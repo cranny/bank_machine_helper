@@ -1,0 +1,7 @@
+#datasource
+spring:
+  datasource:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://47.98.155.107:3306/bapsdb?useSSL=false&useUnicode=true&characterEncoding=UTF-8
+      username: root
+      password: 123456

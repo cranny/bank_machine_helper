@@ -1,0 +1,185 @@
+@charset "UTF-8";
+
+html {
+    height: 100%;
+    font-size: 100%;
+}
+
+body {
+    height: 100%;
+    font-size: 1em;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.cardMain {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: space-around;
+    padding: 0em 2em;
+}
+
+.backRegion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.backRegion .time {
+    font-size: 2em;
+    font-family: SimHei;
+    border-style: solid;
+    border-width: 0.05em;
+    border-color: #9a9393;
+    padding: 0.2em;
+    margin-right: 0.5em;
+    width: 1.5em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.backRegion a {
+    text-decoration: none;
+    color: #000000;
+}
+
+.stepContainer {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: auto;
+    margin: 0.2em;
+    display: flex;
+    margin-bottom: 1em;
+}
+
+.stepLeft {
+    flex-shrink: 1;
+    flex-basis: 10em;
+}
+.is-vertical.el-step {
+    flex-grow: 1;
+}
+.stepRight {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.step1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 1000px;
+}
+.step1 div{
+    margin:15px 0;
+}
+.step2 {
+    display: flex;
+    flex-grow: 1;
+}
+.el-form {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+.el-form-item {
+    margin-bottom: 0.1em;
+}
+
+.card-table {
+    flex-grow: 1;
+    width: 100%;
+}
+.card-img {
+    text-align: center;
+}
+table,
+table tr th,
+table tr td {
+    border: 1px solid #a9aeb9;
+}
+table {
+    border-collapse: collapse;
+}
+table tr th,
+table tr td {
+    height: 52px;
+}
+.el-input {
+    width: 90%;
+}
+.card-bottom {
+    margin-top: 0.5em;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.el-button {
+    width: 120px;
+    height: 50px;
+}
+.step3 {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-basis: auto;
+}
+.step3 div {
+    display: flex;
+    justify-content: center;
+    flex: 1 1 auto;
+    align-items: center;
+}
+
+.step3 img {
+    width: 28em;
+    height: 28em;
+}
+.step4{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-basis: auto;
+}
+.step4 div{
+    display: flex;
+    justify-content: center;
+    flex: 1 1 auto;
+    align-items: center;
+}
+.passwordTitle span{
+    font-size: 1.3em;
+	font-family: Microsoft Yahei;
+}
+.passwordInput{
+    display: flex;
+    flex-direction: column;
+}
+.step5{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-basis: auto;
+}
+.signBottom{
+    display: flex;
+    justify-content: center;
+    margin-top: 0.5em;
+}
+
+.labelM{
+    width: 125px;
+    text-align:right;
+    display:block;
+    overflow:hidden;
+}

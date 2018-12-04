@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8>
+    <meta name=viewport content="width=device-width,initial-scale=1">
+    <title>自助开卡</title>
+    <OBJECT ID="DumpException" CLASSID="CLSID:00F003A2-DA0E-4252-B330-1E1F2F9BEA96" type="application/x-oleobject"
+            style="LEFT: 0px; TOP: 0px; display: none"></OBJECT>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../static/vue/elementUI/index.css">
+    <link rel="stylesheet" href="../static/css/card.css" />
+    <link rel="stylesheet" href="../static/css/common.css" />
+    <link rel="stylesheet" href="../static/css/header.css" />
+    <script src="../js/polyfill.min.js"></script>
+    <!-- 引入组件库 -->
+    <script src="../static/vue/vue.js"></script>
+    <script src="../static/vue/axios.min.js"></script>
+    <script src="../static/vue/elementUI/index.js"></script>
+    <!-- 设备调用JS -->
+    <script src="../devjs/device.js"></script>
+    <script src="../devjs/siu.js"></script>
+    <script src="../devjs/idcard.js"></script>
+    <script src="../devjs/idscanner.js"></script>
+</head>
+
+<body>
+<div id="transferMain" class="transferMain">
+    <div class="header">
+        <div>
+            <img src="../static/img/logo.png" />
+        </div>
+        <div class="bankName">
+            <span style="display: blok;">遵义长征村镇银行</span>
+        </div>
+        <div class="backRegion">
+            <div class="time">
+                <span id="timer">300</span>
+            </div>
+            <div>
+                <a href="../index.html">返回首页</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="stepContainer">
+        <div class="stepRight">
+            <div class="step1" v-if="activeStep ===0">
+                    <div>
+                        <label class="labelM">请选择卡类型：</label>
+                        <input type="radio" name="cardType" id="card" value="card">
+                        <label for="card">银行卡</label>
+                        <input type="radio" name="cardType" id="bankbook" value="bankbook">
+                        <label for="bankbook">存折</label>
+                    </div>
+                    <div>
+                        <label class="labelM">转入账号：</label>
+                        <input type="text" id="accountNumber1" name="accountNumber1" class="el-input__inner" />
+                    </div>
+                    <div>
+                        <label class="labelM">确认转入账号：</label>
+                        <input type="text" id="accountNumber2" name="accountNumber2" class="el-input__inner" />
+                    </div>
+                    <div><el-button @click="stepChangeHandler('next')">确认</el-button></div>
+                </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="../js/time.js"></script>
+<script src="../js/common.js"></script>
+<!--  <script src="../js/loadCard.js"/>-->
+<script src="../js/transfer.js"></script>
+
+</html>

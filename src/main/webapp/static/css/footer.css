@@ -1,0 +1,23 @@
+.footer{
+    flex-shrink: 1;
+    flex-basis: 2em; 
+    margin: 1em 0.2em;
+    display:flex;
+    
+}
+.footer.rightFoot{
+    flex-grow: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.telphone{
+  flex-grow: 1;
+  
+}
+.footer .welcome{
+    flex-grow: 1;
+    font-size: 1.3em;
+	font-family: Microsoft Yahei;
+}

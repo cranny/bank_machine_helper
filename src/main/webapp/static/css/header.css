@@ -1,0 +1,22 @@
+@charset "UTF-8";
+.header{
+  	flex-shrink: 1;
+  	flex-basis: auto; 
+  	margin: 0.2em;
+  	display:flex;
+}
+.header img{
+	width: 4em;
+    height: 4em;
+}
+.bankName{
+	flex-grow:1;
+	display:flex;
+	justify-content: left;
+    align-items: center;
+    margin-left: 0.2em;
+}
+.bankName span{
+	font-size: 2em;
+	font-family: SimHei;
+}

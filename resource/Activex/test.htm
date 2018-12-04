@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>无标题页</title>
+    <script type="text/javascript">
+        function macaddr() {
+            var Getmacaddr = document.getElementById("test");
+            alert(Getmacaddr.GetOfMACAddr());
+        }
+        function DiskID() {
+            var Getmacaddr = document.getElementById("test");
+            alert(Getmacaddr.GetDiskID());
+        }
+        function kkk() {
+            var crmsactivex = document.getElementById("test");
+            try {
+                if (crmsactivex.GetReady()) {
+
+                }
+            } catch (ex) {
+                document.getElementById("crmscontaier").style.display = "block";
+                alert("辅助插件未安装，请先安装插件，否则程序会发生错误！")
+            }
+        }
+ </script>
+</head>
+<body onload="kkk()">
+    <input type='button' onclick='macaddr()' value='GetOfMACAddr' Width="50" Height="24"/>
+    <input type='button' onclick='DiskID()' value='GetDiskID' Width="50" Height="24"/>
+<div></div>
+<div id="crmscontaier" style="display:none" >
+插件安装不正常请点击<a href="Activex/setup.exe"> 这里</a>下载手动安装。然后刷新该页面！
+<object id="test" style="display:none"  classid="clsid:FED17702-5CFB-41fd-95CB-1A947854C67A" codebase="../Activex/setup.exe" Width="404" Height="400"  /></div>
+</body>
+</html>
