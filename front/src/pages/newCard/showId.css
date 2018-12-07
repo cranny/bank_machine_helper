@@ -1,0 +1,12 @@
+.idBox {
+  margin: 60px auto;
+  width: 500px;
+  height: 300px;
+  background-color: rgb(216, 247, 247, 0.4);
+  border: solid 1px rgb(216, 247, 247, 0.9);
+  border-radius: 4px;
+}
+
+.button {
+  width: 500px;
+}

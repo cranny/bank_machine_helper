@@ -1,0 +1,69 @@
+.crumbs {
+    text-align: center;
+}
+.crumbs ul {
+    list-style: none;
+    display: flex;
+    padding: 0;
+}
+.crumbs ul li {
+    flex: 1;
+}
+.crumbs ul li a {
+    display: block;
+    height: 60px;
+    background: #3498db;
+    text-align: center;
+    line-height: 60px;
+    position: relative;
+    margin: 0 10px 0 0;
+    font-size: 20px;
+    text-decoration: none;
+    color: #fff;
+}
+.crumbs ul li a:after {
+    content: "";
+    border-top: 30px solid transparent;
+    border-bottom: 30px solid transparent;
+    border-left: 30px solid #3498db;
+    position: absolute;
+    right: -29px;
+    top: 0;
+    z-index: 1;
+}
+.crumbs ul li a:before {
+    content: "";
+    border-top: 30px solid transparent;
+    border-bottom: 30px solid transparent;
+    border-left: 30px solid #d4f2ff;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+.crumbs ul li:first-child a {
+
+}
+.crumbs ul li:first-child a:before {
+    display: none;
+}
+.crumbs ul li:last-child a {
+    margin: 0
+}
+.crumbs ul li:last-child a:after {
+    display: none;
+}
+.crumbs ul li a:hover {
+    background: #fa5ba5;
+}
+.crumbs ul li a:hover:after {
+    border-left-color: #fa5ba5;
+}
+
+.figure {
+    width: 100%;
+    height: 780px;
+    background-image: url("../../assets/new_card/1.png");
+    background-repeat: no-repeat;
+    background-position: top center;
+    background-size: contain;
+}

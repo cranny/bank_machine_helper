@@ -1,0 +1,111 @@
+
+.indigo {
+  background-color: #1a237e;
+}
+
+.blue {
+  background-color: #0d47a1;
+}
+
+.lightBlue {
+  background-color: #1565c0;
+}
+
+.cyan {
+  background-color: #00bcd4;
+}
+
+.purple {
+  background-color: #9c27b0;
+}
+
+.deepPurple {
+  background-color: #7b1fa2;
+}
+
+.pink {
+  background-color: #d50000;
+}
+
+.lightGreen {
+  background-color: #00c853;
+}
+
+.teal {
+  background-color: #00897b;
+}
+
+.lime {
+  background-color: #aeea00;
+}
+
+.cardItem {
+  display: flex;
+  height: 250px;
+  align-items:center;
+  justify-content: center;
+}
+
+.cardInnerItem {
+  display: flex;
+  height: 100px;
+  padding-top: 70px;
+  color: #fff;
+  background-size: 64px 64px;
+  background-position: top center;
+  background-repeat: no-repeat;
+  font-size: 24px;
+  text-align: center;
+}
+
+.cardInnerItem1 {
+  background-image: url("../assets/index/img_active.png");
+}
+
+.cardInnerItem2 {
+  background-image: url("../assets/index/img_cunzhe.png");
+}
+
+.cardInnerItem3 {
+  background-image: url("../assets/index/img_cunzhe.png");
+}
+
+.cardInnerItem4 {
+  background-image: url("../assets/index/img_cunzhe.png");
+}
+
+.cardInnerItem5 {
+  background-image: url("../assets/index/img_cunzhe.png");
+}
+
+.cardInnerItem6 {
+  background-image: url("../assets/index/img_open_card.png");
+}
+
+.cardInnerItem7 {
+  background-image: url("../assets/index/img_qianyue.png");
+}
+
+.cardInnerItem8 {
+  background-image: url("../assets/index/img_query.png");
+}
+
+.cardInnerItem9 {
+  background-image: url("../assets/index/img_zhuan.png");
+}
+
+.cardInnerItem10 {
+  background-image: url("../assets/index/img_active.png");
+}
+
+.home {
+
+}
+
+.row {
+  padding-top: 4px;
+}
+
+.row:first-child {
+  padding-top: 0;
+}
