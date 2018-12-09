@@ -1,4 +1,4 @@
-import styles from './done.css';
+import styles from './done.scss';
 import classNames from 'classnames';
 // import Link from 'umi/link';
 // import router from 'umi/router';
@@ -40,34 +40,34 @@ class InputForm extends React.Component {
 
     return (
       <Form onSubmit={this.handleSubmit} className="input-form">
-        <h1>借记开卡成功(一类户)</h1>
-        <p>请勾选需要联动的交易</p>
-        <div>
-          <FormItem>
+        <h1 className={styles.title}>借记开卡成功(一类户)</h1>
+        <p className={styles.secTitle}>请勾选需要联动的交易</p>
+        <div className={styles.checkBox}>
+          <FormItem className={styles.checkItem}>
             {getFieldDecorator('addInfo', {
               valuePropName: 'checked',
             })(<Checkbox>客户信息补录</Checkbox>)}
           </FormItem>
 
-          <FormItem>
+          <FormItem className={styles.checkItem}>
             {getFieldDecorator('smsSign', {
               valuePropName: 'checked',
             })(<Checkbox>短信签约</Checkbox>)}
           </FormItem>
 
-          <FormItem>
+          <FormItem className={styles.checkItem}>
             {getFieldDecorator('transferSign', {
               valuePropName: 'checked',
             })(<Checkbox>转账签约</Checkbox>)}
           </FormItem>
 
-          <FormItem>
+          <FormItem className={styles.checkItem}>
             {getFieldDecorator('fastSign', {
               valuePropName: 'checked',
             })(<Checkbox>小额免密签约</Checkbox>)}
           </FormItem>
 
-          <FormItem>
+          <FormItem className={styles.checkItem}>
             {getFieldDecorator('onlineSign', {
               valuePropName: 'checked',
             })(<Checkbox>网银签约</Checkbox>)}
@@ -77,6 +77,7 @@ class InputForm extends React.Component {
         <div className={styles.submit}>
           <FormItem>
             <Button
+              type="primary"
               size="large"
               htmlType="submit"
               className={classNames(styles.button, 'wb-button')}

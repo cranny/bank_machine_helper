@@ -1,9 +1,11 @@
+@import '../theme/colors.scss';
+
 .tool {
   position: absolute;
   padding: 20px;
   right: 0;
   top: 0;
-  border: solid 1px blue;
+  border: solid 1px $purple;
   background-color: aliceblue;
   text-align: left;
   z-index: 999;

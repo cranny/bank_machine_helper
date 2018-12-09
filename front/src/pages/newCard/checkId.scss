@@ -1,3 +1,5 @@
+@import '../../theme/colors.scss';
+
 .crumbs {
     text-align: center;
 }
@@ -12,7 +14,7 @@
 .crumbs ul li a {
     display: block;
     height: 60px;
-    background: #3498db;
+    background: $pink;
     text-align: center;
     line-height: 60px;
     position: relative;
@@ -25,7 +27,7 @@
     content: "";
     border-top: 30px solid transparent;
     border-bottom: 30px solid transparent;
-    border-left: 30px solid #3498db;
+    border-left: 30px solid $pink;
     position: absolute;
     right: -29px;
     top: 0;
@@ -35,7 +37,7 @@
     content: "";
     border-top: 30px solid transparent;
     border-bottom: 30px solid transparent;
-    border-left: 30px solid #d4f2ff;
+    border-left: 30px solid $red;
     position: absolute;
     left: 0;
     top: 0;
@@ -53,10 +55,10 @@
     display: none;
 }
 .crumbs ul li a:hover {
-    background: #fa5ba5;
+    // background: #fa5ba5;
 }
 .crumbs ul li a:hover:after {
-    border-left-color: #fa5ba5;
+    // border-left-color: #fa5ba5;
 }
 
 .figure {

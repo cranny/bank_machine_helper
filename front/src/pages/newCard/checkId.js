@@ -1,69 +1,100 @@
-import styles from './checkId.css';
+import styles from './checkId.scss';
 // import { Row, Col } from 'antd';
 // import classNames from 'classnames';
 import router from 'umi/router';
 import { connect } from 'dva';
-import { getBankAPI } from '../../lib/bankApi'
+import { getBankAPI } from '../../lib/bankApi';
+import React from 'react';
 
 const debug = require('debug')('wb:pages:checkId')
 
-function next() {
-  router.push('/newCard/showId');
-}
+class Page extends React.Component {
+  componentDidMount() {
+    getBankAPI().Ids.open()
+    getBankAPI().Ids.insert()
 
-function Page({ dispatch }) {
-  getBankAPI().Ids.open()
-  getBankAPI().Ids.insert()
+    getBankAPI().Ids.once('onInserted', this.onInserted)
+    getBankAPI().Ids.once('onRead', this.onRead)
+    getBankAPI().Ids.once('onScan', this.onScan)
+  }
 
-  getBankAPI().Ids.once('onInserted', () => {
+  componentWillUnmount() {
+    getBankAPI().Ids.off('onInserted', this.onInserted)
+    getBankAPI().Ids.off('onRead', this.onRead)
+    getBankAPI().Ids.off('onScan', this.onScan)
+  }
+
+  onInserted = () => {
     debug('接收到身份证已放置事件')
     getBankAPI().Ids.read()
-    dispatch({
+    this.props.dispatch({
       type: 'app/showLoading',
       payload: {
         loading: '正在读取身份证信息',
       },
     });
-  })
+  }
 
-  getBankAPI().Ids.once('onRead', (payload) => {
+  onRead = payload =>{
     debug('接收到身份证已读取事件', payload)
-    dispatch({
+    getBankAPI().Ids.scan()
+    this.props.dispatch({
+      type: 'ids/onRead',
+      payload
+    });
+    this.props.dispatch({
+      type: 'app/showLoading',
+      payload: {
+        loading: '正在扫描身份证信息',
+      }
+    });
+  }
+
+  onScan = payload => {
+    debug('接收到身份证已扫描事件', payload)
+    this.props.dispatch({
+      type: 'ids/onScan',
+      payload
+    });
+    this.props.dispatch({
       type: 'app/hideLoading',
       payload
     });
-  })
+    router.push('/newCard/showId');
+  }
 
-  return (
-    <div className={styles.home}>
-      <div className={styles.crumbs}>
-        <ul>
-          <li>
-            <a href="#1">阅读协议</a>
-          </li>
-          <li>
-            <a href="#2">身份核查</a>
-          </li>
-          <li>
-            <a href="#3">录入信息</a>
-          </li>
-          {/* <li>
-            <a href="#3">发卡</a>
-          </li> */}
-          <li>
-            <a href="#3">设置密码</a>
-          </li>
-          <li>
-            <a href="#3">领取卡片</a>
-          </li>
-        </ul>
+  render() {
+    return (
+      <div className={styles.home}>
+        <div className={styles.crumbs}>
+          <ul>
+            <li>
+              <a href="#1">阅读协议</a>
+            </li>
+            <li>
+              <a href="#2">身份核查</a>
+            </li>
+            <li>
+              <a href="#3">录入信息</a>
+            </li>
+            {/* <li>
+              <a href="#3">发卡</a>
+            </li> */}
+            <li>
+              <a href="#3">设置密码</a>
+            </li>
+            <li>
+              <a href="#3">领取卡片</a>
+            </li>
+          </ul>
+        </div>
+        <div className={styles.figure} />
       </div>
-      <div onClick={next} className={styles.figure} />
-    </div>
-  );
+    );
+  }
 }
 
-function mapStateToProps() {
+function mapStateToProps(state) {
   return {};
 }
 

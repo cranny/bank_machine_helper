@@ -4,6 +4,8 @@
 export default {
   nameSpace: 'ids',
   state: {
+    info: {},
+    images: {}
     // province: eventResult.SF,
     // name: eventResult.NM,
     // sex: eventResult.SX,
@@ -12,8 +14,21 @@ export default {
     // address: eventResult.AD,
     // issueAgency: eventResult.QF,
     // issueDate: eventResult.SD,
-    // expiredDate: eventResult.ED
+    // expiredDate: eventResult.ED,
+    // avatar: '',
+    // IdsImage1: '',
+    // IdsImage2: ''
   },
   reducers: {
+    onRead(state, { payload }) {
+      state.info = {
+        ...payload
+      }
+    },
+    onScan(state, { payload }) {
+      state.images = {
+        ...payload
+      }
+    }
   },
 };

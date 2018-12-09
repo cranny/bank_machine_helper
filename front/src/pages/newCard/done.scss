@@ -1,0 +1,32 @@
+@import '../../theme/colors.scss';
+
+.checkItem {
+  display: inline-block;
+}
+
+.checkBox {
+  width: 400px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.title {
+  @extend .checkBox;
+  padding: 20px 0;
+  font-size: 28px;
+  color: $pink;
+}
+
+.secTitle {
+  @extend .checkBox;
+  padding: 10px 0;
+  font-size: 20px;
+}
+
+.button {
+  display: block;
+  @extend .checkBox;
+  text-align: center;
+}
+
+

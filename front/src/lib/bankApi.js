@@ -67,10 +67,16 @@ export class Ids extends EventEmitter {
       desc: 'event: 二代证已放入'
     },
 
-    onReadOrScan: {
+    onRead: {
       command: 'idsReadAsyn',
       name: 'OnIdsRead',
-      desc: 'event: 二代证已读取(扫描)'
+      desc: 'event: 二代证已读取'
+    },
+
+    onScan: {
+      command: 'idsReadAsyn',
+      name: 'OnIdsRead',
+      desc: 'event: 二代证已扫描'
     }
   }
 
@@ -99,16 +105,16 @@ export class Ids extends EventEmitter {
   }
 
   async read() {
-    debug('二代读卡器读取')
+    debug('二代读卡器开始读取')
     this.ctx.idsReadAsyn(1, 0)
   }
 
   async scan() {
-    debug('二代读卡器扫描')
+    debug('二代读卡器开始扫描')
     this.ctx.idsReadAsyn(2, 0)
   }
 
-  getReadResult(eventResult) {
+  static getReadResult(eventResult) {
     if (!eventResult) {
       throw new Error('eventResult should not be empty')
     }
@@ -122,11 +128,16 @@ export class Ids extends EventEmitter {
       address: eventResult.AD,
       issueAgency: eventResult.QF,
       issueDate: eventResult.SD,
-      expiredDate: eventResult.ED
+      expiredDate: eventResult.ED,
+      avatar: this.ctx.IdsPhoto
     }
   }
 
-  getScanResult(eventResult) {
+  static isReadResult(eventResult) {
+    return eventResult && eventResult.issueAgency
+  }
+
+  static getScanResult(eventResult) {
     if (!eventResult) {
       throw new Error('getScanResult: eventResult should not be empty')
     }
@@ -145,14 +156,13 @@ export class Ids extends EventEmitter {
       throw new Error('getScanResult: unknown error')
     }
 
-    if (!(this.ctx.IdsImage1 && this.ctx.IdsImage2 && this.ctx.IdsPhoto)) {
+    if (!(this.ctx.IdsImage1 && this.ctx.IdsImage2)) {
       throw new Error('getScanResult: no data found')
     }
 
     return {
       IdsImage1: this.ctx.IdsImage1,
-      IdsImage2: this.ctx.IdsImage2,
-      IdsPhoto: this.ctx.IdsPhoto
+      IdsImage2: this.ctx.IdsImage2
     }
   }
 }
@@ -344,13 +354,32 @@ export const BankFactory = {
       Pinpad: new Pinpad(window.BOCOMDevControl)
     }
 
-    ctx.addEventListener('OnAsynExecuted', (szCmdName, szEventName, execCode, execValue) => {
-      debug('OnAsynExecuted fired:', szCmdName, szEventName, execCode, execValue)
+    ctx.addEventListener('OnAsynExecuted', (szCmdName, szEventName, execCode, _execValue) => {
+      debug('OnAsynExecuted fired:', szCmdName, szEventName, execCode, _execValue)
       Object.values(apis).map(api => {
         const eventsMap = api.constrctor.EVENTS
-        Object.keys(eventsMap).map(eventKey => {
-          const eventMap = eventsMap[eventKey]
-          if (szCmdName === eventMap.command && szEventName === eventMap.name) {
+        Object.keys(eventsMap).map(_eventKey => {
+          let eventKey = _eventKey
+          let eventMap = eventsMap[_eventKey]
+          let execValue = _execValue
+          const matched = szCmdName === eventMap.command && szEventName === eventMap.name
+
+          // 二代证已读取
+          const isIdsRead = matched && szCmdName === Ids.EVENTS.onRead.command && szEventName === Ids.EVENTS.onRead.name && Ids.isReadResult(execValue)
+          // 二代证已扫描
+          const isIdsScan = matched && szCmdName === Ids.EVENTS.onScan.command && szEventName === Ids.EVENTS.onScan.name && !Ids.isReadResult(execValue)
+
+          if (isIdsRead) {
+            eventKey = 'onRead'
+            eventMap = Ids.EVENTS.onRead
+            execValue = Ids.getReadResult(execValue)
+          } else if (isIdsScan) {
+            eventKey = 'onScan'
+            eventMap = Ids.EVENTS.onScan
+            execValue = Ids.getScanResult(execValue)
+          }
+
+          if (matched) {
             eventMap.desc && debug(eventMap.desc)
             api.emit(eventKey, {
               code: execCode,

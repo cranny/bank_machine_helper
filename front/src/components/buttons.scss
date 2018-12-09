@@ -1,19 +1,10 @@
 @import '../theme/colors.scss';
-.wb-button {
+button.wb-button {
   display: block;
   margin: 0 auto;
-  /* width: 500px; */
-  height: 64px;
-  line-height:64px;
-  font-size: 28px;
-  text-align: center;
-  border: solid 1px #ddd;
-  border-radius: 6px;
-  color: #fff;
-  background-color: $red;
 }
 
-.wb-button.single {
+button.wb-button.single {
   display: block;
   margin: 0 20px;
 }

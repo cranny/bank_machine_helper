@@ -113,6 +113,7 @@ class InputForm extends React.Component {
         <div className={styles.submit}>
           <FormItem>
             <Button
+              type="primary"
               size="large"
               htmlType="submit"
               className={classNames(styles.button, 'wb-button')}

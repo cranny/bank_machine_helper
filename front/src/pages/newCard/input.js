@@ -22,19 +22,19 @@ class InputForm extends React.Component {
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: {
-        span: 6,
+        span: 4,
       },
       wrapperCol: {
-        span: 18,
+        span: 20,
       },
     };
 
     const singleFormItemLayout = {
       labelCol: {
-        span: 3,
+        span: 2,
       },
       wrapperCol: {
-        span: 21,
+        span: 22,
       },
     };
 
@@ -185,7 +185,7 @@ class InputForm extends React.Component {
 
         <div className={styles.submit}>
           <FormItem>
-            <Button size="large" htmlType="submit" className={classNames(styles.button, 'wb-button')}>
+            <Button type="primary" size="large" htmlType="submit" className={classNames(styles.button, 'wb-button')}>
               确认
             </Button>
           </FormItem>

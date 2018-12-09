@@ -5,6 +5,8 @@ import { Button } from 'antd';
 import classNames from 'classnames';
 import { connect } from 'dva';
 import { getBankAPI } from '../lib/bankApi'
+import idsPic from '../assets/new_card/ids.jpg'
+
 const debug = require('debug')('wb:components:tool')
 
 function Tool({ show }) {
@@ -14,7 +16,7 @@ function Tool({ show }) {
   }
 
   const idsReadDone = () => {
-    debug('触发读取事件')
+    debug('触发读取完毕事件')
     getBankAPI().Ids.emit('onRead', {
       province: '地球',
       name: '卡卡罗特',
@@ -29,7 +31,11 @@ function Tool({ show }) {
   }
 
   const idsScanDone = () => {
-
+    debug('触发扫描完毕事件')
+    getBankAPI().Ids.emit('onScan', {
+      IdsImage1: idsPic,
+      IdsImage2: idsPic
+    })
   }
 
   const pinPadInput = () => {
@@ -38,13 +44,13 @@ function Tool({ show }) {
 
   return (
     <div className={classNames(styles.tool, show ? '' : 'hide')}>
-      <Button onClick={putIds}>放身份证</Button>
+      <Button type="primary" onClick={putIds}>放身份证</Button>
       <hr />
-      <Button onClick={idsReadDone}>身份证读取完毕</Button>
+      <Button type="primary" onClick={idsReadDone}>身份证读取完毕</Button>
       <hr />
-      <Button onClick={idsScanDone}>身份证扫描完毕</Button>
+      <Button type="primary" onClick={idsScanDone}>身份证扫描完毕</Button>
       <hr />
-      <Button onClick={pinPadInput}>按密码键</Button>
+      <Button type="primary" onClick={pinPadInput}>按密码键</Button>
       <hr />
     </div>
   );

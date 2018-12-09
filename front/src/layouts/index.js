@@ -25,7 +25,7 @@ function BasicLayout({ app, children}) {
       <Divider />
 
       <div className={styles.content}>{children}</div>
-      <Loading text={app.loading} />
+      <Loading className={app.loading ? '' : 'hide'} text={app.loading} />
       <Tool show={app.tool} />
       <object className={styles.ocx} title="devControl" classID="clsid:1D2162F4-98C8-417E-8410-C1E9B0B0337C" hspace="0" vspace="0" id="BOCOMDevControl"/>
     </Layout>
