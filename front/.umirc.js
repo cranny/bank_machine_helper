@@ -22,6 +22,7 @@ export default {
   targets: {
     ie: 11,
   },
+  history: 'hash',
   theme: {
     "heading-color": "rgba(0, 0, 0, .85)",               // 标题色
     "text-color": "rgba(0, 0, 0, .65)",                 // 主文本色
