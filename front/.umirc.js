@@ -15,7 +15,11 @@ export default {
         exclude: [],
       },
       hardSource: false,
+      sass: {}
     }],
   ],
-  publicPath: './'
+  publicPath: './',
+  targets: {
+    ie: 11,
+  },
 }

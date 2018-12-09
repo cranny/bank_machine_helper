@@ -1,42 +1,43 @@
+@import '../theme/colors.scss';
 
 .indigo {
-  background-color: #1a237e;
+  background-color: $indigo;
 }
 
 .blue {
-  background-color: #0d47a1;
+  background-color: $blue;
 }
 
 .lightBlue {
-  background-color: #1565c0;
+  background-color: $lightBlue;
 }
 
 .cyan {
-  background-color: #00bcd4;
+  background-color: $cyan;
 }
 
 .purple {
-  background-color: #9c27b0;
+  background-color: $purple;
 }
 
 .deepPurple {
-  background-color: #7b1fa2;
+  background-color: $deepPurple;
 }
 
 .pink {
-  background-color: #d50000;
+  background-color: $pink;
 }
 
 .lightGreen {
-  background-color: #00c853;
+  background-color: $lightGreen;
 }
 
 .teal {
-  background-color: #00897b;
+  background-color: $teal;
 }
 
 .lime {
-  background-color: #aeea00;
+  background-color: $lime;
 }
 
 .cardItem {

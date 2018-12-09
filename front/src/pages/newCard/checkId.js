@@ -3,25 +3,36 @@ import styles from './checkId.css';
 // import classNames from 'classnames';
 import router from 'umi/router';
 import { connect } from 'dva';
+import { getBankAPI } from '../../lib/bankApi'
+
+const debug = require('debug')('wb:pages:checkId')
 
 function next() {
   router.push('/newCard/showId');
 }
 
-function Page({ app, dispatch }) {
-  setTimeout(() => {
+function Page({ dispatch }) {
+  getBankAPI().Ids.open()
+  getBankAPI().Ids.insert()
+
+  getBankAPI().Ids.once('onInserted', () => {
+    debug('接收到身份证已放置事件')
+    getBankAPI().Ids.read()
     dispatch({
-        type: 'app/showLoading',
-        payload: {
-          text: '正在读取身份证信息',
-        },
-      });
-  }, 500)
-  setTimeout(() => {
+      type: 'app/showLoading',
+      payload: {
+        loading: '正在读取身份证信息',
+      },
+    });
+  })
+
+  getBankAPI().Ids.once('onRead', (payload) => {
+    debug('接收到身份证已读取事件', payload)
     dispatch({
       type: 'app/hideLoading',
+      payload
     });
-  }, 3000);
+  })
 
   return (
     <div className={styles.home}>
@@ -52,10 +63,8 @@ function Page({ app, dispatch }) {
   );
 }
 
-function mapStateToProps(state) {
-  return {
-    app: state.app,
-  };
+function mapStateToProps() {
+  return {};
 }
 
 export default connect(mapStateToProps)(Page);

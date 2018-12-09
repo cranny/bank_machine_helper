@@ -1,0 +1,93 @@
+@import '../theme/colors.scss';
+
+$whirl-height: 60px !default;
+$whirl-width: 60px !default;
+$whirl-border-width: 6px !default;
+$whirl-overlay-color: $pink;
+$whirl-base-color: $red !default;
+
+$left-width: 110px;
+
+.loading {
+  // display: flex;
+  // align-items: center;
+  // justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255,255,255, .6);
+}
+
+.inner {
+  display: flex;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 60px;
+  transform: translate(-50%,-50%);
+  transform-origin: 50% 50%;
+}
+
+.text {
+  width: auto;
+  flex-grow: 1;
+  font-size: 36px;
+  line-height: 60px;
+  color: $pink;
+}
+
+.left {
+  width: $left-width;
+	min-width: $left-width;
+  max-width: $left-width;
+  flex-grow: 0;
+}
+
+/* whirl base styling */
+.whirl {
+  position: relative;
+  top: 50%;
+}
+
+.whirl:before {
+  content: "";
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  height: 100%;
+  width: 100%;
+  background-color: $whirl-overlay-color;
+  opacity: 0.6;
+}
+.whirl:after {
+  z-index: 2;
+  content: "";
+  height: $whirl-height;
+  width: $whirl-width;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: (-$whirl-width / 2) 0 0 (-$whirl-width / 2);
+  transition: all .75s ease 0s;
+  border-radius: 100%;
+  border-top: $whirl-border-width solid $whirl-base-color;
+  animation: standard .75s infinite linear;
+}
+.whirl.no-overlay:before {
+  content: none;
+  display: none;
+}
+
+/* whirl standard rotation animation used for duo, double-up etc. */
+@keyframes standard {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

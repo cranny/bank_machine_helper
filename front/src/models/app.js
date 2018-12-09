@@ -2,14 +2,14 @@ export default {
   nameSpace: 'app',
   state: {
     loading: '',
+    tool: true,
   },
   reducers: {
     showLoading(state, { payload }) {
-      console.log(payload)
-      state.loading = true;
+      state.loading = payload.loading;
     },
     hideLoading(state) {
-      state.loading = false;
+      state.loading = '';
     },
   },
 };

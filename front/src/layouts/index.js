@@ -1,9 +1,13 @@
 import styles from './index.css';
 import { Layout, Divider } from 'antd';
+import { connect } from 'dva';
+import withRouter from 'umi/withRouter';
+import Loading from '../components/loading';
+import Tool from '../components/tool'
 
 const { Header } = Layout;
 
-function BasicLayout(props) {
+function BasicLayout({ app, children}) {
   return (
     <Layout className={styles.layout}>
       <Header className={styles.header}>
@@ -20,9 +24,20 @@ function BasicLayout(props) {
 
       <Divider />
 
-      <div className={styles.content}>{props.children}</div>
+      <div className={styles.content}>{children}</div>
+      <Loading text={app.loading} />
+      <Tool show={app.tool} />
+      <object className={styles.ocx} title="devControl" classID="clsid:1D2162F4-98C8-417E-8410-C1E9B0B0337C" hspace="0" vspace="0" id="BOCOMDevControl"/>
     </Layout>
   );
 }
 
-export default BasicLayout;
+
+function mapStateToProps(state) {
+  return {
+    app: state.app,
+  };
+}
+
+export default withRouter(connect(mapStateToProps)(BasicLayout));
+

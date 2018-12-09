@@ -1,4 +1,4 @@
-import styles from './index.css';
+import styles from './index.scss';
 import { Row, Col } from 'antd';
 import classNames from 'classnames';
 import Link from 'umi/link';
