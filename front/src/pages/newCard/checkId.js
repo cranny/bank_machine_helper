@@ -5,6 +5,7 @@ import router from 'umi/router';
 import { connect } from 'dva';
 import { getBankAPI } from '../../lib/bankApi';
 import React from 'react';
+import CountDown from '../../components/countdown'
 
 const debug = require('debug')('wb:pages:checkId')
 
@@ -18,10 +19,17 @@ class Page extends React.Component {
     getBankAPI().Ids.once('onScan', this.onScan)
   }
 
+  onTimeout = () => {
+    getBankAPI().Ids.cancelInsert()
+    getBankAPI().Ids.close()
+    router.push('/');
+  }
+
   componentWillUnmount() {
     getBankAPI().Ids.off('onInserted', this.onInserted)
     getBankAPI().Ids.off('onRead', this.onRead)
     getBankAPI().Ids.off('onScan', this.onScan)
+    getBankAPI().Ids.close()
   }
 
   onInserted = () => {
@@ -56,10 +64,12 @@ class Page extends React.Component {
       type: 'ids/onScan',
       payload
     });
+    
     this.props.dispatch({
       type: 'app/hideLoading',
       payload
     });
+
     router.push('/newCard/showId');
   }
 
@@ -88,7 +98,9 @@ class Page extends React.Component {
             </li>
           </ul>
         </div>
-        <div className={styles.figure} />
+        <div className={styles.figure}>
+        <CountDown text="请于%s内插入您的身份证" num={10} onEnd={this.onTimeout} />
+        </div>
       </div>
     );
   }

@@ -3,6 +3,8 @@ export function mockOcxEnv(ctx) {
   const functions = [
     'idsOpen',
     'idsClose',
+    'idsGetInfo',
+    'idsReset',
     'idsInsertAsyn',
     'idsCancel',
     'idsReadAsyn',

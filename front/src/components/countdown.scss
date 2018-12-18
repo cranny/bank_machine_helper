@@ -1,0 +1,11 @@
+@import '../theme/colors.scss';
+
+.countdown {
+    position: absolute;
+    top: 50px;
+    width: 100%;
+    padding: 20px;
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+}

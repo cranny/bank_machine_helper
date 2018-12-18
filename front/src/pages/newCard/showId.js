@@ -14,6 +14,8 @@ function Page({ ids }) {
     <div className={styles.home}>
       <div className={styles.idBox}>
         <img className={styles.idImage} alt="" src={ids.images.IdsImage1} />
+
+
       </div>
       <Button type="primary" size="large" onClick={onConfirm} className={classNames(styles.button, 'wb-button')}>
         确认

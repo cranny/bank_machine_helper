@@ -4,11 +4,17 @@ import { connect } from 'dva';
 import withRouter from 'umi/withRouter';
 import Loading from '../components/loading';
 import Tool from '../components/tool'
+import ErrorBoundary from 'react-error-boundary';
 
 const { Header } = Layout;
 
-function BasicLayout({ app, children}) {
+function BasicLayout({ app, children, dispatch}) {
+  const onError = (error) => {
+    console.error(error.msg)
+  }
+
   return (
+    <ErrorBoundary onError={onError}>
     <Layout className={styles.layout}>
       <Header className={styles.header}>
         <div className={styles.logo} />
@@ -29,6 +35,7 @@ function BasicLayout({ app, children}) {
       <Tool show={app.tool} />
       <object className={styles.ocx} title="devControl" classID="clsid:1D2162F4-98C8-417E-8410-C1E9B0B0337C" hspace="0" vspace="0" id="BOCOMDevControl"/>
     </Layout>
+    </ErrorBoundary>
   );
 }
 

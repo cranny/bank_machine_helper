@@ -40,6 +40,7 @@
 
 // }
 import EventEmitter from 'eventemitter3'
+import {parseAsyncResult, OcxExceptions, handleSyncResult} from './utils'
 
 const debug = require('debug')('wb:lib:bankApi')
 
@@ -85,8 +86,31 @@ export class Ids extends EventEmitter {
   }
 
   open() {
-    debug('打开二代读卡器')
-    this.ctx.idsOpen(0)
+    const actionName = '打开二代读卡器'
+    debug(actionName)
+    const resCode = this.ctx.idsOpen(0)
+    handleSyncResult(actionName, resCode)
+
+    // 查看设备状态
+    this.getInfo()
+  }
+
+  getInfo(type = 11) {
+    const actionName = '获取设备状态'
+    debug(actionName)
+    const resCode = this.ctx.idsGetInfo(type)
+
+    // 设备未准备好便复位
+    if (resCode === 3) {
+      this.reset()
+    }
+  }
+
+  reset() {
+    const actionName = '复位二代读卡器'
+    debug(actionName)
+    const resCode = this.ctx.idsReset()
+    handleSyncResult(actionName, resCode)
   }
 
   close() {
@@ -258,13 +282,20 @@ export class BankCard extends EventEmitter {
     }
   }
 
-  isActive() {
+  // 最近一次用户插入的卡号
+  get lastCardNum() {
+    return this.ctx.CardissuerCardNumber
+  }
+
+  // 是否安装了发卡器
+  get isActive() {
     return this.ctx.CardissuerActive
   }
 
+  // 	0=成功，-2=设备硬件故障，-6=操作超时。
   open() {
     debug('打开发卡器')
-    this.ctx.cardissuerOpen(1, 1)
+    return this.ctx.cardissuerOpen(1, 1)
   }
 
   close() {
@@ -274,6 +305,27 @@ export class BankCard extends EventEmitter {
 
   toReadMode() {
     this.ctx.SetWorkMode(0)
+  }
+
+  // type 1 是否允许插卡,  0 不允许 1 允许
+  // type 2 初始化时对卡的处理 0 吞卡 1 退卡 2 无动作
+  setParam(type, param1) {
+    debug('发卡器设置参数')
+    this.ctx.cardissuerSetParam(type, param1)
+  }
+
+  // 0=成功，-1=设备没有打开，-2=硬件故障，-6=操作超时
+  forceInit() {
+    debug('发卡器强制初始化')
+    return this.ctx.cardissuerInit()
+  }
+
+  // RT 0=成功，-1=设备没有打开，-2=硬件故障，-6=操作超时
+  getInfo(type) {
+    const result = this.ctx.cardissuerGetInfo(type)
+    return {
+
+    }
   }
 
   getBoxCount() {
@@ -323,6 +375,22 @@ export class BankCard extends EventEmitter {
   }
 }
 
+// class BankAPI {
+//   constructor() {}
+
+//   static wrap(ocxNode) {
+//     for (key in ocxNode) {
+//       if (ocxNode.hasOwnProperty(key) && typeof ocxNode[key] === 'function') {
+//         ocxNode[key] = function (...args) {
+//           debug(`call ${key}: begin`)
+//           ocxNode[key](...args)
+//           debug(`call ${key}: end`)
+//         }.bind(ocxNode)
+//       }
+//     }
+//   }
+// }
+
 export const BankFactory = {
   getOcx() {
     let $ocx = window.BOCOMDevControl || document.getElementById('BOCOMDevControl')
@@ -345,7 +413,7 @@ export const BankFactory = {
     const ctx = BankFactory.getOcx()
 
     if (!(ctx && ctx.getVersion)) {
-      throw new Error('BOCOMDevControl API not exists!')
+      throw new OcxExceptions('BOCOMDevControl API not exists!')
     }
 
     const apis = {
@@ -355,6 +423,7 @@ export const BankFactory = {
     }
 
     ctx.addEventListener('OnAsynExecuted', (szCmdName, szEventName, execCode, _execValue) => {
+      _execValue = parseAsyncResult(_execValue)
       debug('OnAsynExecuted fired:', szCmdName, szEventName, execCode, _execValue)
       Object.values(apis).map(api => {
         const eventsMap = api.constrctor.EVENTS

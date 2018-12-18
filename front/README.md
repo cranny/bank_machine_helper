@@ -1,10 +1,12 @@
 # 环境要求
 
-nodejs 8+,  yarn
+nodejs 8+
 
 # 安装依赖
 
 ~~~
+  npm install yarn -g
+  cd ./front
   yarn
 ~~~
 
@@ -14,4 +16,10 @@ nodejs 8+,  yarn
 
 ~~~
  yarn start
+~~~
+
+# 打包部署
+
+~~~
+ yarn build
 ~~~

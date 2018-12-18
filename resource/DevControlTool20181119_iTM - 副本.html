@@ -1,0 +1,6464 @@
+﻿<!-- 
+
+	广州广电运通金融电子股份有限公司 
+
+	杨明君 
+
+-->
+
+<HTML style="background:rgb(165,156,199);">
+
+<HEAD>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<OBJECT classid="clsid:A3C12A49-A136-4C2A-A87F-233B2A8190EE" width=100 height=50 align=center hspace=0 vspace=0 id="BOCOMDevControl"></OBJECT>
+
+
+
+<style type="text/css">
+
+
+
+#buttonStyle{
+
+	height:50px;
+
+	width:auto;
+
+	margin:0 0 0 0px;
+
+	text-align:center;
+
+	line-align:center;
+
+	padding:10px 10px;
+
+	vertical-align:middle;
+
+}
+
+
+
+#buttonMin{
+
+	height:22;
+
+	width:180;
+
+}
+
+
+
+</style>
+
+
+
+<script language="JavaScript">
+
+function LogTrace(p_strLogContext){
+
+	var l_date = new Date();
+
+	var l_strTime = l_date.getHours().toString() + ":" + l_date.getMinutes().toString() + ":" + l_date.getSeconds().toString() + "." + l_date.getMilliseconds().toString();
+
+	var l_nLength = l_strTime.length;
+
+	for(var i = 12 - l_nLength; i > 0; i--) {
+
+		l_strTime += " ";
+
+	}
+
+	l_strTime = "[" + l_strTime + "]  ";
+
+	
+
+	var l_strCurLogContext = document.getElementById("taLogWin").value;
+
+	document.getElementById("taLogWin").value = l_strTime + p_strLogContext + "\r\n" + l_strCurLogContext;
+
+}
+
+
+
+function LogClean() {
+
+	document.getElementById("taLogWin").value = "";
+
+}
+
+
+
+//控件调试按钮响应函数，如果不需要可以注释相关模块调试代码
+
+function OcxDebug() {
+
+
+
+	//alert("0x25FE123FAB"^"0xFFFFFFFFFF");
+
+	//发卡器调试函数
+
+	//CrdDebug();
+
+	
+
+	//CrdGetInfo();
+
+	//UkeyGetInfo();
+
+}
+
+
+
+function readLogicNamesForAllDevices() {
+
+	var wsh = new ActiveXObject("WScript.shell");
+
+	var idc = wsh.RegRead("HKEY_USERS\\.DEFAULT\\XFS\\LOGICAL_SERVICES\\IDC\\Provider");
+
+	document.getElementById('LogicNameIDC').value = idc;
+
+	var pin = wsh.RegRead("HKEY_USERS\\.DEFAULT\\XFS\\LOGICAL_SERVICES\\PIN30\\Provider");
+
+	document.getElementById('LogicNamePIN').value = pin;
+
+	var prp = wsh.RegRead("HKEY_USERS\\.DEFAULT\\XFS\\LOGICAL_SERVICES\\PRP30\\Provider");
+
+	document.getElementById('LogicNamePRP').value = prp;
+
+
+
+}
+
+
+
+function readVersionInfo() {
+
+	var wsh = new ActiveXObject("WScript.shell");
+
+
+
+	var version_sp5  = wsh.RegRead("HKLM\\SOFTWARE\\GrgBanking\\GrgXFSSP\\MibVersion");
+
+	LogTrace("SP版本信息(MibVersion)："+version_sp5);
+
+
+
+	var version_sp6  = wsh.RegRead("HKLM\\SOFTWARE\\GrgBanking\\GrgXFSSP\\SPVersion");
+
+	LogTrace("SP版本信息(SPVersion)："+version_sp6);	
+
+
+
+	var version_sp2  = wsh.RegRead("HKLM\\SOFTWARE\\GrgBanking\\GrgXFSSP\\ReleaseDate");
+
+	LogTrace("SP版本发布日期："+version_sp2);		
+
+
+
+	var device_sp  = wsh.RegRead("HKLM\\SOFTWARE\\GrgBanking\\GrgSpSetting\\ATMMachine\\MachineType");
+
+	LogTrace("SP设备型号："+device_sp);
+
+	
+
+	LogTrace("------------------------------------------------------");
+
+	
+
+	var version_ocx = wsh.RegRead("HKLM\\SOFTWARE\\BocomItm\\Version");
+
+	LogTrace("OCX版本信息："+version_ocx);
+
+	
+
+	var device_ocx = wsh.RegRead("HKLM\\SOFTWARE\\BocomItm\\ItmModel");
+
+	LogTrace("OCX设备型号："+device_ocx);	
+
+	
+
+	LogTrace("------------------------------------------------------");
+
+
+
+	var version_app = wsh.RegRead("HKLM\\SOFTWARE\\HISUN\\ITMC\\ITMVersion");
+
+	LogTrace("应用版本信息："+version_app);
+
+	
+
+	LogTrace("======================================================");
+
+}
+
+
+
+</script>
+
+
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnAsynExecuted(p1, p2, p3, p4)">
+
+	LogTrace("[事件]OnAsynExecuted 命令="+p1+", 事件="+p2+", 结果码="+p3+", 数据="+p4);
+
+	if(p1 == "idsReadAsyn" && p2 == "OnIdsRead" && p3 == 0) {
+
+		IdsImageChange();
+
+	}
+
+	
+
+	if(p1 == "ciccDataIOAsyn" && p2 == "OnCiccDataIO" && p3 == 0 && p4 != "") {
+
+		ciccImageChange();
+
+	}
+
+	
+
+	if(p1 == "cardissuerInsert" && p2 == "OnCardissuerInserted" && p3 == 0) {
+
+		//CrdPressureTestRetainOrEject();
+
+		CrdPressureTest("CrdInsert");
+
+	}
+
+
+
+	if(p1 == "cardissuerInsertEx" && p2 == "OnCardissuerInserted" && p3 == 0) {
+
+		//CrdPressureTestRetainOrEject();
+
+		CrdPressureTest("CrdInsert");
+
+	}
+
+	
+
+	if(p1 == "cardissuerRetainAsyn" && p2 == "OnCardissuerRetained" && p3 == 0) {
+
+		//CrdPressureTestInsert();
+
+		CrdPressureTest("CrdInOut");
+
+	}
+
+	
+
+	if(p1 == "cardissuerReadAsyn" && p2 == "OnCardissuerRead" && p3 == 0) {
+
+		//CrdPressureTestInsert();
+
+		CrdPressureTest("CrdRead");
+
+	}
+
+	
+
+	if(p1 == "cardissuerICPowerOnAsyn" && p2 == "OnCardissuerICPowerOn" && p3 == 0) {
+
+		//CrdPressureTestInsert();
+
+		CrdPressureTest("CrdRead");
+
+	}
+
+
+
+	if(p1 == "safetytoolissuerIssue" && p2 == "OnSafetytoolissuerIssued" && p3 == 0) {
+
+		UkeyPressureTest("UkeyInsert");
+
+	}
+
+
+
+	if(p1 == "safetytoolissuerRetainAsyn" && p2 == "OnSafetytoolissuerRetained" && p3 == 0) {
+
+		UkeyPressureTest("UkeyInOut");
+
+	}
+
+	
+
+	if(p1 == "safetytoolissuerGetDataAsyn" && p2 == "OnSafetytoolissuerGetData" && p3 == 0) {
+
+		UkeyPressureTest("UkeyRead");
+
+	}
+
+	
+
+	if(p1 == "bankbookReadAsyn" && p2 == "OnBankbookRead" && p3 == 0) {
+
+		bkPressureTest("bkRead");
+
+	}	
+
+
+
+	if(p1 == "bankbookPrintAsyn" && p2 == "OnBankbookPrinted" && p3 == 0) {
+
+		bkPressureTest("bkPrint");
+
+	}
+
+	
+
+</script>
+
+
+
+</HEAD>
+
+
+
+<!--*********************************************************************************************************************************
+
+
+
+**********************************************************************************************************************************-->
+
+<BODY>
+
+<div id="LogWinFixedID" style="position:fixed; top:0; left:0; _position:absolute; _top:expression(offsetParent.scrollTop); _left:expression(offsetParent.scrollLeft); width:100%; height:220px; background:rgb(118,105,171);">
+
+<H2 style="margin:8 0 8 0px;">OCX接口测试网页</H2>
+
+<H5 style="margin:0 0 1 0px;">说明：按钮标签后带"(*)"的表示异步调用，有"[事件]"，反之为同步调用，无返回事件；按钮标签后带"(+)"的表示同名函数增强版本；返回"结果码"为"0"表示成功，其它值表示失败。</H5>
+
+<TEXTAREA id="taLogWin" cols="150" rows="10" width=100%></TEXTAREA>
+
+<input type="button" value="清空日志" onClick="LogClean();">
+
+<input type="button" value="调试" onClick="OcxDebug();" />
+
+<input type="button" value="版本信息" onClick="readVersionInfo();" />
+
+</div>
+
+&nbsp;<P>&nbsp;<P>&nbsp;<P>&nbsp;<P>&nbsp;<P>&nbsp;<P>
+
+
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>读卡器</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;IDC&nbsp;&nbsp;&nbsp;</td>
+
+				<!--td><input type="text" id="LogicNameIDC" style="width:220;" value='NODEVICE'></td-->
+
+				<!--td><input type="button" value="修改" 	onClick="var s=document.getElementById('LogicNameIDC').value;LogTrace('[指令]pinpadMainKey='+BOCOMDevControl.pinpadMainKey(s));"/></td-->
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+<!--事件-->
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCardInserted()">LogTrace("[事件]OnCardInserted()");</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCardTaken()">LogTrace("[事件]OnCardTaken()");</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCardRetained()">LogTrace("[事件]OnCardRetained()");</script>
+
+<!--事件-->
+
+
+
+<!--input type="button" id="buttonStyle" value="初始化(*)" 			onClick="LogTrace('[指令]cardInitAsyn='+BOCOMDevControl.cardInitAsyn());"/-->
+
+<input type="button" id="buttonStyle" value="打开(*)" 			onClick="LogTrace('[指令]cardOpenAsyn='+BOCOMDevControl.cardOpenAsyn(1));"/>
+
+<input type="button" id="buttonStyle" value="关闭(*)" 			onClick="LogTrace('[指令]cardCloseAsyn='+BOCOMDevControl.cardCloseAsyn());"/>
+
+<select id="CardReaderResetAction" style="height:40;">
+
+	<option value="1">（复位动作）</option>
+
+	<option value="1">无动作</option>
+
+	<option value="2">退出卡片</option>
+
+	<option value="3">回收卡片</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="复位(*)" 			onClick="LogTrace('[指令]cardResetAsyn='+BOCOMDevControl.cardResetAsyn(document.getElementById('CardReaderResetAction').value, 10000));"/>
+
+<select id="IDCInfo" style="height:40;">
+
+	<option value="1">驱动版本</option>
+
+	<option value="2">驱动厂商名</option>
+
+	<option value="3">驱动摘要说明</option>
+
+	<option value="11">读卡器状态</option>
+
+	<option value="12">取吞卡记录</option>
+
+	<option value="13">IC芯片状态</option>
+
+	<option value="14">芯片模块状态</option>
+
+	<option value="15">读卡器内卡的状态</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取信息" 			onClick="LogTrace('[指令]cardGetInfo='+BOCOMDevControl.cardGetInfo(document.getElementById('IDCInfo').value));"/>
+
+<P>
+
+<select id="CardReaderInsertTimeout" style="height:40;">
+
+	<option value="0">（插卡超时）</option>
+
+	<option value="0">0秒</option>
+
+	<option value="1">1秒</option>
+
+	<option value="10">10秒</option>
+
+	<option value="30">30秒</option>
+
+	<option value="60">1分钟</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="插卡" 				onClick="LogTrace('[指令]cardInsert='+BOCOMDevControl.cardInsert(document.getElementById('CardReaderInsertTimeout').value, 0)+'OK, 可随时插卡或取消');"/>
+
+<input type="button" id="buttonStyle" value="取消插卡" 			onClick="LogTrace('[指令]cardCancel'); BOCOMDevControl.cardCancel(); LogTrace('取消完成');"/>
+
+<input type="button" id="buttonStyle" value="读卡(*)" 			onClick="LogTrace('[指令]cardReadAsyn='+BOCOMDevControl.cardReadAsyn(7));"/>
+
+
+
+<select id="CardReaderEjectTimeout" style="height:40;">
+
+	<option value="0">（退卡超时）</option>
+
+	<option value="0">0秒</option>
+
+	<option value="1">1秒</option>
+
+	<option value="10">10秒</option>
+
+	<option value="30">30秒</option>
+
+	<option value="60">1分钟</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="退卡(*)" 			onClick="LogTrace('[指令]cardEjectAsyn='+BOCOMDevControl.cardEjectAsyn(document.getElementById('CardReaderEjectTimeout').value, '60142800000012345'));"/>
+
+<input type="button" id="buttonStyle" value="吞卡" 				onClick="LogTrace('[指令]cardRetain='+BOCOMDevControl.cardRetain('6222688888888888888888'));"/>
+
+
+
+<P>
+
+
+
+<input type="button" id="buttonStyle" value="1,IC卡上电(*)" 	onClick="LogTrace('[指令]cardICPowerOnAsyn='+BOCOMDevControl.cardICPowerOnAsyn(10)); LogTrace('上电完成');"/>
+
+PBOC数据<input type="text" style="height:30;width:360;" id="PbocDataIDC" value='00A404000E315041592E5359532E444446303100' />
+
+<input type="button" id="buttonStyle" value="PBOC测试" 			onClick="LogTrace('[指令]cardICDataIO='+BOCOMDevControl.cardICDataIO(document.getElementById('PbocDataIDC').value, -1));"/>
+
+<input type="button" id="buttonStyle" value="PBOC测试(*)" 		onClick="LogTrace('[指令]cardICDataIOAsyn='+BOCOMDevControl.cardICDataIOAsyn(document.getElementById('PbocDataIDC').value, -1));"/>
+
+<input type="button" id="buttonStyle" value="IC卡下电(*)" 		onClick="LogTrace('[指令]cardICPowerOffAsyn='+BOCOMDevControl.cardICPowerOffAsyn(10)); LogTrace('下电完成');"/>
+
+
+
+
+
+<P>
+
+
+
+<input type="button" id="buttonStyle" value="2,建立应用列表(*)"	onClick="LogTrace('[指令]cardPBOCGetPSEAIDAsyn='+BOCOMDevControl.cardPBOCGetPSEAIDAsyn('')); LogTrace('建立应用列表结束');"/>
+
+AID:
+
+<select id="AppId" style="height:40;">
+
+	<option value="A000000333010101" selected>A000000333010101</option>
+
+	<option value="A000000333010102">A000000333010102</option>
+
+	<option value="A0000003330101021122334455667788">A0000003330101021122334455667788</option>
+
+	<option value="A000000333010103">A000000333010103</option>
+
+	<option value="A000000333010106">A000000333010106</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="3,应用选择(*)" 	onClick="var Id=document.getElementById('AppId').value;LogTrace('[指令]cardPBOCSelectADFAsyn='+BOCOMDevControl.cardPBOCSelectADFAsyn(Id)); LogTrace('建立应用列表结束');"/>
+
+<input type="button" id="buttonStyle" value="4,应用初始化(*)" 	onClick="LogTrace('[指令]cardPBOCGetProOptionAsyn='+BOCOMDevControl.cardPBOCGetProOptionAsyn(10000,123)); LogTrace('应用初始化完成');"/>
+
+<input type="button" id="buttonStyle" value="5,读应用数据(*)" 	onClick="LogTrace('[指令]cardPBOCReadAppDataAsyn='+BOCOMDevControl.cardPBOCReadAppDataAsyn('800E7C000801010010010500180102019000')); LogTrace('读应用数据完成');"/>
+
+<P>
+
+<input type="button" id="buttonStyle" value="6,卡号信息(*)" 	onClick="LogTrace('[指令]cardPBOCGetPanInfoAsyn='+BOCOMDevControl.cardPBOCGetPanInfoAsyn()); LogTrace('读卡号信息完成');"/>
+
+<input type="button" id="buttonStyle" value="6,余额(*)" 		onClick="LogTrace('[指令]cardPBOCReadBalanceAsyn='+BOCOMDevControl.cardPBOCReadBalanceAsyn()); LogTrace('读余额完成');"/>
+
+<input type="button" id="buttonStyle" value="6,余额上限(*)" 	onClick="LogTrace('[指令]cardPBOCReadBalanceLimitAsyn='+BOCOMDevControl.cardPBOCReadBalanceLimitAsyn()); LogTrace('读余额上限完成');"/>
+
+<input type="button" id="buttonStyle" value="6,有效日期(*)" 	onClick="LogTrace('[指令]cardPBOCCardDateInfoAsyn='+BOCOMDevControl.cardPBOCCardDateInfoAsyn()); LogTrace('读卡日期完成');"/>
+
+<input type="button" id="buttonStyle" value="6,持卡人信息(*)" 	onClick="LogTrace('[指令]cardPBOCGetHolderInfoAsyn='+BOCOMDevControl.cardPBOCGetHolderInfoAsyn()); LogTrace('读持卡人信息完成');"/>
+
+<input type="button" id="buttonStyle" value="6,交易日志(*)" 	onClick="LogTrace('[指令]cardPBOCReadLogAsyn='+BOCOMDevControl.cardPBOCReadLogAsyn()); LogTrace('读交易日志完成');"/>
+
+<input type="button" id="buttonStyle" value="6,圈存日志(*)" 	onClick="LogTrace('[指令]cardPBOCReadQcLogAsyn='+BOCOMDevControl.cardPBOCReadQcLogAsyn());"/>
+
+<input type="button" id="buttonStyle" value="6,二磁道(*)" 		onClick="LogTrace('[指令]cardPBOCGetTrack2DataAsyn='+BOCOMDevControl.cardPBOCGetTrack2DataAsyn()); LogTrace('读磁道2完成');"/>
+
+<P>
+
+<input type="button" id="buttonStyle" value="圈存交易开始(*)" 	onClick="LogTrace('[指令]cardPBOCInitForLoadAsyn='+BOCOMDevControl.cardPBOCInitForLoadAsyn()); LogTrace('圈存交易开始调用完成');"/>
+
+<input type="button" id="buttonStyle" value="取55域数据(*)" 	onClick="LogTrace('[指令]cardPBOCReadIcTLVAsyn='+BOCOMDevControl.cardPBOCReadIcTLVAsyn('177F732616983937','177F732616983937','177F732616983937')); LogTrace('取55域数据调用完成');"/>
+
+<input type="button" id="buttonStyle" value="解析外部认证(*)" 	onClick="LogTrace('[指令]cardPBOCExternalAuthAsyn='+BOCOMDevControl.cardPBOCExternalAuthAsyn('177F7326169839370123')); LogTrace('解析外部认证调用完成');"/>
+
+<input type="button" id="buttonStyle" value="脚本分析(*)" 		onClick="LogTrace('[指令]cardPBOCAnalyScriptAsyn='+BOCOMDevControl.cardPBOCAnalyScriptAsyn('723B9F180400009689863204DC020C2C70269F61123332303430323139383130353232323233399F6201005F200A46414E47204C49414E47B87E20FC00713B9F180400009689863204DC020C2C70269F61123332303430323139383130353232323233399F6201005F200A46414E47204C49414E47B87E20FC00')); LogTrace('脚本分析调用完成');"/>
+
+<input type="button" id="buttonStyle" value="圈存交易结束(*)" 	onClick="LogTrace('[指令]cardPBOCFinishLoadAsyn='+BOCOMDevControl.cardPBOCFinishLoadAsyn()); LogTrace('圈存交易结束调用完成');"/>
+
+<input type="button" id="buttonStyle" value="执行脚本(*)" 		onClick="LogTrace('[指令]cardPBOCExecScriptAsyn='+BOCOMDevControl.cardPBOCExecScriptAsyn('723B9F180400009689863204DC020C2C70269F61123332303430323139383130353232323233399F6201005F200A46414E47204C49414E47B87E20FC00')); LogTrace('执行脚本调用完成');"/>
+
+<P>
+
+<select id="TagSel" style="height:40;">
+
+	<option value="9F51">应用货币代码(9F51)</option>
+
+	<option value="9F79">电子现金余额(9F79)</option>
+
+	<option value="9F77">电子现金余额上限(9F77)</option>
+
+	<option value="9F74">电子现金发卡行授权码(9F74)</option>
+
+	<option value="78">电子现金单笔交易限额(78)</option>
+
+	<option value="6D">电子现金重置阈值(6D)</option>
+
+	<option value="9F6B">卡片CVM限额(9F6B)</option>
+
+	<option value="DF71">第二币种电子现金应用货币代码(DF71)</option>
+
+	<option value="DF79">第二币种电子现金余额(DF79)</option>
+
+	<option value="DF77">第二币种电子现金余额上限(DF77)</option>
+
+	<option value="DF78">第二币种电子现金单笔交易限额(DF78)</option>
+
+	<option value="DF76">第二币种电子现金重置阈值(DF76)</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="取标签值" 			onClick="var Tag=document.getElementById('TagSel').value;LogTrace('标签值cardPBOCGetTag='+BOCOMDevControl.cardPBOCGetTag(Tag));"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<P><HR>
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>发卡器</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;ISS30&nbsp;&nbsp;&nbsp;</td>
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+<!-- 事件函数 -->
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCardissuerCardTaken()">
+
+	LogTrace("[事件]OnCardissuerCardTaken()");
+
+	//CrdPressureTestInsert();
+
+	CrdPressureTest("CrdInOut");
+
+</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCardissuerRetained()">LogTrace("[事件]OnCardissuerRetained()");</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCardissuerInserted()">LogTrace("[事件]OnCardissuerInserted()");</script>
+
+<!-- 事件函数 -->
+
+<script language="JavaScript">
+
+
+
+var g_iCrdPressureTestCardIssuedCount = 0;
+
+
+
+function CrdPressureTest(p_strLastCmd) {
+
+	var checkCrdTest = document.getElementsByName("CrdPressureTest");
+
+	if(checkCrdTest[0].checked) {
+
+		if(p_strLastCmd == "CrdInsert") {
+
+			var radioRead = document.getElementsByName("CrdPressureTestReadCard"); // 用ById就不能取得全部的radio值,而是每次返回都为1
+
+			var radioReadLength = radioRead.length;
+
+			for(var i = 0;i < radioReadLength;i++){
+
+				if(radioRead[i].checked) {
+
+					var radioReadValue = radioRead[i].value;
+
+					if("1" == radioReadValue) {
+
+						LogTrace('[指令]cardissuerReadAsyn='+BOCOMDevControl.cardissuerReadAsyn(7));
+
+						return;
+
+					} else if("2" == radioReadValue) {
+
+						LogTrace('[指令]cardissuerICPowerOnAsyn='+BOCOMDevControl.cardissuerICPowerOnAsyn());
+
+						return;
+
+					}
+
+				}
+
+			}
+
+		
+
+		}
+
+		
+
+		if(p_strLastCmd == "CrdRead" || p_strLastCmd == "CrdInsert") {
+
+			var radioInOut = document.getElementsByName("CrdPressureTestCardInOut"); // 用ById就不能取得全部的radio值,而是每次返回都为1
+
+			var radioInOutLength = radioInOut.length;
+
+			for(var i = 0;i < radioInOutLength;i++){
+
+				if(radioInOut[i].checked) {
+
+					var radioInOutValue = radioInOut[i].value;
+
+					if("1" == radioInOutValue) {
+
+						LogTrace('[指令]cardissuerRetain='+BOCOMDevControl.cardissuerRetain('6222688888888888888888'));
+
+						return;
+
+					} else if("2" == radioInOutValue) {
+
+						LogTrace('[指令]cardissuerEjectAsyn='+BOCOMDevControl.cardissuerEjectAsyn(0,''));
+
+						return;
+
+					}
+
+				}
+
+			}
+
+		
+
+		}
+
+		
+
+		if(p_strLastCmd == "CrdInOut") {
+
+			var radioInsert = document.getElementsByName("CrdPressureTestUnitType"); // 用ById就不能取得全部的radio值,而是每次返回都为1
+
+			var radioInsertLength = radioInsert.length;
+
+			for(var i = 0;i < radioInsertLength;i++){
+
+				if(radioInsert[i].checked) {
+
+					var radioInsertValue = radioInsert[i].value;
+
+					if("1" == radioInsertValue) {
+
+						var checkCrdTestAllUnit = document.getElementsByName("CrdPressureTestAllUnit");
+
+						var autoInsertID = false;//标识多卡箱标识是否有改变
+
+						do{
+
+							autoInsertID = false;//无需变更卡箱
+
+							var insertID = document.getElementById('CRDInsertExID').value;//获取卡箱标识
+
+							
+
+							//记录出卡张数
+
+							g_iCrdPressureTestCardIssuedCount = g_iCrdPressureTestCardIssuedCount + 1;
+
+							LogTrace("[发卡器模块压力测试] "+insertID+"号卡箱出卡张数："+g_iCrdPressureTestCardIssuedCount);													
+
+							
+
+							//执行下一出卡指令
+
+							var retCode = BOCOMDevControl.cardissuerInsertEx(0, insertID);
+
+							LogTrace('[指令]cardissuerInsertEx='+retCode);
+
+							
+
+							if(0 == retCode) {								
+
+
+
+							} else {								
+
+								if(checkCrdTestAllUnit[0].checked) {//是否测试所有卡箱
+
+									autoInsertID = CrdPressureTestAutoInsertID();//变更（切换）卡箱及其相关参数
+
+									if(autoInsertID) {//检查卡箱变更结果
+
+										g_iCrdPressureTestCardIssuedCount = -1;//卡箱切换，初始化计数
+
+										
+
+									/*
+
+										//由于出卡失败需要复位（吞卡，或退卡）
+
+										var radioInOut = document.getElementsByName("CrdPressureTestCardInOut"); // 用ById就不能取得全部的radio值,而是每次返回都为1
+
+										var radioInOutLength = radioInOut.length;
+
+										for(var i = 0;i < radioInOutLength;i++){
+
+											if(radioInOut[i].checked) {
+
+												var radioInOutValue = radioInOut[i].value;
+
+												if("1" == radioInOutValue) {													
+
+													LogTrace('[指令]cardissuerReset='+BOCOMDevControl.cardissuerReset(3,30000));
+
+												} else if("2" == radioInOutValue) {
+
+													LogTrace('[指令]cardissuerReset='+BOCOMDevControl.cardissuerReset(2,30000));
+
+												}
+
+											}
+
+										}										
+
+									*/									
+
+									}								
+
+								}								
+
+							}
+
+					
+
+						}while(autoInsertID && checkCrdTestAllUnit[0].checked)//检查是否测试所有卡箱，卡箱是否变更，起到变更卡箱的作用
+
+						
+
+					} else if("2" == radioInsertValue) {
+
+						LogTrace('[指令]cardissuerInsert='+BOCOMDevControl.cardissuerInsert(0));
+
+					}
+
+				}
+
+			}
+
+		}
+
+
+
+	}
+
+}
+
+
+
+
+
+
+
+function CrdPressureTestInsert() {
+
+	var checkCrdTest = document.getElementsByName("CrdPressureTest");
+
+	if(checkCrdTest[0].checked) {
+
+		var radio = document.getElementsByName("CrdPressureTestUnitType"); // 用ById就不能取得全部的radio值,而是每次返回都为1
+
+		var radioLength = radio.length;
+
+		for(var i = 0;i < radioLength;i++){
+
+			if(radio[i].checked) {
+
+				var radioValue = radio[i].value;
+
+				if("1" == radioValue) {
+
+					var id=document.getElementById('CRDInsertExID').value;
+
+					LogTrace('[指令]cardissuerInsertEx='+BOCOMDevControl.cardissuerInsertEx(0,id));
+
+				} else if("2" == radioValue) {
+
+					LogTrace('[指令]cardissuerInsert='+BOCOMDevControl.cardissuerInsert(0));
+
+				}
+
+			}
+
+		}
+
+	}
+
+}
+
+
+
+function CrdPressureTestRetainOrEject() {
+
+	var checkCrdTest = document.getElementsByName("CrdPressureTest");
+
+	if(checkCrdTest[0].checked) {
+
+		var radio = document.getElementsByName("CrdPressureTestCardInOut"); // 用ById就不能取得全部的radio值,而是每次返回都为1
+
+		var radioLength = radio.length;
+
+		for(var i = 0;i < radioLength;i++){
+
+			if(radio[i].checked) {
+
+				var radioValue = radio[i].value;
+
+				if("1" == radioValue) {
+
+					LogTrace('[指令]cardissuerRetain='+BOCOMDevControl.cardissuerRetain('6222688888888888888888'));
+
+				} else if("2" == radioValue) {
+
+					LogTrace('[指令]cardissuerEjectAsyn='+BOCOMDevControl.cardissuerEjectAsyn(0,''));
+
+				}
+
+			}
+
+		}
+
+	}
+
+
+
+}
+
+
+
+function CardUnitIDChanged() {
+
+	var radio = document.getElementsByName("CardUnitID"); // 用ById就不能取得全部的radio值,而是每次返回都为1
+
+	var radioLength = radio.length;
+
+	for(var i = 0;i < radioLength;i++){
+
+		if(radio[i].checked){
+
+			var radioValue = radio[i].value;
+
+			if("1" == radioValue) {
+
+				document.getElementById('carderUsInde').value			= "1";
+
+				document.getElementById('carderUlInitialCoun').value	= "0";
+
+				document.getElementById('carderUlCoun').value			= "0";
+
+				document.getElementById('carderUlThreshold').value		= "10";
+
+			} else if ("2" == radioValue) {
+
+				document.getElementById('carderUsInde').value			= "2";
+
+				document.getElementById('carderUlInitialCoun').value	= "99";
+
+				document.getElementById('carderUlCoun').value			= "99";
+
+				document.getElementById('carderUlThreshold').value		= "10";	
+
+			} else if ("3" == radioValue) {
+
+				document.getElementById('carderUsInde').value			= "1";
+
+				document.getElementById('carderUlInitialCoun').value	= "120";
+
+				document.getElementById('carderUlCoun').value			= "120";
+
+				document.getElementById('carderUlThreshold').value		= "10";
+
+			} else if ("4" == radioValue) {
+
+				document.getElementById('carderUsInde').value			= "2";
+
+				document.getElementById('carderUlInitialCoun').value	= "120";
+
+				document.getElementById('carderUlCoun').value			= "120";
+
+				document.getElementById('carderUlThreshold').value		= "10";	
+
+			} else if ("5" == radioValue) {
+
+				document.getElementById('carderUsInde').value			= "3";
+
+				document.getElementById('carderUlInitialCoun').value	= "120";
+
+				document.getElementById('carderUlCoun').value			= "120";
+
+				document.getElementById('carderUlThreshold').value		= "10";
+
+			} else if ("6" == radioValue) {
+
+				document.getElementById('carderUsInde').value			= "4";
+
+				document.getElementById('carderUlInitialCoun').value	= "0";
+
+				document.getElementById('carderUlCoun').value			= "0";
+
+				document.getElementById('carderUlThreshold').value		= "50";	
+
+			} else if ("7" == radioValue) {
+
+				document.getElementById('carderUsInde').value			= "1";
+
+				document.getElementById('carderUlInitialCoun').value	= "150";
+
+				document.getElementById('carderUlCoun').value			= "150";
+
+				document.getElementById('carderUlThreshold').value		= "10";
+
+			} else if ("8" == radioValue) {
+
+				document.getElementById('carderUsInde').value			= "2";
+
+				document.getElementById('carderUlInitialCoun').value	= "150";
+
+				document.getElementById('carderUlCoun').value			= "150";
+
+				document.getElementById('carderUlThreshold').value		= "10";	
+
+			} else if ("9" == radioValue) {
+
+				document.getElementById('carderUsInde').value			= "3";
+
+				document.getElementById('carderUlInitialCoun').value	= "150";
+
+				document.getElementById('carderUlCoun').value			= "150";
+
+				document.getElementById('carderUlThreshold').value		= "10";	
+
+			} else if ("10" == radioValue) {
+
+				document.getElementById('carderUsInde').value			= "4";
+
+				document.getElementById('carderUlInitialCoun').value	= "0";
+
+				document.getElementById('carderUlCoun').value			= "0";
+
+				document.getElementById('carderUlThreshold').value		= "30";	
+
+			} else if ("11" == radioValue) {
+
+				document.getElementById('carderUsInde').value			= "5";
+
+				document.getElementById('carderUlInitialCoun').value	= "0";
+
+				document.getElementById('carderUlCoun').value			= "0";
+
+				document.getElementById('carderUlThreshold').value		= "30";	
+
+			} else if ("12" == radioValue) {
+
+				document.getElementById('carderUsInde').value			= "6";
+
+				document.getElementById('carderUlInitialCoun').value	= "0";
+
+				document.getElementById('carderUlCoun').value			= "0";
+
+				document.getElementById('carderUlThreshold').value		= "30";	
+
+			} else if ("13" == radioValue) {
+
+				document.getElementById('carderUsInde').value			= "1";
+
+				document.getElementById('carderUlInitialCoun').value	= "150";
+
+				document.getElementById('carderUlCoun').value			= "150";
+
+				document.getElementById('carderUlThreshold').value		= "10";	
+
+			} else if ("14" == radioValue) {
+
+				document.getElementById('carderUsInde').value			= "2";
+
+				document.getElementById('carderUlInitialCoun').value	= "150";
+
+				document.getElementById('carderUlCoun').value			= "150";
+
+				document.getElementById('carderUlThreshold').value		= "10";	
+
+			} else if ("15" == radioValue) {
+
+				document.getElementById('carderUsInde').value			= "3";
+
+				document.getElementById('carderUlInitialCoun').value	= "0";
+
+				document.getElementById('carderUlCoun').value			= "0";
+
+				document.getElementById('carderUlThreshold').value		= "30";	
+
+			} else if ("16" == radioValue) {
+
+				document.getElementById('carderUsInde').value			= "4";
+
+				document.getElementById('carderUlInitialCoun').value	= "0";
+
+				document.getElementById('carderUlCoun').value			= "0";
+
+				document.getElementById('carderUlThreshold').value		= "30";	
+
+			} else if ("17" == radioValue) {
+
+				document.getElementById('carderUsInde').value			= "1";
+
+				document.getElementById('carderUlInitialCoun').value	= "20";
+
+				document.getElementById('carderUlCoun').value			= "20";
+
+				document.getElementById('carderUlThreshold').value		= "2";	
+
+			} else if ("18" == radioValue) {
+
+				document.getElementById('carderUsInde').value			= "2";
+
+				document.getElementById('carderUlInitialCoun').value	= "0";
+
+				document.getElementById('carderUlCoun').value			= "0";
+
+				document.getElementById('carderUlThreshold').value		= "2";	
+
+			}
+
+		}
+
+	}
+
+}
+
+
+
+function carderSet(){
+
+    var cs = document.getElementById('carderUsInde').value;
+
+    var ui = document.getElementById('carderUlInitialCoun').value;
+
+    var uc = document.getElementById('carderUlCoun').value;
+
+    var ut = document.getElementById('carderUlThreshold').value;
+
+    LogTrace('[指令]cardissuerSetCUInfo='+BOCOMDevControl.cardissuerSetCUInfo(cs,ui,uc,ut));
+
+}
+
+
+
+function CardIssuerGetInfo(p_strType){
+
+  var rc = BOCOMDevControl.cardissuerGetInfo(p_strType);
+
+  LogTrace("[指令]cardissuerGetInfo=" + rc);
+
+}
+
+
+
+function CrdPressureTestAutoInsertID() {
+
+	var select = document.getElementById('CRDInsertExID')
+
+	var selectValue = select.value;
+
+	var selectLength = select.length;
+
+	for(var i=0; i<selectLength; i++) {
+
+		if(select.options[i].value == selectValue) {
+
+			if(i+1 == selectLength) {
+
+				return false;
+
+			}
+
+			
+
+			select.options[i].selected = false;
+
+			if(i+1<selectLength) {
+
+				select.options[i+1].selected = true;
+
+				LogTrace("[发卡器模块压力测试] 切换卡箱为："+select.options[i+1].text);
+
+				return true;
+
+			}
+
+			return false;
+
+		}
+
+	}
+
+	return false;
+
+}
+
+
+
+function CrdDebug() {
+
+
+
+	var checkCrdTestAllUnit = document.getElementsByName("CrdPressureTestAllUnit");
+
+	var autoInsertID = false;
+
+	do{
+
+		var insertID = document.getElementById('CRDInsertExID').value;
+
+		var retCode = 0;//BOCOMDevControl.cardissuerInsertEx(0, insertID);
+
+		LogTrace('[指令]cardissuerInsertEx='+retCode);
+
+
+
+		if(0 != retCode) {
+
+			autoInsertID = CrdPressureTestAutoInsertID();
+
+			if(autoInsertID) {
+
+				g_iCrdPressureTestCardIssuedCount = 0;
+
+			}
+
+		} else {
+
+			g_iCrdPressureTestCardIssuedCount = g_iCrdPressureTestCardIssuedCount + 1;
+
+			LogTrace("[发卡器模块压力测试] "+insertID+"号卡箱出卡张数："+g_iCrdPressureTestCardIssuedCount);
+
+		}		
+
+	
+
+	}while(autoInsertID && checkCrdTestAllUnit[0].checked)
+
+	return;
+
+
+
+	LogTrace("--- Start ---");
+
+
+
+	var b = CrdPressureTestAutoInsertID();
+
+	LogTrace(b);
+
+	if(b) {
+
+		LogTrace("is true");
+
+	} else {
+
+		LogTrace("is false");
+
+	}
+
+	LogTrace("---- End ----");
+
+}
+
+
+
+function CrdGetInfo() {
+
+	var InstID = document.getElementById('CardUnitInfoCRD').value;
+
+	var RetVal = BOCOMDevControl.cardissuerGetInfo(InstID);
+
+	//var InstID = 22;
+
+	//var RetVal = "^RT0^LPCardbox1^25^15^0|Cardbox2^40^0^1|Retainbox3^0^0|Retainbox4^0^0";
+
+
+
+	LogTrace('[指令]cardissuerGetInfo='+RetVal);
+
+
+
+	if(22 == InstID) {
+
+		//split all bin info
+
+		var strs1 = new Array();
+
+		strs1 = RetVal.split("LP");
+
+		
+
+		if(strs1.length >=2) {
+
+			//split single bin info
+
+			var strs2 = new Array();
+
+			strs2 = strs1[strs1.length-1].split("|");
+
+			
+
+			if(strs2.length >= 2) {
+
+				LogTrace("==========================================================");
+
+				
+
+				for(i=0; i<strs2.length; i++){
+
+					//LogTrace(strs2[i]);
+
+					
+
+					//split detail of one bin
+
+					var strs3 = new Array();
+
+					strs3 = strs2[i].split("^");
+
+
+
+					var binDetailInfo = "";
+
+					var indexOfBin = strs3[0].charAt(strs3[0].length - 1);
+
+					if(strs3[0].indexOf("Cardbox") != -1) {
+
+						binDetailInfo  = "发卡箱" + indexOfBin;
+
+						binDetailInfo += "  卡箱当前卡数：" + strs3[1];
+
+						binDetailInfo += "  发卡张数：" + strs3[2];
+
+						if(0 == strs3[3]) {
+
+							binDetailInfo += "  卡箱状态：正常";
+
+						}
+
+						if(1 == strs3[3]) {
+
+							binDetailInfo += "  卡箱状态：缺卡";
+
+						}
+
+						if(2 == strs3[3]) {
+
+							binDetailInfo += "  卡箱状态：卡少";
+
+						}				
+
+					}
+
+					
+
+					if(strs3[0].indexOf("Retainbox") != -1) {
+
+						binDetailInfo  = "回收箱" + indexOfBin;
+
+						binDetailInfo += "  废卡张数：" + strs3[1];
+
+						if(0 == strs3[2]) {
+
+							binDetailInfo += "  回收卡箱状态：正常";
+
+						}
+
+						if(1 == strs3[2]) {
+
+							binDetailInfo += "  回收卡箱状态：将满";
+
+						}
+
+						if(2 == strs3[2]) {
+
+							binDetailInfo += "  回收卡箱状态：已满";
+
+						}			
+
+					}
+
+
+
+					LogTrace(binDetailInfo);
+
+				}
+
+				LogTrace("==========================================================");
+
+			}
+
+		}
+
+	}
+
+}
+
+
+
+</script>
+
+
+
+
+
+<!--input type="button" id="buttonStyle" value="初始化(*)" 	onClick="LogTrace('[指令]cardissuerInitAsyn='+BOCOMDevControl.cardissuerInitAsyn());"/-->
+
+<input type="button" id="buttonStyle" value="打开(*)" 		onClick="LogTrace('[指令]cardissuerOpenAsyn='+BOCOMDevControl.cardissuerOpenAsyn(1,1));"/>
+
+<input type="button" id="buttonStyle" value="关闭(*)" 		onClick="LogTrace('[指令]cardissuerCloseAsyn='+BOCOMDevControl.cardissuerCloseAsyn());"/>
+
+<input type="button" id="buttonStyle" value="切换到读卡器" onClick="LogTrace('[指令]SetWorkMode='+BOCOMDevControl.SetWorkMode(0)); LogTrace('切换到读卡器完成');"/>
+
+<select id="CRDResetAction" style="height:40;">
+
+	<option value="1">（复位动作）</option>
+
+	<option value="1">无动作</option>
+
+	<option value="2">退出卡片</option>
+
+	<option value="3">回收卡片</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="复位(*)" 		onClick="LogTrace('[指令]cardissuerResetAsyn='+BOCOMDevControl.cardissuerResetAsyn(document.getElementById('CRDResetAction').value,30000));"/>
+
+<select id="CardUnitInfoCRD" style="height:40;">
+
+	<option value="1">驱动版本</option>
+
+	<option value="2">驱动厂商名</option>
+
+	<option value="3">驱动摘要说明</option>
+
+	<option value="10">卡片状态</option>
+
+	<option value="11">设备状态</option>
+
+	<option value="12">取吞卡记录</option>
+
+	<option value="21">详细状态值</option>
+
+	<option value="22" selected>卡箱状态</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取信息" 		onClick="CrdGetInfo();"/>
+
+<input type="button" id="buttonStyle" value="获取卡箱个数" onClick="LogTrace('[指令]cardissuerGetCUCount='+BOCOMDevControl.cardissuerGetCUCount());"/>
+
+
+
+<P>
+
+<select id="CRDInsertExID" style="height:40;" onchange="g_iCrdPressureTestCardIssuedCount = 0;">
+
+	<option value="1">1号卡箱</option>
+
+	<option value="2">2号卡箱</option>
+
+	<option value="3">3号卡箱</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="出卡(+)" 		onClick="var id=document.getElementById('CRDInsertExID').value;LogTrace('[指令]cardissuerInsertEx='+BOCOMDevControl.cardissuerInsertEx(0,id));"/>
+
+<input type="button" id="buttonStyle" value="出卡" 			onClick="LogTrace('[指令]cardissuerInsert='+BOCOMDevControl.cardissuerInsert(0));"/>
+
+<input type="button" id="buttonStyle" value="取消出卡" 		onClick="LogTrace('[指令]cardissuerCancel='+BOCOMDevControl.cardissuerCancel());"/>
+
+<input type="button" id="buttonStyle" value="读卡(*)" 		onClick="LogTrace('[指令]cardissuerReadAsyn='+BOCOMDevControl.cardissuerReadAsyn(7));"/>
+
+<input type="button" id="buttonStyle" value="吞卡" 			onClick="LogTrace('[指令]cardissuerRetain='+BOCOMDevControl.cardissuerRetain('6222688888888888888888'));"/>
+
+<input type="button" id="buttonStyle" value="吞卡(*)" 		onClick="LogTrace('[指令]cardissuerRetainAsyn='+BOCOMDevControl.cardissuerRetainAsyn('6222688888888888888888'));"/>
+
+<input type="button" id="buttonStyle" value="退卡(*)" 		onClick="LogTrace('[指令]cardissuerEjectAsyn='+BOCOMDevControl.cardissuerEjectAsyn(0,''));"/>
+
+
+
+<P>
+
+
+
+<input type="button" id="buttonStyle" value="1,IC卡上电(*)" onClick="LogTrace('[指令]cardissuerICPowerOnAsyn='+BOCOMDevControl.cardissuerICPowerOnAsyn()); LogTrace('上电完成');"/>
+
+PBOC数据<input type="text" style="height:30;width:360;" id="PbocDataCRD" value='00A404000E315041592E5359532E444446303100' />
+
+<input type="button" id="buttonStyle" value="PBOC测试" 		onClick="LogTrace('[指令]cardissuerICDataIO='+BOCOMDevControl.cardissuerICDataIO(document.getElementById('PbocDataCRD').value, -1));"/>
+
+<input type="button" id="buttonStyle" value="PBOC测试(*)" 	onClick="LogTrace('[指令]cardissuerICDataIOAsyn='+BOCOMDevControl.cardissuerICDataIOAsyn(document.getElementById('PbocDataCRD').value, -1));"/>
+
+<input type="button" id="buttonStyle" value="IC卡下电(*)" 	onClick="LogTrace('[指令]cardissuerICPowerOffAsyn='+BOCOMDevControl.cardissuerICPowerOffAsyn()); LogTrace('下电完成');"/>
+
+
+
+
+
+
+
+
+
+<P>
+
+<input type="button" id="buttonStyle" value="2,建立应用列表(*)"	onClick="LogTrace('[指令]cardissuerPBOCGetPSEAIDAsyn='+BOCOMDevControl.cardissuerPBOCGetPSEAIDAsyn('')); LogTrace('建立应用列表结束');"/>
+
+AID:
+
+<select id="CrdAppId" style="height:40;">
+
+	<option value="A000000333010101" selected>A000000333010101</option>
+
+	<option value="A000000333010102">A000000333010102</option>
+
+	<option value="A0000003330101021122334455667788">A0000003330101021122334455667788</option>
+
+	<option value="A000000333010103">A000000333010103</option>
+
+	<option value="A000000333010106">A000000333010106</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="3,应用选择(*)" 	onClick="var Id=document.getElementById('CrdAppId').value;LogTrace('[指令]cardissuerPBOCSelectADFAsyn='+BOCOMDevControl.cardissuerPBOCSelectADFAsyn(Id)); LogTrace('建立应用列表结束');"/>
+
+<input type="button" id="buttonStyle" value="4,应用初始化(*)" 	onClick="LogTrace('[指令]cardissuerPBOCGetProOptionAsyn='+BOCOMDevControl.cardissuerPBOCGetProOptionAsyn(10000,123)); LogTrace('应用初始化完成');"/>
+
+<input type="button" id="buttonStyle" value="5,读应用数据(*)" 	onClick="LogTrace('[指令]cardissuerPBOCReadAppDataAsyn='+BOCOMDevControl.cardissuerPBOCReadAppDataAsyn('800E7C000801010010010500180102019000')); LogTrace('读应用数据完成');"/>
+
+<P>
+
+<input type="button" id="buttonStyle" value="6,余额(*)" 		onClick="LogTrace('[指令]cardissuerPBOCReadBalanceAsyn='+BOCOMDevControl.cardissuerPBOCReadBalanceAsyn()); LogTrace('读余额完成');"/>
+
+<input type="button" id="buttonStyle" value="6,余额上限(*)" 	onClick="LogTrace('[指令]cardissuerPBOCReadBalanceLimitAsyn='+BOCOMDevControl.cardissuerPBOCReadBalanceLimitAsyn()); LogTrace('读余额上限完成');"/>
+
+<input type="button" id="buttonStyle" value="6,有效日期(*)" 	onClick="LogTrace('[指令]cardissuerPBOCCardDateInfoAsyn='+BOCOMDevControl.cardissuerPBOCCardDateInfoAsyn()); LogTrace('读卡日期完成');"/>
+
+<input type="button" id="buttonStyle" value="6,持卡人信息(*)" 	onClick="LogTrace('[指令]cardissuerPBOCGetHolderInfoAsyn='+BOCOMDevControl.cardissuerPBOCGetHolderInfoAsyn()); LogTrace('读持卡人信息完成');"/>
+
+<input type="button" id="buttonStyle" value="6,交易日志(*)" 	onClick="LogTrace('[指令]cardissuerPBOCReadLogAsyn='+BOCOMDevControl.cardissuerPBOCReadLogAsyn()); LogTrace('读交易日志完成');"/>
+
+<input type="button" id="buttonStyle" value="6,二磁道(*)" 		onClick="LogTrace('[指令]cardissuerPBOCGetTrack2DataAsyn='+BOCOMDevControl.cardissuerPBOCGetTrack2DataAsyn()); LogTrace('读磁道2完成');"/>
+
+<P>
+
+<input type="button" id="buttonStyle" value="圈存交易开始(*)" 	onClick="LogTrace('[指令]cardissuerPBOCInitForLoadAsyn='+BOCOMDevControl.cardissuerPBOCInitForLoadAsyn()); LogTrace('圈存交易开始调用完成');"/>
+
+<input type="button" id="buttonStyle" value="取55域数据(*)" 	onClick="LogTrace('[指令]cardissuerPBOCReadIcTLVAsyn='+BOCOMDevControl.cardissuerPBOCReadIcTLVAsyn('177F732616983937','177F732616983937','177F732616983937')); LogTrace('取55域数据调用完成');"/>
+
+<input type="button" id="buttonStyle" value="解析外部认证(*)" 	onClick="LogTrace('[指令]cardissuerPBOCExternalAuthAsyn='+BOCOMDevControl.cardissuerPBOCExternalAuthAsyn('177F7326169839370123')); LogTrace('解析外部认证调用完成');"/>
+
+<input type="button" id="buttonStyle" value="脚本分析(*)" 		onClick="LogTrace('[指令]cardissuerPBOCAnalyScriptAsyn='+BOCOMDevControl.cardissuerPBOCAnalyScriptAsyn('723B9F180400009689863204DC020C2C70269F61123332303430323139383130353232323233399F6201005F200A46414E47204C49414E47B87E20FC00713B9F180400009689863204DC020C2C70269F61123332303430323139383130353232323233399F6201005F200A46414E47204C49414E47B87E20FC00')); LogTrace('脚本分析调用完成');"/>
+
+<input type="button" id="buttonStyle" value="圈存交易结束(*)" 	onClick="LogTrace('[指令]cardissuerPBOCFinishLoadAsyn='+BOCOMDevControl.cardissuerPBOCFinishLoadAsyn()); LogTrace('圈存交易结束调用完成');"/>
+
+<input type="button" id="buttonStyle" value="执行脚本(*)" 		onClick="LogTrace('[指令]cardissuerPBOCExecScriptAsyn='+BOCOMDevControl.cardissuerPBOCExecScriptAsyn('723B9F180400009689863204DC020C2C70269F61123332303430323139383130353232323233399F6201005F200A46414E47204C49414E47B87E20FC00')); LogTrace('执行脚本调用完成');"/>
+
+
+
+<P>
+
+<table border=1 cellspacing=0>
+
+  <tr align=center>
+
+	<td><input name="CrdPressureTest" type="checkbox" value="1" >压力测试</input></td>
+
+	<td>卡箱类型</td>
+
+	<td>吞卡出卡</td>
+
+	<td>卡片读取</td>
+
+  </tr><tr>
+
+	<td>	
+
+		<input name="CrdPressureTestAllUnit" type="checkbox" value="1" >所有卡箱</input>
+
+	</td><td>
+
+		<input type="radio" name="CrdPressureTestUnitType" value="1" checked="checked">多卡箱</input><br>		
+
+		<input type="radio" name="CrdPressureTestUnitType" value="2">单卡箱</input>
+
+	</td><td>
+
+		<input type="radio" name="CrdPressureTestCardInOut" value="1" checked="checked">吞卡</input><br>
+
+		<input type="radio" name="CrdPressureTestCardInOut" value="2">出卡</input>
+
+	</td><td>
+
+		<input type="radio" name="CrdPressureTestReadCard" value="0" checked="checked">无动作</input><br>
+
+		<input type="radio" name="CrdPressureTestReadCard" value="1">磁条卡</input><br>
+
+		<input type="radio" name="CrdPressureTestReadCard" value="2">芯片卡</input>	
+
+	</td>
+
+  </tr>
+
+</table>
+
+<P>
+
+<table border=1 cellspacing=0>
+
+  <tr align=center>
+
+	<td>&nbsp;</td>
+
+	<td>1号箱</td>
+
+	<td>2号箱</td>
+
+	<td>3号箱</td>
+
+	<td>4号箱</td>
+
+	<td>5号箱</td>
+
+	<td>6号箱</td>
+
+	<td align=right>卡箱索引：</td>
+
+	<td><input type="text" id="carderUsInde" value='1' style="width:50;"></td>
+
+  </tr><tr>
+
+	<td align=right>Sankyo单卡箱：</td>
+
+	<td><input type="radio" name="CardUnitID" value="1" onClick="CardUnitIDChanged();" checked="checked">回收箱</input></td>
+
+	<td><input type="radio" name="CardUnitID" value="2" onClick="CardUnitIDChanged();">发卡箱</input></td>
+
+	<td>&nbsp;</td>
+
+	<td>&nbsp;</td>
+
+	<td>&nbsp;</td>
+
+	<td>&nbsp;</td>
+
+	<td align=right>卡箱初始张数：</td>
+
+	<td><input type="text" id="carderUlInitialCoun" value='0' style="width:50;"></td>
+
+  </tr><tr>
+
+	<td align=right>Sankyo三卡箱：</td>
+
+	<td><input type="radio" name="CardUnitID" value="3" onClick="CardUnitIDChanged();">发卡箱</input></td>
+
+	<td><input type="radio" name="CardUnitID" value="4" onClick="CardUnitIDChanged();">发卡箱</input></td>
+
+	<td><input type="radio" name="CardUnitID" value="5" onClick="CardUnitIDChanged();">发卡箱</input></td>
+
+	<td><input type="radio" name="CardUnitID" value="6" onClick="CardUnitIDChanged();">回收箱</input></td>
+
+	<td>&nbsp;</td>
+
+	<td>&nbsp;</td>
+
+	<td align=right>卡箱当前张数：</td>
+
+	<td><input type="text" id="carderUlCoun" value='0' style="width:50;"></td>
+
+  </tr><tr>
+
+	<td align=right>GRG三卡箱：</td>
+
+	<td><input type="radio" name="CardUnitID" value="7" onClick="CardUnitIDChanged();">发卡箱</input></td>
+
+	<td><input type="radio" name="CardUnitID" value="8" onClick="CardUnitIDChanged();">发卡箱</input></td>
+
+	<td><input type="radio" name="CardUnitID" value="9" onClick="CardUnitIDChanged();">发卡箱</input></td>
+
+	<td><input type="radio" name="CardUnitID" value="10" onClick="CardUnitIDChanged();">回收箱</input></td>
+
+	<td><input type="radio" name="CardUnitID" value="11" onClick="CardUnitIDChanged();">回收箱</input></td>
+
+	<td><input type="radio" name="CardUnitID" value="12" onClick="CardUnitIDChanged();">回收箱</input></td>
+
+	<td align=right>卡箱阀值：</td>
+
+	<td><input type="text" id="carderUlThreshold" value='10' style="width:50;"></td>
+
+  </tr><tr>
+
+	<td align=right>GRG两卡箱：</td>
+
+	<td><input type="radio" name="CardUnitID" value="13" onClick="CardUnitIDChanged();">发卡箱</input></td>
+
+	<td><input type="radio" name="CardUnitID" value="14" onClick="CardUnitIDChanged();">发卡箱</input></td>
+
+	<td><input type="radio" name="CardUnitID" value="15" onClick="CardUnitIDChanged();">回收箱</input></td>
+
+	<td><input type="radio" name="CardUnitID" value="16" onClick="CardUnitIDChanged();">回收箱</input></td>
+
+	<td>&nbsp;</td>
+
+	<td>&nbsp;</td>
+
+	<td>&nbsp;</td>
+
+	<td>&nbsp;</td>
+
+  </tr><tr>
+
+	<td align=right>MCRD单卡箱：</td>
+
+	<td><input type="radio" name="CardUnitID" value="17" onClick="CardUnitIDChanged();">发卡箱</input></td>
+
+	<td><input type="radio" name="CardUnitID" value="18" onClick="CardUnitIDChanged();">回收箱</input></td>
+
+	<td>&nbsp;</td>
+
+	<td>&nbsp;</td>	
+
+	<td>&nbsp;</td>
+
+	<td>&nbsp;</td>
+
+	<td>&nbsp;</td>
+
+	<td>&nbsp;</td>
+
+  </tr>
+
+</table>
+
+<P>
+
+<input type="button" id="buttonStyle" value="1,开始设置卡箱信息" 		onClick="LogTrace('[指令]cardissuerBeginSetCUInfo='+BOCOMDevControl.cardissuerBeginSetCUInfo());"/>
+
+<input type="button" id="buttonStyle" value="2,设置卡箱信息" 			onClick="carderSet();"/>
+
+<input type="button" id="buttonStyle" value="3,完成卡箱信息设置" 		onClick="LogTrace('[指令]cardissuerCompleteCUInfoSetting='+BOCOMDevControl.cardissuerCompleteCUInfoSetting());"/>
+
+<input type="button" id="buttonStyle" value="3,完成卡箱信息设置(*)" 	onClick="LogTrace('[指令]cardissuerCompleteCUInfoSettingAsyn='+BOCOMDevControl.cardissuerCompleteCUInfoSettingAsyn());"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<P><HR>
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>非接读卡器</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;ICCardReader&nbsp;&nbsp;&nbsp;</td>
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+<!--非接模块事件-->
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnContactlessCardIn()">LogTrace("[事件]OnContactlessCardIn()");</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnContactlessCardTaken()">LogTrace("[事件]OnContactlessCardTaken()");</script>
+
+<!--非接模块事件-->
+
+
+
+<!--input type="button" id="buttonStyle" value="初始化(*)" onClick="LogTrace('[指令]contactlessCardInitAsyn='+BOCOMDevControl.contactlessCardInitAsyn());" /-->
+
+<input type="button" id="buttonStyle" value="打开(*)"	onClick="LogTrace('[指令]contactlessCardOpenAsyn='+BOCOMDevControl.contactlessCardOpenAsyn(0));" />
+
+<input type="button" id="buttonStyle" value="关闭(*)"	onClick="LogTrace('[指令]contactlessCardCloseAsyn='+BOCOMDevControl.contactlessCardCloseAsyn());" />
+
+<input type="button" id="buttonStyle" value="复位(*)"	onClick="LogTrace('[指令]contactlessCardResetAsyn='+BOCOMDevControl.contactlessCardResetAsyn(0));"/>
+
+<select id="NFCInsertTimeout" style="height:40;">
+
+	<option value="0">（插卡超时）</option>
+
+	<option value="0">0秒</option>
+
+	<option value="1">1秒</option>
+
+	<option value="30">30秒</option>
+
+	<option value="60">1分钟</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="插卡(*)"	onClick="LogTrace('[指令]contactlessCardInsert='+BOCOMDevControl.contactlessCardInsert(document.getElementById('NFCInsertTimeout').value));"/>
+
+<input type="button" id="buttonStyle" value="取消"		onClick="LogTrace('[指令]contactlessCardCancel()'); BOCOMDevControl.contactlessCardCancel();" />
+
+<select id="NFCEjectTimeout" style="height:40;">
+
+	<option value="0">（退卡超时）</option>
+
+	<option value="0">0秒</option>
+
+	<option value="1">1秒</option>
+
+	<option value="30">30秒</option>
+
+	<option value="60">1分钟</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="退卡(*)" 			onClick="LogTrace('[指令]contactlessCardEjectAsyn='+BOCOMDevControl.contactlessCardEjectAsyn(document.getElementById('NFCEjectTimeout').value));"/>
+
+<P>PBOC数据<input type="text" style="height:30;width:360;" id="PbocDataNFC" value='00A404000E315041592E5359532E444446303100' />
+
+<input type="button" id="buttonStyle" value="PBOC测试" 			onClick="LogTrace('[指令]contactlessCardDataIO='+BOCOMDevControl.contactlessCardDataIO(document.getElementById('PbocDataNFC').value, -1));"/>
+
+<input type="button" id="buttonStyle" value="PBOC测试(*)" 		onClick="LogTrace('[指令]contactlessCardDataIOAsyn='+BOCOMDevControl.contactlessCardDataIOAsyn(document.getElementById('PbocDataNFC').value, -1));"/>
+
+
+
+
+
+<P>
+
+<input type="button" id="buttonStyle" value="1,建立应用列表(*)"	onClick="LogTrace('[指令]contactlessCardGetPSEAIDAsyn='+BOCOMDevControl.contactlessCardGetPSEAIDAsyn ('')); LogTrace('建立应用列表结束');"/>
+
+<input type="button" id="buttonStyle" value="QPBOC" onClick="LogTrace('[指令]交易类型contactlessCardSetTag(9C)='+BOCOMDevControl.contactlessCardSetTag('9C', '1'));LogTrace('[指令]授权金额contactlessCardSetTag(9F02)='+BOCOMDevControl.contactlessCardSetTag('9F02', '100000'));"/>
+
+
+
+AID:
+
+<select id="AppIdNFC" style="height:40;">
+
+	<option value="A000000333010101">A000000333010101</option>
+
+	<option value="A000000333010102">A000000333010102</option>
+
+	<option value="A0000003330101021122334455667788">A0000003330101021122334455667788</option>
+
+	<option value="A000000333010103">A000000333010103</option>
+
+	<option value="A000000333010106" selected>A000000333010106</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="2,应用选择(*)" 	onClick="var Id=document.getElementById('AppIdNFC').value;LogTrace('[指令]contactlessCardSelectADFAsyn='+BOCOMDevControl.contactlessCardSelectADFAsyn(Id)); LogTrace('建立应用列表结束');"/>
+
+<input type="button" id="buttonStyle" value="3,应用初始化(*)" 	onClick="LogTrace('[指令]contactlessCardGetProOptionAsyn='+BOCOMDevControl.contactlessCardGetProOptionAsyn(10000,123)); LogTrace('应用初始化完成');"/>
+
+<input type="button" id="buttonStyle" value="4,读应用数据(*)" 	onClick="LogTrace('[指令]contactlessCardReadAppDataAsyn='+BOCOMDevControl.contactlessCardReadAppDataAsyn('800E7C000801010010010500180102019000')); LogTrace('读应用数据完成');"/>
+
+<P>
+
+<input type="button" id="buttonStyle" value="5,余额(*)" 		onClick="LogTrace('[指令]contactlessCardReadBalanceAsyn='+BOCOMDevControl.contactlessCardReadBalanceAsyn()); LogTrace('读余额完成');"/>
+
+<input type="button" id="buttonStyle" value="5,余额上限(*)" 	onClick="LogTrace('[指令]contactlessCardPBOCReadBalanceLimitAsyn='+BOCOMDevControl.contactlessCardPBOCReadBalanceLimitAsyn()); LogTrace('读余额上限完成');"/>
+
+<input type="button" id="buttonStyle" value="5,有效日期(*)" 	onClick="LogTrace('[指令]contactlessCardCardDateInfoAsyn='+BOCOMDevControl.contactlessCardCardDateInfoAsyn()); LogTrace('读卡日期完成');"/>
+
+<input type="button" id="buttonStyle" value="5,持卡人信息(*)" 	onClick="LogTrace('[指令]contactlessCardGetHolderInfoAsyn='+BOCOMDevControl.contactlessCardGetHolderInfoAsyn()); LogTrace('读持卡人信息完成');"/>
+
+<input type="button" id="buttonStyle" value="5,交易日志(*)" 	onClick="LogTrace('[指令]contactlessCardReadLogAsyn='+BOCOMDevControl.contactlessCardReadLogAsyn()); LogTrace('读交易日志完成');"/>
+
+<input type="button" id="buttonStyle" value="5,圈存日志(*)" 	onClick="LogTrace('[指令]contactlessCardReadQcLogAsyn='+BOCOMDevControl.contactlessCardReadQcLogAsyn()); LogTrace('读圈存日志完成');"/>
+
+<input type="button" id="buttonStyle" value="5,读二磁道(*)" 	onClick="LogTrace('[指令]contactlessCardPBOCGetTrack2DataAsyn='+BOCOMDevControl.contactlessCardPBOCGetTrack2DataAsyn()); LogTrace('读二磁道信息完成');"/>
+
+
+
+<P>
+
+<table>
+
+	<tr>
+
+		<td>授权响应码：</td>
+
+		<td><input type="text" style="height:30;width:1000;" id="NFCaInExtenalAuth" value='177F7326169839370123'></td>
+
+	</tr><tr>
+
+		<td>脚本数据：</td>
+
+		<td><input type="text" style="height:30;width:1000;" id="NFCaInScript" value='723B9F180400009689863204DC020C2C70269F61123332303430323139383130353232323233399F6201005F200A46414E47204C49414E47B87E20FC00'></td>
+
+	</tr>
+
+</table>
+
+<input type="button" id="buttonStyle" value="圈存交易开始(*)" 	 onClick="LogTrace('[指令]contactlessCardInitForLoadAsyn='+BOCOMDevControl.contactlessCardInitForLoadAsyn()); LogTrace('圈存交易开始调用完成');"/>
+
+<input type="button" id="buttonStyle" value="取55域数据(*)" 	 onClick="LogTrace('[指令]contactlessCardReadIcTLVAsyn='+BOCOMDevControl.contactlessCardReadIcTLVAsyn('177F732616983937','177F732616983937','177F732616983937')); LogTrace('取55域数据调用完成');"/>
+
+<input type="button" id="buttonStyle" value="处理发卡行应答(*)" onClick="LogTrace('[指令]contactlessCardProcessARPCAsyn='+BOCOMDevControl.contactlessCardProcessARPCAsyn(document.getElementById('NFCaInExtenalAuth').value, document.getElementById('NFCaInScript').value)); LogTrace('处理发卡行应答调用完成');"/>
+
+<p>
+
+<select id="GetTagNFC" style="height:40;">
+
+	<option value="9F51">应用货币代码(9F51)</option>
+
+	<option value="9F79">电子现金余额(9F79)</option>
+
+	<option value="9F77">电子现金余额上限(9F77)</option>
+
+	<option value="9F74">电子现金发卡行授权码(9F74)</option>
+
+	<option value="78">电子现金单笔交易限额(78)</option>
+
+	<option value="6D">电子现金重置阈值(6D)</option>
+
+	<option value="9F6B">卡片CVM限额(9F6B)</option>
+
+	<option value="DF71">第二币种电子现金应用货币代码(DF71)</option>
+
+	<option value="DF79">第二币种电子现金余额(DF79)</option>
+
+	<option value="DF77">第二币种电子现金余额上限(DF77)</option>
+
+	<option value="DF78">第二币种电子现金单笔交易限额(DF78)</option>
+
+	<option value="DF76">第二币种电子现金重置阈值(DF76)</option>
+
+	<option value="9F36">应用交易计数器ATC(9F36)</option>
+
+	<option value="9F13">上次联机应用交易序号寄存器(9F13)</option>
+
+	<option value="9F17">PIN重试计数器(9F17)</option>
+
+	<option value="5F25">卡片上应用生效日期(5F25)</option>
+
+	<option value="5F24">应用失效日期(5F24)</option>
+
+	<option value="95">终端验证结果TVR(95)</option>
+
+	<option value="9B">交易状态信息TSI(9B)</option>
+
+	<option value="9C">交易类型(9C)</option>
+
+	<option value="9F02">交易金额(9F02)</option>
+
+	<option value="">()</option>
+
+	<option value="">()</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取标签值" onClick="var TagVal=document.getElementById('GetTagNFC').value;LogTrace('标签值='+BOCOMDevControl.contactlessCardGetTag(TagVal));"/>
+
+<input type="text" id="SetTagNFC" value='' /> = <input type="text" id="SetTagValNFC" value='' />
+
+<input type="button" id="buttonStyle" value="设置标签值" onClick="var Tag=document.getElementById('SetTagNFC').value;var TagVal=document.getElementById('SetTagValNFC').value;LogTrace('[指令]='+BOCOMDevControl.contactlessCardSetTag(Tag, TagVal));"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<P><HR>
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>密码键盘</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;PIN30&nbsp;&nbsp;&nbsp;</td>
+
+				<!--td><input type="text" id="LogicNamePIN" style="width:220;" value='NODEVICE'></td-->
+
+				<!--td><input type="button" value="修改" 	onClick="var s=document.getElementById('LogicNameIDC').value;LogTrace('[指令]pinpadMainKey='+BOCOMDevControl.pinpadMainKey(s));"/></td-->
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+<script language="JavaScript">
+
+
+
+function pinComputeMasterKey() {
+
+	var hexSet=new Array("0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F");
+
+
+
+	var key1=document.getElementById('MasterKey1').value;
+
+	var key2=document.getElementById('MasterKey2').value;
+
+	
+
+	var key1Len = key1.length;
+
+	var key2Len = key2.length;
+
+	
+
+	if(key1Len != key2Len) {
+
+		LogTrace("[错误]主密钥两个分量的长度不相等");
+
+		return;
+
+	}
+
+	
+
+	if(key1Len != 32) {
+
+		LogTrace("[警告]主密钥两个分量的长度不等于32字节长度");
+
+	}	
+
+	
+
+	var masterKey = "";
+
+	for(var i=0; i<key1Len; i++) {
+
+		var k1 = key1.charAt(i);
+
+		var k2 = key2.charAt(i);
+
+		var k = parseInt(k1, 16) ^ parseInt(k2, 16);
+
+		
+
+		if(k >= 0 && k <= 15) {
+
+			masterKey += hexSet[k];
+
+		} else {
+
+			masterKey += "?";
+
+		}
+
+	}
+
+	
+
+	LogTrace("主密钥="+masterKey);
+
+	
+
+	document.getElementById('MasterKey').value = masterKey;
+
+}
+
+</script>
+
+
+
+<!--事件-->
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnPinPadKeyPressed(key)">LogTrace("[事件]OnPinPadKeyPressed="+key);</script>
+
+<!--事件-->
+
+
+
+<input type="button" id="buttonStyle" value="打开(*)" 					onClick="LogTrace('[指令]pinpadOpenAsyn='+BOCOMDevControl.pinpadOpenAsyn(0));"/>
+
+<input type="button" id="buttonStyle" value="关闭(*)" 					onClick="LogTrace('[指令]pinpadCloseAsyn='+BOCOMDevControl.pinpadCloseAsyn());LogTrace('关闭完成');"/>
+
+
+
+<input type="button" id="buttonStyle" value="开始读密码(30s)" 			onClick="LogTrace('[指令]pinpadBeginRead='+BOCOMDevControl.pinpadBeginRead(30, 1, 6)); LogTrace('请按键');"/>
+
+<input type="button" id="buttonStyle" value="取PinBlock(*)" 			onClick="LogTrace('[指令]pinpadEndRead='+BOCOMDevControl.pinpadEndRead(0)); BOCOMDevControl.pinpadGetDataAsyn('6222620001234567');"/>
+
+<input type="button" id="buttonStyle" value="取消读密码(未满6位时)" 	onClick="LogTrace('[指令]pinpadEndRead='+BOCOMDevControl.pinpadEndRead(1));LogTrace('完成');"/>
+
+<input type="button" id="buttonStyle" value="开始读明码" 				onClick="LogTrace('[指令]pinpadBeginRead='+BOCOMDevControl.pinpadBeginRead(30, 0, 0));LogTrace('begin read');"/>
+
+<input type="button" id="buttonStyle" value="读明码中止" 				onClick="LogTrace('[指令]pinpadEndRead='+BOCOMDevControl.pinpadEndRead(0));LogTrace('EndRead(0)完成');"/>
+
+
+
+<P>
+
+<table border=1 cellspacing=0>
+
+  <tr align=center>
+
+	<td align=right>MasterKey:</td>
+
+	<td align=left>
+
+		<table border=0 cellspacing=0>
+
+			<tr>
+
+				<td>主密钥分量1：</td>
+
+			</tr><tr>
+
+				<td><input type="text" id="MasterKey1" style="height:30;width:300;" value='AE1A0237D0A4BF3458A79E1F04E65416'>（32字节）</td>
+
+			</tr><tr>
+
+				<td>主密钥分量2：</td>
+
+			</tr><tr>
+
+				<td><input type="text" id="MasterKey2" style="height:30;width:300;" value='00000000000000000000000000000000'>（32字节）</td>
+
+			</tr><tr>
+
+				<td>主密钥：</td>
+
+			</tr><tr>
+
+				<td><input type="text" id="MasterKey" style="height:30;width:300;" value='AE1A0237D0A4BF3458A79E1F04E65416'>（32字节）</td>
+
+			</tr>
+
+		</table>
+
+	</td>
+
+	<td align=left>
+
+		<input type="button" id="buttonStyle" value="计算主密钥" 	onClick="pinComputeMasterKey();"/>
+
+		<P>
+
+		<input type="button" id="buttonStyle" value="设置主密钥" 	onClick="var s=document.getElementById('MasterKey').value;LogTrace('[指令]pinpadMainKey='+BOCOMDevControl.pinpadMainKey(s));"/>
+
+	</td>
+
+  </tr><tr>
+
+	<td align=right>PinKey:</td>
+
+	<td><input type="text" id="PinKey" style="height:30;width:300;" value='ABCDEF1234567890ABCDEF1234567890'>（32字节）</td>
+
+	<td><input type="button" id="buttonStyle" value="设置PIN密钥" 		onClick="var s=document.getElementById('PinKey').value;LogTrace('[指令]pinpadWorkKey='+BOCOMDevControl.pinpadWorkKey(s));"/></td>
+
+  </tr><tr>
+
+	<td align=right>MacKey:</td>
+
+	<td><input type="text" id="MacKey" style="height:30;width:300;" value='ABCDEF1234567890'>（16字节）</td>
+
+	<td><input type="button" id="buttonStyle" value="设置MAC密钥" 		onClick="var s=document.getElementById('MacKey').value;LogTrace('[指令]pinpadWorkKey='+BOCOMDevControl.pinpadWorkKey(s));"/></td>
+
+  </tr><tr>
+
+	<td align=right>计算MAC值:</td>
+
+	<td><input type="text" id="macSrc" style="height:30;width:300;"></td>
+
+	<td><input type="button" id="buttonStyle" value="算MAC(单DES)" 		onClick="var s=document.getElementById('macSrc').value;LogTrace('[指令]pinpadGetMac='+BOCOMDevControl.pinpadGetMac(s, 0));"/></td>
+
+  </tr>
+
+</table>
+
+
+
+
+
+
+
+<P><HR>
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>存折打印机</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;PRP30&nbsp;&nbsp;&nbsp;</td>
+
+				<!--td><input type="text" id="LogicNamePRP" style="width:220;" value='NODEVICE'></td-->
+
+				<!--td><input type="button" value="修改" 	onClick="var s=document.getElementById('LogicNameIDC').value;LogTrace('[指令]pinpadMainKey='+BOCOMDevControl.pinpadMainKey(s));"/></td-->
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnBankbookInserted()">
+
+	LogTrace("[事件]OnBankbookInserted()");
+
+	bkPressureTest("bkInsert");
+
+</script>
+
+
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnBankbookTaken()">
+
+	LogTrace("[事件]OnBankbookTaken()");
+
+	bkPressureTest("bkInOut");
+
+</script>
+
+
+
+<script language="JavaScript">
+
+function bkExecuteControl() {
+
+	var val1=document.getElementById('BKControlTypeSel').value;
+
+	var val2=document.getElementById('BKwParam').value;
+
+	var val3=document.getElementById('BKlParam').value;
+
+	LogTrace('[指令]bankbookControl='+BOCOMDevControl.bankbookControl(val1, val2, val3));
+
+}
+
+
+
+function bkPressureTest(p_strLastCmd) {
+
+	var checkUkeyTest = document.getElementsByName("bkPressureTest");
+
+	if(checkUkeyTest[0].checked) {
+
+		if(p_strLastCmd == "bkInsert") {
+
+			LogTrace('[指令]bankbookReadAsyn='+BOCOMDevControl.bankbookReadAsyn(7, 20));
+
+		}
+
+		
+
+		if(p_strLastCmd == "bkRead") {
+
+			LogTrace('[指令]bankbookPrintAsyn='+BOCOMDevControl.bankbookPrintAsyn(document.getElementById('bkPrintData').value, -1));
+
+		}
+
+		
+
+		if(p_strLastCmd == "bkPrint") {
+
+			LogTrace('[指令]bankbookEjectAsyn='+BOCOMDevControl.bankbookEjectAsyn());
+
+		}		
+
+		
+
+		if(p_strLastCmd == "bkInOut") {
+
+			LogTrace('[指令]bankbookInsertAsyn='+BOCOMDevControl.bankbookInsertAsyn(20));
+
+		}
+
+	}
+
+}
+
+
+
+</script>
+
+
+
+
+
+
+
+打印数据<br>
+
+<TEXTAREA id="bkPrintData" cols="85" rows="4" width=100%>
+
+00252  20150118 CNY  交行存现 活期                 100.00           601.21  ABBI012
+
+00252  20150118 CNY  交行取现 活期                 200.00           401.21  ABBI012
+
+00252  20150118 CNY  交行存现 活期                 200.00           601.21  ABBI012
+
+</TEXTAREA><br>
+
+<input type="button" id="buttonStyle" value="打开(*)" 	onClick="LogTrace('[指令]bankbookOpenAsyn='+BOCOMDevControl.bankbookOpenAsyn(1));"/>
+
+<input type="button" id="buttonStyle" value="关闭(*)" 	onClick="LogTrace('[指令]bankbookCloseAsyn='+BOCOMDevControl.bankbookCloseAsyn());"/>
+
+<input type="button" id="buttonStyle" value="复位(*)" 	onClick="LogTrace('[指令]bankbookResetAsyn='+BOCOMDevControl.bankbookResetAsyn());"/>
+
+<input type="button" id="buttonStyle" value="插折(*)" 	onClick="LogTrace('[指令]bankbookInsertAsyn='+BOCOMDevControl.bankbookInsertAsyn(20));"/>
+
+<input type="button" id="buttonStyle" value="取消插折" 	onClick="LogTrace('[指令]bankbookCancel='+BOCOMDevControl.bankbookCancel()); LogTrace('取消完成');"/>
+
+<input type="button" id="buttonStyle" value="读磁道(*)"	onClick="LogTrace('[指令]bankbookReadAsyn='+BOCOMDevControl.bankbookReadAsyn(7, 20));"/>
+
+<input type="button" id="buttonStyle" value="打印(*)" 	onClick="LogTrace('[指令]bankbookPrintAsyn='+BOCOMDevControl.bankbookPrintAsyn(document.getElementById('bkPrintData').value, -1));"/>
+
+<input type="button" id="buttonStyle" value="退折(*)" 	onClick="LogTrace('[指令]bankbookEjectAsyn='+BOCOMDevControl.bankbookEjectAsyn());"/>
+
+<P>
+
+<input type="button" id="buttonStyle" value="打开" 		onClick="LogTrace('[指令]bankbookOpen='+BOCOMDevControl.bankbookOpen(1));"/>
+
+<input type="button" id="buttonStyle" value="关闭" 		onClick="LogTrace('[指令]bankbookClose()');BOCOMDevControl.bankbookClose();LogTrace('关闭完成');"/>
+
+<input type="button" id="buttonStyle" value="复位" 		onClick="LogTrace('[指令]bankbookReset()');BOCOMDevControl.bankbookReset();LogTrace('复位完成');"/>
+
+<input type="button" id="buttonStyle" value="插折" 		onClick="LogTrace('[指令]bankbookInsert='+BOCOMDevControl.bankbookInsert(20));"/>
+
+<input type="button" id="buttonStyle" value="读磁道" 	onClick="LogTrace('[指令]bankbookRead='+BOCOMDevControl.bankbookRead(7, 20));"/>
+
+<input type="button" id="buttonStyle" value="打印" 		onClick="LogTrace('[指令]bankbookPrint='+BOCOMDevControl.bankbookPrint(document.getElementById('bkPrintData').value, -1));"/>
+
+<input type="button" id="buttonStyle" value="退折" 		onClick="LogTrace('[指令]bankbookEject='+BOCOMDevControl.bankbookEject());"/>
+
+<select id="bkInfoSel" style="height:40;">
+
+	<option value="1">驱动程序版本</option>
+
+	<option value="2">驱动程序厂商名</option>
+
+	<option value="3">驱动程序摘要说明</option>
+
+	<option value="11">部件状态</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取信息" 	onClick="LogTrace('[指令]bankbookGetInfo='+BOCOMDevControl.bankbookGetInfo(document.getElementById('bkInfoSel').value));"/>
+
+
+
+<P>
+
+<table border=1 cellspacing=0>
+
+	<tr>
+
+		<td>
+
+			<input name="bkPressureTest" type="checkbox" value="1" >压力测试</input>
+
+		</td><td>
+
+		</td><td>
+
+		</td><td>
+
+		</td><td>
+
+		</td>
+
+	</tr>
+
+	<tr>
+
+		<td>
+
+		</td><td>
+
+<select id="BKControlTypeSel" style="height:40;">
+
+	<option value="1">打印机控制命令</option>
+
+	<option value="3">设置打印字体</option>
+
+	<option value="4">设置放大倍数</option>
+
+	<option value="6" selected>垂直绝对定位</option>
+
+	<option value="7">设置行距</option>
+
+	<option value="8">设置字间距</option>
+
+</select>		
+
+		</td><td>
+
+wParam<input type="text" id="BKwParam" style="height:40;width:60;" value='100'>
+
+		</td><td>
+
+lParam<input type="text" id="BKlParam" style="height:40;width:180;" value=''>		
+
+		</td><td>
+
+<input type="button" id="buttonStyle" value="控制存折打印机" onClick="bkExecuteControl();"/>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<P><HR>
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>凭条打印机</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;PRR30&nbsp;&nbsp;&nbsp;</td>
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+<script language="JavaScript">
+
+
+
+function GetSlipFormName() {
+
+	var radio = document.getElementsByName("slipFormName"); // 用ById就不能取得全部的radio值,而是每次返回都为1
+
+	var radioLength = radio.length;
+
+	for(var i = 0;i < radioLength;i++){
+
+		if(radio[i].checked){
+
+			var radioValue = radio[i].value;
+
+			if("1" == radioValue) {
+
+				return 'BOCOMForm1';
+
+			} else if ("2" == radioValue) {
+
+				return 'BOCOMForm2';
+
+			}
+
+		}
+
+	}
+
+	
+
+	return '';
+
+}
+
+
+
+function GetSlipFormData() {
+
+	var radio = document.getElementsByName("slipFormName"); // 用ById就不能取得全部的radio值,而是每次返回都为1
+
+	var radioLength = radio.length;
+
+	for(var i = 0;i < radioLength;i++){
+
+		if(radio[i].checked){
+
+			var radioValue = radio[i].value;
+
+			if("1" == radioValue) {
+
+				return document.getElementById('slipFormData1').value;
+
+			} else if ("2" == radioValue) {
+
+				return document.getElementById('slipFormData2').value;
+
+			}
+
+		}
+
+	}
+
+	
+
+	return '';
+
+}
+
+
+
+</script>
+
+
+
+<table border=1 cellspacing=0>
+
+	<tr><td>
+
+字符串数据<br>
+
+<TEXTAREA id="slipPrintData" cols="42" rows="22" width=100%>
+
+              银行客户通知书             
+
+
+
+设备编号：8AESI001
+
+受理行号：01332999999
+
+终端流水号：005402
+
+交易时间：2016年09月05日 01时10分03秒
+
+交易类型：整存整取开户（人民币）
+
+小序号：00010
+
+金额：10000
+
+开户日期：2016-09-05
+
+起息日期：2016-09-05
+
+存期：六个月
+
+转存方式：本息转存
+
+转存期限：六个月
+
+转活金额：
+
+转活账号：--
+
+转活户名：--
+
+
+
+感谢您使用交行远程智能柜员机，欢迎再次光临！
+
+请妥善保管交易凭条；本凭证为机制凭证，手写无效；
+
+如有疑问，请联系客服热线：95559
+
+</TEXTAREA>
+
+	</td><td>
+
+<input type="radio" name="slipFormName" value="1" checked="checked">BOCOMForm1</input><br>
+
+<TEXTAREA id="slipFormData1" cols="22" rows="22" width=100%>
+
+BankName=银行|CusName=户名：*亚勇|LineNo=排队编号：A0009|BusinessType=外币取现|TransAmount=币种：澳大利亚元    总金额：232元|Notation=票面：|Note1=  1元      2张|Note2= 10元      3张|Note3= 50元     75张|WaitingNum=之前等待人数：10|DateTime=2017-08-18 15:23:02|Reserve1=|DeviceNo=设备编号：8ABBG003|BranchNo=受理行号：01310999999|SeqNo=终端流水号：007962|Reserve2=|Reserve3=|Reserve4=
+
+</TEXTAREA>
+
+	</td><td>
+
+<input type="radio" name="slipFormName" value="2">BOCOMForm2</input><br>
+
+<TEXTAREA id="slipFormData2" cols="22" rows="22" width=100%>
+
+BankName=银行|CusName=户名：*亚勇|LineNo=排队编号：A0009|BusinessType=外币取现|TransAmount=币种：澳大利亚元    总金额：232元|WaitingNum=之前等待人数：10|DateTime=2017-08-18 15:23:02|Reserve1=|DeviceNo=设备编号：8ABBG003|BranchNo=受理行号：01310999999|SeqNo=终端流水号：007962|Reserve2=|Reserve3=|Reserve4=
+
+</TEXTAREA>	
+
+	</td></tr>
+
+</table>
+
+
+
+<br>
+
+<input type="button" id="buttonStyle" value="打开(*)" 		onClick="LogTrace('[指令]SlipPrinterOpenAsyn='+BOCOMDevControl.SlipPrinterOpenAsyn(1));"/>
+
+<input type="button" id="buttonStyle" value="关闭(*)" 		onClick="LogTrace('[指令]SlipPrinterCloseAsyn='+BOCOMDevControl.SlipPrinterCloseAsyn()); LogTrace('关闭完成');"/>
+
+<input type="button" id="buttonStyle" value="复位(*)" 		onClick="LogTrace('[指令]slipPrinterResetAsyn='+BOCOMDevControl.slipPrinterResetAsyn(30000));"/>
+
+<input type="button" id="buttonStyle" value="打印(*)" 		onClick="LogTrace('[指令]SlipPrinterPrintAsyn='+BOCOMDevControl.SlipPrinterPrintAsyn(document.getElementById('slipPrintData').value, -1));"/>
+
+<input type="button" id="buttonStyle" value="打印FORM(*)" 	onClick="LogTrace('[指令]SlipPrinterPrintFormAsyn='+BOCOMDevControl.SlipPrinterPrintFormAsyn(GetSlipFormName(), GetSlipFormData()));"/>
+
+<input type="button" id="buttonStyle" value="切纸(*)" 		onClick="LogTrace('[指令]SlipPrinterCutAsyn='+BOCOMDevControl.SlipPrinterCutAsyn());"/>
+
+<P>
+
+<input type="button" id="buttonStyle" value="打开" 		onClick="LogTrace('[指令]SlipPrinterOpen='+BOCOMDevControl.SlipPrinterOpen(1));"/>
+
+<input type="button" id="buttonStyle" value="关闭" 		onClick="LogTrace('[指令]SlipPrinterClose='+BOCOMDevControl.SlipPrinterClose()); LogTrace('关闭完成');"/>
+
+<input type="button" id="buttonStyle" value="复位" 		onClick="LogTrace('[指令]slipPrinterReset='+BOCOMDevControl.slipPrinterReset(30000));"/>
+
+<input type="button" id="buttonStyle" value="打印" 		onClick="LogTrace('[指令]SlipPrinterPrint='+BOCOMDevControl.SlipPrinterPrint(document.getElementById('slipPrintData').value, -1));"/>
+
+<input type="button" id="buttonStyle" value="打印FORM" 	onClick="LogTrace('[指令]SlipPrinterPrintForm='+BOCOMDevControl.SlipPrinterPrintForm(GetSlipFormName(), GetSlipFormData()));"/>
+
+<input type="button" id="buttonStyle" value="切纸" 		onClick="LogTrace('[指令]SlipPrinterCut='+BOCOMDevControl.SlipPrinterCut());"/>
+
+<select id="SlipInfoSel" style="height:40;">
+
+	<option value="1">驱动程序版本</option>
+
+	<option value="2">驱动程序厂商名</option>
+
+	<option value="3">驱动程序摘要说明</option>
+
+	<option value="11">部件状态</option>
+
+	<option value="12">纸张状态</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取信息" 	onClick="LogTrace('[指令]slipPrinterGetInfo='+BOCOMDevControl.slipPrinterGetInfo(document.getElementById('SlipInfoSel').value));"/>
+
+
+
+
+
+<P><HR>
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>流水打印机</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;JournalPrinter&nbsp;&nbsp;&nbsp;</td>
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+
+
+
+
+
+
+
+
+打印数据<br>
+
+<TEXTAREA id="journalPrintData" cols="40" rows="12" width=100%>
+
+银行
+
+BANK OF COMMUNICATIONS
+
+分行号 (BankNo):	310999
+
+终端编号(TERMINAL NO):ABBI100
+
+收单行号(ACQUIRER): 310999
+
+卡号(CARD NO):622588******7972
+
+卡类别(CARD TYPE):交行借记卡
+
+日期/时间(DATA/TIME):06/13 18:22:53
+
+票据号(VOUCHER NO):000001
+
+交易类型(TRANS TYPE):	消费
+
+交易金额(AMOUNT): 2000.00
+
+</TEXTAREA><br>
+
+<input type="button" id="buttonStyle" value="打开(*)" 	onClick="LogTrace('[指令]journalOpenAsyn='+BOCOMDevControl.journalOpenAsyn(1));"/>
+
+<input type="button" id="buttonStyle" value="关闭(*)" 	onClick="LogTrace('[指令]journalCloseAsyn='+BOCOMDevControl.journalCloseAsyn());"/>
+
+<input type="button" id="buttonStyle" value="复位(*)" 	onClick="LogTrace('[指令]journalResetAsyn='+BOCOMDevControl.journalResetAsyn(1000));"/>
+
+<input type="button" id="buttonStyle" value="打印(*)" 	onClick="LogTrace('[指令]journalPrintAsyn='+BOCOMDevControl.journalPrintAsyn(document.getElementById('journalPrintData').value, -1));"/>
+
+<P>
+
+<input type="button" id="buttonStyle" value="打开" 		onClick="LogTrace('[指令]journalOpen='+BOCOMDevControl.journalOpen(1));"/>
+
+<input type="button" id="buttonStyle" value="关闭" 		onClick="LogTrace('[指令]journalClose()');BOCOMDevControl.journalClose();"/>
+
+<input type="button" id="buttonStyle" value="复位" 		onClick="LogTrace('[指令]journalReset='+BOCOMDevControl.journalReset(1000));"/>
+
+<input type="button" id="buttonStyle" value="打印" 		onClick="LogTrace('[指令]journalPrint='+BOCOMDevControl.journalPrint(document.getElementById('journalPrintData').value, -1));"/>
+
+<select id="JPTInfoSel" style="height:40;">
+
+	<option value="1">驱动程序版本</option>
+
+	<option value="2">驱动程序厂商名</option>
+
+	<option value="3">驱动程序摘要说明</option>
+
+	<option value="11">部件状态</option>
+
+	<option value="12">纸张状态</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取信息" 	onClick="LogTrace('[指令]journalGetInfo='+BOCOMDevControl.journalGetInfo(document.getElementById('JPTInfoSel').value));"/>
+
+
+
+
+
+<P><HR>
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>身份证模块</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;IDCardReader&nbsp;&nbsp;&nbsp;</td>
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+
+
+
+
+
+
+<script language="JavaScript">
+
+function IdsImageChange() {
+
+	document.getElementById('Picture').src = "";
+
+	document.getElementById("Image-0").src = "";
+
+	document.getElementById('Image-1').src = "";
+
+
+
+	document.getElementById('Picture').src = "file://C:\\ZZAgent\\Picture.jpg";
+
+	document.getElementById("Image-0").src = "file://C:\\ZZAgent\\IdCardPic\\Image-0.jpg";
+
+	document.getElementById('Image-1').src = "file://C:\\ZZAgent\\IdCardPic\\Image-1.jpg";
+
+}
+
+</script>
+
+
+
+<input type="button" id="buttonStyle" value="打开(*)" 	onClick="LogTrace('[指令]idsOpenAsyn='+BOCOMDevControl.idsOpenAsyn(0));"/>
+
+<input type="button" id="buttonStyle" value="关闭(*)" 	onClick="LogTrace('[指令]idsCloseAsyn='+BOCOMDevControl.idsCloseAsyn());"/>
+
+<input type="button" id="buttonStyle" value="复位(*)" 	onClick="LogTrace('[指令]idsResetAsyn='+BOCOMDevControl.idsResetAsyn());"/>
+
+<input type="button" id="buttonStyle" value="插证(*)" 	onClick="LogTrace('[指令]idsInsertAsyn='+BOCOMDevControl.idsInsertAsyn(30000)); LogTrace('请插入身份证');"/>
+
+<input type="button" id="buttonStyle" value="取消插证" 	onClick="LogTrace('[指令]idsCancel');BOCOMDevControl.idsCancel();"/>
+
+<input type="button" id="buttonStyle" value="读证(*)" 	onClick="LogTrace('[指令]idsReadAsyn='+BOCOMDevControl.idsReadAsyn(1,0));LogTrace('请等待2秒');"/>
+
+<input type="button" id="buttonStyle" value="扫描(*)" 	onClick="LogTrace('[指令]idsReadAsyn='+BOCOMDevControl.idsReadAsyn(2,0));LogTrace('请等待8秒');"/>
+
+<input type="button" id="buttonStyle" value="退证(*)" 	onClick="LogTrace('[指令]idsEjectAsyn='+BOCOMDevControl.idsEjectAsyn(30000));"/>
+
+<p>
+
+<input type="button" id="buttonStyle" value="打开" 		onClick="LogTrace('[指令]idsOpen='+BOCOMDevControl.idsOpen(0));"/>
+
+<input type="button" id="buttonStyle" value="关闭" 		onClick="LogTrace('[指令]idsClose');BOCOMDevControl.idsClose();"/>
+
+<input type="button" id="buttonStyle" value="复位" 		onClick="LogTrace('[指令]idsReset='+BOCOMDevControl.idsReset());"/>
+
+<input type="button" id="buttonStyle" value="插证" 		onClick="LogTrace('请插入身份证');LogTrace('[指令]idsInsert='+BOCOMDevControl.idsInsert(30000));"/>
+
+<input type="button" id="buttonStyle" value="读证" 		onClick="LogTrace('请等待2秒');LogTrace('[指令]idsRead='+BOCOMDevControl.idsRead(1,0));IdsImageChange();"/>
+
+<input type="button" id="buttonStyle" value="扫描" 		onClick="LogTrace('请等待8秒');LogTrace('[指令]idsRead='+BOCOMDevControl.idsRead(2,0));IdsImageChange();"/>
+
+<input type="button" id="buttonStyle" value="退证" 		onClick="LogTrace('[指令]idsEject='+BOCOMDevControl.idsEject(30000));"/>
+
+<select id="IDSInfoSel" style="height:40;">
+
+	<option value="1">驱动程序版本</option>
+
+	<option value="2">驱动程序厂商名</option>
+
+	<option value="3">驱动程序名</option>
+
+	<option value="11">设备状态</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取信息" 	onClick="var Tag=document.getElementById('IDSInfoSel').value;LogTrace('[指令]idsGetInfo='+BOCOMDevControl.idsGetInfo(Tag));"/>
+
+<p>
+
+<table border="1" cellspacing=0>
+
+	<tr align=center>
+
+		<td>登记图片</td>
+
+		<td>扫描图片</td>
+
+	</tr>
+
+	<tr>
+
+		<td>
+
+			<img id="Picture" width="100" height="120" src="file://C:\\ZZAgent\\Picture.jpg" />
+
+		</td><td>
+
+			<img id="Image-0" width="170" height="120" src="file://C:\\ZZAgent\\IdCardPic\\Image-0.jpg" />
+
+			<img id="Image-1" width="170" height="120" src="file://C:\\ZZAgent\\IdCardPic\\Image-1.jpg" />		
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+
+
+
+
+
+
+<P><HR>
+
+<BR><H2>求助电话</H2><P>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnTelOn()">LogTrace("[事件]OnTelOn()");</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnTelOff()">LogTrace("[事件]OnTelOff()");</script>
+
+
+
+<input type="button" id="buttonStyle" value="打开(*)" 	onClick="LogTrace('[指令]telOpenAsyn='+BOCOMDevControl.telOpenAsyn(0));"/>
+
+<input type="button" id="buttonStyle" value="关闭(*)" 	onClick="LogTrace('[指令]telCloseAsyn='+BOCOMDevControl.telCloseAsyn());"/>
+
+<input type="button" id="buttonStyle" value="打开" 		onClick="LogTrace('[指令]telOpen='+BOCOMDevControl.telOpen(''));"/>
+
+<input type="button" id="buttonStyle" value="关闭" 		onClick="LogTrace('[指令]telClose='+BOCOMDevControl.telClose()); LogTrace('关闭完成');"/>
+
+<input type="button" id="buttonStyle" value="取状态" 	onClick="LogTrace('[指令]telGetPhoneState='+BOCOMDevControl.telGetPhoneState());"/>
+
+<input type="button" id="buttonStyle" value="触发摘机" 	onClick="LogTrace('[指令]telSwitch='+BOCOMDevControl.telSwitch(2)); LogTrace('摘机');"/>
+
+<input type="button" id="buttonStyle" value="挂断事件" 	onClick="LogTrace('[指令]telSwitch='+BOCOMDevControl.telSwitch(1)); LogTrace('挂断');"/>
+
+
+
+
+
+<P><HR>
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>指纹仪</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;FingerScanner&nbsp;&nbsp;&nbsp;</td>
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+
+
+
+
+<script language="JavaScript">
+
+function ciccImageChange() {
+
+	document.getElementById('Finger').src = "";
+
+	document.getElementById('Finger').src = "file://C:\\ZZAgent\\temp\\Finger.jpg";
+
+}
+
+</script>
+
+<input type="button" id="buttonStyle" value="打开(*)" 						onClick="LogTrace('[指令]ciccOpenAsyn='+BOCOMDevControl.ciccOpenAsyn());" />
+
+<input type="button" id="buttonStyle" value="关闭(*)" 						onClick="LogTrace('[指令]ciccCloseAsyn='+BOCOMDevControl.ciccCloseAsyn());" />
+
+<input type="button" id="buttonStyle" value="检测手指(*)" 					onClick="LogTrace('[指令]ciccDataIOAsyn='+BOCOMDevControl.ciccDataIOAsyn('',1,0));" />
+
+<input type="button" id="buttonStyle" value="等待手指按下(10秒)(*)" 		onClick="LogTrace('[指令]ciccDataIOAsyn='+BOCOMDevControl.ciccDataIOAsyn('',2,10000));" />
+
+<input type="button" id="buttonStyle" value="取指纹并生成特征值(10秒)(*)" 	onClick="LogTrace('[指令]ciccDataIOAsyn='+BOCOMDevControl.ciccDataIOAsyn('^R1C:\\ZZAgent\\temp\\finger.jpg^R2JPG^R31^R41', 3, 10000));" />
+
+<input type="button" id="buttonStyle" value="从图像生成特征值(*)" 			onClick="LogTrace('[指令]ciccDataIOAsyn='+BOCOMDevControl.ciccDataIOAsyn('^R1C:\\ZZAgent\\temp\\finger.bmp^RFBMP', 4, 10000));" />
+
+<p>
+
+<input type="button" id="buttonStyle" value="打开" 						onClick="LogTrace('[指令]ciccOpen='+BOCOMDevControl.ciccOpen());" />
+
+<input type="button" id="buttonStyle" value="关闭" 						onClick="LogTrace('[指令]ciccClose');BOCOMDevControl.ciccClose();" />
+
+<input type="button" id="buttonStyle" value="检测手指" 					onClick="LogTrace('[指令]ciccDataIO='+BOCOMDevControl.ciccDataIO('',1,0));" />
+
+<input type="button" id="buttonStyle" value="等待手指按下(10秒)" 		onClick="LogTrace('[指令]ciccDataIO='+BOCOMDevControl.ciccDataIO('',2,10000));" />
+
+<input type="button" id="buttonStyle" value="取指纹并生成特征值(10秒)" onClick="LogTrace('[指令]ciccDataIO='+BOCOMDevControl.ciccDataIO('^R1C:\\ZZAgent\\temp\\finger.jpg^R2JPG^R31^R41', 3, 10000));ciccImageChange();" />
+
+<input type="button" id="buttonStyle" value="从图像生成特征值" 		onClick="LogTrace('[指令]ciccDataIO='+BOCOMDevControl.ciccDataIO('^R1C:\\ZZAgent\\temp\\finger.bmp^RFBMP', 4, 10000));" />
+
+<select id="CiccInfoSel1" style="height:40;">
+
+	<option value="1">驱动程序版本</option>
+
+	<option value="2">驱动程序厂商名</option>
+
+	<option value="3">驱动程序名</option>
+
+	<option value="11">设备状态</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取信息" 	onClick="var Tag=document.getElementById('CiccInfoSel1').value;LogTrace('[指令]ciccGetInfo='+BOCOMDevControl.ciccGetInfo(Tag));"/>
+
+
+
+<p>
+
+<table border="1" cellspacing=0>
+
+	<tr align=center><td>指纹图片</td></tr>
+
+	<tr><td><img id="Finger" width="100" height="120" src="file://C:\\ZZAgent\\temp\\Finger.jpg" /></td></tr>
+
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<P><HR>
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>通用扩展部件（含指纹仪、琴岛通读卡器）</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+
+
+
+
+<script language="JavaScript">
+
+function CiccDataIO()
+
+{
+
+	var p1=document.getElementById('CiccParam1').value;
+
+	var p2=document.getElementById('CiccParam2').value;
+
+	var p3=document.getElementById('CiccParam3').value;
+
+
+
+	LogTrace('[指令]ciccDataIO='+BOCOMDevControl.ciccDataIO(p1,p2,p3));
+
+}
+
+</script>
+
+<!--input type="button" id="buttonStyle" value="打开(*)" 						onClick="LogTrace('[指令]ciccOpenAsyn='+BOCOMDevControl.ciccOpenAsyn());" />
+
+<input type="button" id="buttonStyle" value="关闭(*)" 						onClick="LogTrace('[指令]ciccCloseAsyn='+BOCOMDevControl.ciccCloseAsyn());" />
+
+<input type="button" id="buttonStyle" value="检测手指(*)" 					onClick="LogTrace('[指令]ciccDataIOAsyn='+BOCOMDevControl.ciccDataIOAsyn('',1,0));" />
+
+<input type="button" id="buttonStyle" value="等待手指按下(10秒)(*)" 		onClick="LogTrace('[指令]ciccDataIOAsyn='+BOCOMDevControl.ciccDataIOAsyn('',2,10000));" />
+
+<input type="button" id="buttonStyle" value="取指纹并生成特征值(10秒)(*)" 	onClick="LogTrace('[指令]ciccDataIOAsyn='+BOCOMDevControl.ciccDataIOAsyn('^R1C:\\ZZAgent\\temp\\finger.jpg^R2JPG^R31^R41', 3, 10000));" />
+
+<input type="button" id="buttonStyle" value="从图像生成特征值(*)" 			onClick="LogTrace('[指令]ciccDataIOAsyn='+BOCOMDevControl.ciccDataIOAsyn('^R1C:\\ZZAgent\\temp\\finger.bmp^RFBMP', 4, 10000));" />
+
+<p-->
+
+
+
+<select id="CiccSelDevice" style="height:40;">
+
+	<option value="1">指纹仪</option>
+
+	<option value="2" selected>非接读卡器</option>
+
+	<option value="3">读卡器</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="选择设备" 	onClick="var Sel=document.getElementById('CiccSelDevice').value;LogTrace('[指令]ciccSelDevice()');BOCOMDevControl.ciccSelDevice(Sel);"/>
+
+<input type="button" id="buttonStyle" value="打开" 						onClick="LogTrace('[指令]ciccOpen='+BOCOMDevControl.ciccOpen());" />
+
+<input type="button" id="buttonStyle" value="关闭" 						onClick="LogTrace('[指令]ciccClose');BOCOMDevControl.ciccClose();" />
+
+<select id="CiccInfoSel" style="height:40;">
+
+	<option value="1">驱动程序版本</option>
+
+	<option value="2">驱动程序厂商名</option>
+
+	<option value="3">驱动程序名</option>
+
+	<option value="11">设备状态</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取信息" 	onClick="var Tag=document.getElementById('CiccInfoSel').value;LogTrace('[指令]ciccGetInfo='+BOCOMDevControl.ciccGetInfo(Tag));"/>
+
+
+
+<P>
+
+<table border="1" cellspacing=0>
+
+	<tr><td>
+
+		CMD<BR>
+
+		<input type="text" id="CiccParam1" value='00A404000E315041592E5359532E444446303100'>
+
+	</td><td>
+
+		TYPE<BR>
+
+		<input type="text" id="CiccParam2" value='1'>
+
+	</td><td>
+
+		TIMEOUT<BR>
+
+		<input type="text" id="CiccParam3" value='10000'>
+
+	</td><td>
+
+		<input type="button" id="buttonStyle" value="DataIO" 	onClick="CiccDataIO();" />
+
+	</td></tr>
+
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<P><HR>
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>存款</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;CashAcceptor&nbsp;&nbsp;&nbsp;</td>
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+
+
+<!--存款事件-->
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMOpenComplete(p_lRetCode)">LogTrace("[事件]打开完成OnCIMOpenComplete="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMCloseComplete(p_lRetCode)">LogTrace("[事件]关闭完成OnCIMCloseComplete="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMResetted(p_lRetCode)">LogTrace("[事件]复位完成OnCIMResetted="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMCashInStarted(p_lRetCode)">LogTrace("[事件]准备存款完成OnCIMCashInStarted="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMCashIn(p_lRetCode)">LogTrace("[事件]点钞结果OnCIMCashIn="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMCashInEnd(p_lRetCode)">LogTrace("[事件]存款完成OnCIMCashInEnd="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMCashInRollback(p_lRetCode)">LogTrace("[事件]退钞完成OnCIMCashInRollback="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMRetracted(p_lRetCode)">LogTrace("[事件]回收完成OnCIMRetracted="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMShutterOpened(p_lRetCode)">LogTrace("[事件]打开钞门完成OnCIMShutterOpened="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMShutterClosed(p_lRetCode)">LogTrace("[事件]关闭钞门完成OnCIMShutterClosed="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMCUInfoSetted(p_lRetCode)">LogTrace("[事件]设置钞箱完成OnCIMCUInfoSetted="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMStartExchanged(p_lRetCode)">LogTrace("[事件]开始加钞完成OnCIMStartExchanged="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMEndExchanged(p_lRetCode)">LogTrace("[事件]结束加钞完成OnCIMEndExchanged="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMSafeDoorOpened(p_lRetCode)">LogTrace("[事件]安全门打开OnCIMSafeDoorOpened="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMSafeDoorClosed(p_lRetCode)">LogTrace("[事件]安全门关闭OnCIMSafeDoorClosed="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMCUThreshold(p_lCUNumber, p_lStatus, p_lRetCode)">LogTrace("[事件]钱箱状态改变OnCIMCUThreshold="+p_lRetCode+", p_lCUNumber="+p_lCUNumber+", p_lStatus="+p_lStatus);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMCUInfoChanged(p_lCUNumber, p_lRetCode)">LogTrace("[事件]钱箱信息改变OnCIMCUInfoChanged="+p_lRetCode+", p_lCUNumber"+p_lCUNumber);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMCUError(p_lCUNumber, p_bstrCUID, p_eErr, p_lRetCode)">LogTrace("[事件]钱箱出现故障OnCIMCUError="+p_lRetCode+", p_lCUNumber="+p_lCUNumber+", p_bstrCUID="+p_bstrCUID+", p_eErr="+p_eErr);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMItemsTaken(p_lRetCode)">LogTrace("[事件]钞票被拿走OnCIMItemsTaken="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMInputRefused(p_eReason, p_lRetCode)">LogTrace("[事件]拒钞OnCIMInputRefused="+p_lRetCode+", p_eReason="+p_eReason);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMItemsPresented(p_lRetCode)">LogTrace("[事件]钞票被送至出口OnCIMItemsPresented="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMNoteError(p_eReason, p_lRetCode)">LogTrace("[事件]钞票错误OnCIMNoteError="+p_lRetCode+", p_eReason"+p_eReason);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMItemsInserted(p_lRetCode)">LogTrace("[事件]钞票放入OnCIMItemsInserted="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMMediaDetected(p_ePos, p_lRetCode)">LogTrace("[事件]检测到钞票OnCIMMediaDetected="+p_lRetCode+", p_ePos="+p_ePos);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMTimeOut()">LogTrace("[事件]执行命令超时OnCIMTimeOut()");</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCIMCashInStr(p_bstrCashInInfo)">LogTrace("[事件]点钞执行完成OnCIMCashInStr="+p_bstrCashInInfo);</script>
+
+
+
+<!--存款事件-->
+
+<script language="JavaScript">
+
+function CimCashUnitStartExchange() {
+
+	var check = document.getElementsByName("CimUnitName");
+
+	var parameter = "1";
+
+	for(var i = 1; i < check.length; i++) {
+
+		if(check[i].checked) {
+
+			parameter = parameter + "," + check[i].value;
+
+		}
+
+	}
+
+	
+
+	//LogTrace(parameter);
+
+	LogTrace("[指令]cimStartExchangeAsyn="+BOCOMDevControl.cimStartExchangeAsyn(1, parameter, 0)+", Count="+parameter);
+
+}
+
+
+
+function CimCashUnitSetPUCurrentCounts() {
+
+	var check = document.getElementsByName("CimUnitName");
+
+	var parameter = "0";
+
+	for(var i = 1; i < check.length; i++) {
+
+		if(check[i].checked) {
+
+			var checkID = "CimUnitValue" + check[i].value;
+
+			parameter = parameter + "^" + document.getElementById(checkID).value;
+
+		}
+
+	}
+
+	
+
+	//LogTrace(parameter);
+
+	LogTrace("[指令]cimSetPUCurrentCounts="+BOCOMDevControl.cimSetPUCurrentCounts(parameter)+", Count="+parameter);
+
+}
+
+
+
+function CimCashUnitSetPUCashinCounts() {
+
+	var check = document.getElementsByName("CimUnitName");
+
+	var parameter = "0";
+
+	for(var i = 1; i < check.length; i++) {
+
+		if(check[i].checked) {
+
+			var checkID = "CimUnitValue" + check[i].value;
+
+			parameter = parameter + "^" + document.getElementById(checkID).value;
+
+		}
+
+	}
+
+
+
+	LogTrace("[指令]cimSetPUCashinCounts="+BOCOMDevControl.cimSetPUCashinCounts(parameter)+", Count="+parameter);
+
+}
+
+
+
+</script>
+
+
+
+<input type="button" id="buttonStyle" value="打开(*)" 	onClick="LogTrace('[指令]cimOpenAsyn='+BOCOMDevControl.cimOpenAsyn(''));LogTrace('打开中')">
+
+<input type="button" id="buttonStyle" value="关闭(*)" 	onClick="LogTrace('[指令]cimCloseAsyn='+BOCOMDevControl.cimCloseAsyn());LogTrace('关闭中')">
+
+<input type="button" id="buttonStyle" value="复位(*)" 	onClick="LogTrace('[指令]cimResetAsyn='+BOCOMDevControl.cimResetAsyn(0,0,0));LogTrace('复位中')">
+
+<input type="button" id="buttonStyle" value="获取状态" 	onClick="LogTrace('[指令]cimGetStatus='+BOCOMDevControl.cimGetStatus('Status_Device',0));">
+
+
+
+<select id="PUInfoCIM" style="height:40;">
+
+	<option value="PU_CashUnitName">PU钱箱名称</option>
+
+	<option value="PU_InitialCount">PU初始张数</option>
+
+	<option value="PU_Count">PU当前张数</option>
+
+	<option value="PU_RejectCount">PU拒钞张数</option>
+
+	<option value="PU_Maximum">PU最大张数</option>
+
+	<option value="PU_CashInCount">PU存入张数</option>
+
+	<option value="PU_PStatus">PU钱箱状态</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取PU钱箱信息" onClick="LogTrace('[指令]cimGetPUInfo='+BOCOMDevControl.cimGetPUInfo(document.getElementById('PUInfoCIM').value));">
+
+<select id="CUInfoCIM" style="height:40;">
+
+	<option value="CU_Number">CU钱箱索引号</option>
+
+	<option value="CU_Type">CU钱箱类型</option>
+
+	<option value="CU_ItemType">CU钱箱支持的钞票类型</option>
+
+	<option value="CU_CashUnitName">CU名称列表</option>
+
+	<option value="CU_UnitID">CU钱箱ID列表</option>
+
+	<option value="CU_CurrencyID">CU币种</option>
+
+	<option value="CU_Values">CU货币面额</option>
+
+	<option value="CU_InitialCount">CU初始张数</option>
+
+	<option value="CU_Count">CU钱箱当前张数</option>
+
+	<option value="CU_RejectCount">CU拒钞张数</option>
+
+	<option value="CU_CashInCount">CU存入张数列表</option>
+
+	<option value="CU_Minimum">CU最小保留张数</option>
+
+	<option value="CU_Maximum">CU最大回收或拒钞张数</option>
+
+	<option value="CU_Status">CU钱箱状态列表</option>
+
+	<option value="CU_NumPhysicalCUs">CU对应物理钱箱个数</option>
+
+	<option value="CU_DispensedCount">CU挖钞张数列表</option>
+
+	<option value="CU_PresentedCount">CU送钞张列表数</option>
+
+	<option value="CU_RetractedCount">CU回收张数列表</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取CU钱箱信息" 		onClick="LogTrace('[指令]cimGetCUInfo='+BOCOMDevControl.cimGetCUInfo(document.getElementById('CUInfoCIM').value));">
+
+<p>
+
+<input type="button" id="buttonStyle" value="1,准备存款(*)" 		onClick="LogTrace('[指令]cimCashInStartAsyn='+BOCOMDevControl.cimCashInStartAsyn(0,0,0,0));"/>
+
+<input type="button" id="buttonStyle" value="2,打开出钞口门(*)" 	onClick="LogTrace('[指令]cimOpenShutterAsyn='+BOCOMDevControl.cimOpenShutterAsyn(0,0));"/>
+
+<input type="button" id="buttonStyle" value="3,点钞(*)" 			onClick="LogTrace('[指令]cimCashInAsyn='+BOCOMDevControl.cimCashInAsyn(0));"/>
+
+<input type="button" id="buttonStyle" value="4,结束存款(*)" 		onClick="LogTrace('[指令]cimCashInEndAsyn='+BOCOMDevControl.cimCashInEndAsyn(0));"/>
+
+<input type="button" id="buttonStyle" value="关闭出钞口门(*)" 		onClick="LogTrace('[指令]cimCloseShutterAsyn='+BOCOMDevControl.cimCloseShutterAsyn(0,0));"/>
+
+<input type="button" id="buttonStyle" value="退钞(*)" 				onClick="LogTrace('[指令]cimCashInRollbackAsyn='+BOCOMDevControl.cimCashInRollbackAsyn(0));"/>
+
+<input type="button" id="buttonStyle" value="回收(*)" 				onClick="LogTrace('[指令]cimRetractAsyn='+BOCOMDevControl.cimRetractAsyn(0,0,0,0));"/>
+
+<p>
+
+<table border=1 cellspacing=0>
+
+  <tr align=center>
+
+	<td>&nbsp;</td>
+
+	<td><input name="CimUnitName" type="checkbox" value="1" checked="checked" disabled="disabled">回收箱1</input></td>
+
+	<td><input name="CimUnitName" type="checkbox" value="2" checked="checked">循环箱2</input></td>
+
+	<td><input name="CimUnitName" type="checkbox" value="3" checked="checked">循环箱3</input></td>
+
+	<td><input name="CimUnitName" type="checkbox" value="4" checked="checked">循环箱4</input></td>
+
+	<td><input name="CimUnitName" type="checkbox" value="5" checked="checked">循环箱5</input></td>	
+
+  </tr><tr>
+
+	<td>钞箱数额（张）</td>
+
+	<td><input type="text" id="CimUnitValue1" style="width:100;" value='0' disabled="disabled"></td>
+
+    <td><input type="text" id="CimUnitValue2" style="width:100;" value='0'></td>
+
+	<td><input type="text" id="CimUnitValue3" style="width:100;" value='0'></td>
+
+    <td><input type="text" id="CimUnitValue4" style="width:100;" value='0'></td>
+
+	<td><input type="text" id="CimUnitValue5" style="width:100;" value='0'></td>	
+
+  </tr>
+
+</table>
+
+<p>
+
+<!--input type="button" id="buttonStyle" value="1,取款箱类型" 			onClick="LogTrace('[指令]cdmGetCUInfo='+BOCOMDevControl.cdmGetCUInfo('CU_Type'));"-->
+
+<!--input type="button" id="buttonStyle" value="2,存款箱状态" 			onClick="LogTrace('[指令]cimGetStatus='+BOCOMDevControl.cimGetStatus('Status_Acceptor',0));"-->
+
+<!--input type="button" id="buttonStyle" value="3,存款箱类型" 			onClick="LogTrace('[指令]cimGetCUInfo='+BOCOMDevControl.cimGetCUInfo('CU_Type'));"-->
+
+<input type="button" id="buttonStyle" value="1,开始清装钞(*)" 			onClick="CimCashUnitStartExchange();"/>
+
+<input type="button" id="buttonStyle" value="2,结束清装钞(*)" 			onClick="LogTrace('[指令]cimEndExchangeAsyn='+BOCOMDevControl.cimEndExchangeAsyn(0));"/>
+
+<!--input type="button" id="buttonStyle" value="6,存款箱类型" 			onClick="LogTrace('[指令]cimGetCUInfo='+BOCOMDevControl.cimGetCUInfo('CU_Type'));"-->
+
+<input type="button" id="buttonStyle" value="3,开始设置钞箱信息" 		onClick="LogTrace('[指令]cimBeginSetCUInfo='+BOCOMDevControl.cimBeginSetCUInfo());">
+
+<input type="button" id="buttonStyle" value="4,设置当前数额" 			onClick="CimCashUnitSetPUCurrentCounts();"/>
+
+<input type="button" id="buttonStyle" value="5,设置钞箱数额" 			onClick="CimCashUnitSetPUCashinCounts();"/>
+
+<input type="button" id="buttonStyle" value="6,完成设置钞箱信息(*)" 	onClick="LogTrace('[指令]cimSetCUInfoAsyn='+BOCOMDevControl.cimSetCUInfoAsyn(0));">
+
+<!--input type="button" id="buttonStyle" value="11,计算钞箱信息" 		onClick="BOCOMDevControl.cimCalculateSetCUInfoFromPU();LogTrace('[指令]cimCalculateSetCUInfoFromPU');"-->
+
+
+
+
+
+
+
+
+
+<P><HR>
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>取款</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;CashDispenser&nbsp;&nbsp;&nbsp;</td>
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+
+
+
+
+<!--取款事件-->
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMOpenComplete(p_lRetCode)">LogTrace("[事件]打开完成OnCDMOpenComplete="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMCloseComplete(p_lRetCode)">LogTrace("[事件]关闭设备OnCDMCloseComplete="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMDispensed(p_pbstrValues, p_lRetCode)">LogTrace("[事件]挖钞完成,出钞列表OnCDMDispensed="+p_pbstrValues+", 返回码="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMPresented(p_lRetCode)">LogTrace("[事件]送钞完成OnCDMPresented="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMRejected(p_lRetCode)">LogTrace("[事件]暂存区回收完成OnCDMRejected="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMRetracted(p_lRetCode)">LogTrace("[事件]钞口回收完成OnCDMRetracted："+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMShutterOpened(p_lRetCode)">LogTrace("[事件]钞门口打开OnCDMShutterOpened="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMShutterClosed(p_lRetCode)">LogTrace("[事件]钞门口关闭OnCDMShutterClosed="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMSetCUInfo(p_lRetCode)">LogTrace("[事件]设置钞箱完成OnCDMSetCUInfo="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMStartExchanged(p_lRetCode)">LogTrace("[事件]开始加钞完成OnCDMStartExchanged="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMEndExchanged(p_lRetCode)">LogTrace("[事件]结束加钞完成OnCDMEndExchanged="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMSafeDoorOpened(p_lRetCode)">LogTrace("[事件]安全门打开OnCDMSafeDoorOpened="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMSafeDoorClosed(p_lRetCode)">LogTrace("[事件]安全门关闭OnCDMSafeDoorClosed="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMResetted(p_lRetCode)">LogTrace("[事件]复位完成OnCDMResetted："+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMCUThreshold(p_lCUNumber, p_lStatus, p_lRetCode)">LogTrace("[事件]钱箱状态改变OnCDMCUThreshold="+p_lRetCode+", p_lCUNumber="+p_lCUNumber+", p_lStatus="+p_lStatus);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMCUInfoChanged(p_lCUNumber, p_lRetCode)">LogTrace("[事件]钱箱信息改变OnCDMCUInfoChanged="+p_lRetCode+", p_lCUNumber="+p_lCUNumber);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMCUError(p_lCUNumber, p_bstrCUID, p_eErr, p_lRetCode)">LogTrace("[事件]钱箱出现故障OnCDMCUError="+p_lRetCode+", p_lCUNumber="+p_lCUNumber+", p_bstrCUID="+p_bstrCUID+", p_eErr="+p_eErr);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMItemsTaken(p_lRetCode)">LogTrace("[事件]钞票被拿走OnCDMItemsTaken="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMNoteError(p_eReason, p_lRetCode)">LogTrace("[事件]钞票错误OnCDMNoteError="+p_lRetCode+", p_eReason="+p_eReason);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMMediaDetected(p_ePos, p_lRetCode)">LogTrace("[事件]检测到钞票OnCDMMediaDetected="+p_lRetCode+", p_ePos="+p_ePos);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnCDMTimeOut()">LogTrace("[事件]执行命令超时OnCDMTimeOut()");</script>
+
+<!--取款事件-->
+
+<script language="JavaScript">
+
+function CdmCashUnitStartExchange() {
+
+	var check = document.getElementsByName("CdmUnitName");
+
+	var parameter = "1,2";
+
+	for(var i = 2; i < check.length; i++) {
+
+		if(check[i].checked) {
+
+			parameter = parameter + "," + check[i].value;
+
+		}
+
+	}
+
+	
+
+	//LogTrace(parameter);
+
+	LogTrace("[指令]cdmStartExchangeAsyn="+BOCOMDevControl.cdmStartExchangeAsyn(1, parameter, 0)+", Count="+parameter);
+
+}
+
+
+
+function CdmCashUnitSetPUCurrentCounts() {
+
+	var check = document.getElementsByName("CdmUnitName");
+
+	var parameter = "0^0";
+
+	for(var i = 2; i < check.length; i++) {
+
+		if(check[i].checked) {
+
+			var checkID = "CdmUnitValue" + check[i].value;
+
+			parameter = parameter + "^" + document.getElementById(checkID).value;
+
+		}
+
+	}
+
+	
+
+	//LogTrace(parameter);
+
+	LogTrace("[指令]cdmSetPUCurrentCounts="+BOCOMDevControl.cdmSetPUCurrentCounts(parameter)+", Count="+parameter);
+
+}
+
+
+
+function CdmCashUnitSetCUInitialCounts() {
+
+	var check = document.getElementsByName("CdmUnitName");
+
+	var parameter = "0^0";
+
+	for(var i = 2; i < check.length; i++) {
+
+		if(check[i].checked) {
+
+			var checkID = "CdmUnitValue" + check[i].value;
+
+			parameter = parameter + "^" + document.getElementById(checkID).value;
+
+		}
+
+	}
+
+
+
+	LogTrace("[指令]cdmSetCUInitialCounts="+BOCOMDevControl.cdmSetCUInitialCounts(parameter)+", Count="+parameter);
+
+}
+
+
+
+</script>
+
+
+
+<input type="button" id="buttonStyle" value="打开(*)" 		onClick="LogTrace('[指令]cdmOpenAsyn='+BOCOMDevControl.cdmOpenAsyn(''));LogTrace('打开中');">
+
+<input type="button" id="buttonStyle" value="关闭(*)" 		onClick="LogTrace('[指令]cdmCloseAsyn='+BOCOMDevControl.cdmCloseAsyn());LogTrace('关闭中');">
+
+<input type="button" id="buttonStyle" value="复位(*)" 		onClick="LogTrace('[指令]cdmResetAsyn='+BOCOMDevControl.cdmResetAsyn(0,0,0));LogTrace('复位中');">
+
+<input type="button" id="buttonStyle" value="获取模块状态" 	onClick="LogTrace('[指令]cdmGetStatus='+BOCOMDevControl.cdmGetStatus('Status_Device',0));">
+
+
+
+<select id="PUInfoCDM" style="height:40;">
+
+	<option value="PU_CashUnitName">PU钱箱名称</option>
+
+	<option value="PU_InitialCount">PU初始张数</option>
+
+	<option value="PU_CurCount">PU当前张数</option>
+
+	<option value="PU_RejectCount">PU拒钞张数</option>
+
+	<option value="PU_Maximum">PU最大张数</option>
+
+	<option value="PU_PStatus">PU钱箱状态</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取PU钱箱信息" onClick="LogTrace('[指令]cdmGetPUInfo='+BOCOMDevControl.cdmGetPUInfo(document.getElementById('PUInfoCDM').value, 0));">
+
+<select id="CUInfoCDM" style="height:40;">
+
+	<option value="CU_Type">CU钱箱类型</option>
+
+	<option value="CU_CashUnitName">CU钱箱名称</option>
+
+	<option value="CU_UnitID">CU钱箱ID号</option>
+
+	<option value="CU_CurrencyID">CU钱箱币种</option>
+
+	<option value="CU_Values">CU货币面额</option>
+
+	<option value="CU_InitialCount">CU初始张数</option>
+
+	<option value="CU_CurCount">CU当前张数</option>
+
+	<option value="CU_RejectCount">CU拒钞张数</option>
+
+	<option value="CU_Minimum">CU最小保留张数</option>
+
+	<option value="CU_Maximum">CU最大回收或拒钞张数</option>
+
+	<option value="CU_Status">CU钱箱状态列表</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取CU钱箱信息" 		onClick="LogTrace('[指令]cdmGetCUInfo='+BOCOMDevControl.cdmGetCUInfo(document.getElementById('CUInfoCDM').value));">
+
+<p>
+
+<input type="button" id="buttonStyle" value="1,挖钞(*)" 				onClick="var val=document.getElementById('MoneyVal').value; LogTrace('[指令]cdmDispenseAsyn='+BOCOMDevControl.cdmDispenseAsyn(val, 0, '', 1, 0));"/>
+
+<input type="text" id="MoneyVal" value='100'>
+
+<input type="button" id="buttonStyle" value="2,送钞(*)" 				onClick="LogTrace('[指令]cdmPresentAsyn='+BOCOMDevControl.cdmPresentAsyn(0, 0));"/>
+
+<input type="button" id="buttonStyle" value="暂存区钞票回收(*)" 	onClick="LogTrace('[指令]cdmRejectAsyn='+BOCOMDevControl.cdmRejectAsyn(0));"/>
+
+<input type="button" id="buttonStyle" value="出钞口钞票回收(*)" 	onClick="LogTrace('[指令]cdmRetractAsyn='+BOCOMDevControl.cdmRetractAsyn(0, 0, 1, 0));"/>
+
+<p>
+
+<table border=1 cellspacing=0>
+
+  <tr align=center>
+
+	<td>&nbsp;</td>
+
+	<td><input name="CdmUnitName" type="checkbox" value="1" checked="checked" disabled="disabled">废钞箱1</input></td>
+
+	<td><input name="CdmUnitName" type="checkbox" value="2" checked="checked" disabled="disabled">回收箱2</input></td>
+
+	<td><input name="CdmUnitName" type="checkbox" value="3" checked="checked">循环箱3</input></td>
+
+	<td><input name="CdmUnitName" type="checkbox" value="4" checked="checked">循环箱4</input></td>
+
+	<td><input name="CdmUnitName" type="checkbox" value="5" checked="checked">循环箱5</input></td>
+
+	<td><input name="CdmUnitName" type="checkbox" value="6" checked="checked">循环箱6</input></td>	
+
+  </tr><tr>
+
+	<td>钞箱数额（张）</td>
+
+	<td><input type="text" id="CdmUnitValue1" style="width:100;" value='0' disabled="disabled"></td>
+
+	<td><input type="text" id="CdmUnitValue2" style="width:100;" value='0' disabled="disabled"></td>
+
+    <td><input type="text" id="CdmUnitValue3" style="width:100;" value='1000'></td>
+
+	<td><input type="text" id="CdmUnitValue4" style="width:100;" value='1000'></td>
+
+    <td><input type="text" id="CdmUnitValue5" style="width:100;" value='1000'></td>
+
+	<td><input type="text" id="CdmUnitValue6" style="width:100;" value='1000'></td>	
+
+  </tr>
+
+</table>
+
+<p>
+
+
+
+<!--input type="button" id="buttonStyle" value="1,取款箱状态" 			onClick="LogTrace('[指令]cdmGetStatus='+BOCOMDevControl.cdmGetStatus('Status_Acceptor',0));"-->
+
+<!--input type="button" id="buttonStyle" value="2,复位(*)" 				onClick="LogTrace('[指令]cdmResetAsyn='+BOCOMDevControl.cdmResetAsyn(0,0,0));LogTrace('复位中');"-->
+
+<!--input type="button" id="buttonStyle" value="3,取款箱类型" 			onClick="LogTrace('[指令]cdmGetCUInfo='+BOCOMDevControl.cdmGetCUInfo('CU_Type'));"-->
+
+<input type="button" id="buttonStyle" value="1,开始清装钞(*)" 			onClick="CdmCashUnitStartExchange();"/>
+
+<input type="button" id="buttonStyle" value="2,结束清装钞(*)" 			onClick="LogTrace('[指令]cdmEndExchangeAsyn='+BOCOMDevControl.cdmEndExchangeAsyn(0));"/>
+
+<input type="button" id="buttonStyle" value="3,开始设置钞箱信息" 		onClick="LogTrace('[指令]cdmBeginSetCUInfo='+BOCOMDevControl.cdmBeginSetCUInfo());">
+
+<input type="button" id="buttonStyle" value="4,设置当前数额" 			onClick="CdmCashUnitSetPUCurrentCounts();"/>
+
+<input type="button" id="buttonStyle" value="5,设置初始数额" 			onClick="CdmCashUnitSetCUInitialCounts();"/>
+
+<input type="button" id="buttonStyle" value="6,完成设置钞箱信息(*)" 	onClick="LogTrace('[指令]cdmSetCUInfoAsyn='+BOCOMDevControl.cdmSetCUInfoAsyn(0));">
+
+<!--input type="button" id="buttonStyle" value="10,计算钞箱信息" 		onClick="BOCOMDevControl.cdmCalculateSetCUInfoFromPU();LogTrace('[指令]cdmCalculateSetCUInfoFromPU');"-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<P><HR>
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>盖章机/A4打印机</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;A4STAMP&nbsp;&nbsp;&nbsp;</td>
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnReceiptPrinterOpened(p_lRetCode)">LogTrace("[事件]OnReceiptPrinterOpened="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnReceiptPrinterClosed(p_lRetCode)">LogTrace("[事件]OnReceiptPrinterClosed="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnReceiptPrinterFormPrinted(p_lRetCode)">LogTrace("[事件]OnReceiptPrinterFormPrinted="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnReceiptPrinterRawDataPrinted(p_lRetCode)">LogTrace("[事件]OnReceiptPrinterRawDataPrinted="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnReceiptPrinterReset(p_lRetCode)">LogTrace("[事件]OnReceiptPrinterReset="+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnReceiptPrinterPaperThreshold(p_lPaperStatus)">LogTrace("[事件]OnReceiptPrinterPaperThreshold="+p_lPaperStatus);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnReceiptPrinterPaperPrinted(p_lPrinted, p_lTotal)">LogTrace("[事件]OnReceiptPrinterPaperPrinted p_lPrinted="+p_lPrinted+", p_lTotal="+p_lTotal);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnReceiptPrinterStamperReseted(p_lRetCode)">LogTrace("[事件]OnReceiptPrinterStamperReseted="+p_lRetCode);</script>
+
+
+
+<script language="JavaScript">
+
+<!-- SetFormReceiptEx('Stamp1', document.getElementById('taForm').value, 'PTR_PAPER_L3', 'PORTRAIT', '0', '1'); -->
+
+function SetFormReceiptEx(p_bstrFormName, p_bstrPrintData, p_bstrReceiptPaperType, p_bstrOrientation, p_bstrIsStamp, p_bstrPrintNumber) {
+
+	BOCOMDevControl.receiptPrinterSetForm(p_bstrFormName, "PrintData", p_bstrPrintData, 0);
+
+	BOCOMDevControl.receiptPrinterSetForm(p_bstrFormName, "ReceiptPaperType", p_bstrReceiptPaperType, 0);
+
+	BOCOMDevControl.receiptPrinterSetForm(p_bstrFormName, "Orientation", p_bstrOrientation, 0);
+
+	BOCOMDevControl.receiptPrinterSetForm(p_bstrFormName, "IsStamp", p_bstrIsStamp, 0);
+
+	BOCOMDevControl.receiptPrinterSetForm(p_bstrFormName, "PrintNumber", p_bstrPrintNumber, 0);
+
+	
+
+	LogTrace("FormName="+p_bstrFormName+"; ReceiptPaperType="+p_bstrReceiptPaperType+"; Orientation="+p_bstrOrientation+"; IsStamp="+p_bstrIsStamp+"; PrintNumber="+p_bstrPrintNumber+"; PrintData="+p_bstrPrintData);
+
+}
+
+
+
+<!-- ReadFormReceiptEx('Stamp1'); -->
+
+function ReadFormReceiptEx(p_bstrFormName){
+
+	var l_bstrInfo = "ReceiptPaperType=";
+
+	l_bstrInfo = l_bstrInfo + BOCOMDevControl.receiptPrinterReadForm(p_bstrFormName, "ReceiptPaperType", 0);
+
+	l_bstrInfo = l_bstrInfo + ", IsStamp=";
+
+	l_bstrInfo = l_bstrInfo + BOCOMDevControl.receiptPrinterReadForm(p_bstrFormName, "IsStamp", 0);
+
+	l_bstrInfo = l_bstrInfo + ", Orientation=";
+
+	l_bstrInfo = l_bstrInfo + BOCOMDevControl.receiptPrinterReadForm(p_bstrFormName, "Orientation", 0);
+
+	l_bstrInfo = l_bstrInfo + ", PrintNumber=";
+
+	l_bstrInfo = l_bstrInfo + BOCOMDevControl.receiptPrinterReadForm(p_bstrFormName, "PrintNumber", 0);
+
+	l_bstrInfo = l_bstrInfo + ", PrintData=";
+
+	l_bstrInfo = l_bstrInfo + BOCOMDevControl.receiptPrinterReadForm(p_bstrFormName, "PrintData", 0);
+
+
+
+	LogTrace(l_bstrInfo);
+
+}
+
+
+
+function ButtonSetForm(p_nIndex) {
+
+	var l_strFormName  		= document.getElementById('PN'+p_nIndex).value;
+
+	var l_strPrintData 		= "";
+
+	var l_strPaperType 		= document.getElementById('PT'+p_nIndex).value;
+
+	var l_strOrientation 	= document.getElementById('PD'+p_nIndex).value;
+
+	var l_strIsStamp 		= document.getElementById('PS'+p_nIndex).value;
+
+	var l_nFormNum			= document.getElementById('PF'+p_nIndex).value;
+
+
+
+	for(var i=0; i<l_nFormNum; i++) {
+
+		l_strPrintData = l_strPrintData + document.getElementById('taForm').value;
+
+	}
+
+	
+
+	var l_strPrintNumber	= document.getElementById('NU'+p_nIndex).value;
+
+	
+
+	SetFormReceiptEx(l_strFormName, l_strPrintData, l_strPaperType, l_strOrientation, l_strIsStamp, l_strPrintNumber);
+
+}
+
+
+
+function ButtonPrintForm(p_nIndex) {
+
+	var l_strFormName = document.getElementById('PN'+p_nIndex).value;
+
+	LogTrace("[指令]receiptPrinterPrintFormAsyn="+BOCOMDevControl.receiptPrinterPrintFormAsyn(l_strFormName, 0)+", l_strFormName="+l_strFormName);
+
+}
+
+
+
+function ButtonPrintFormEx(p_nIndex) {
+
+	var l_strFormName = document.getElementById('PN'+p_nIndex).value;
+
+	LogTrace("[指令]receiptPrinterPrintFormExAsyn="+BOCOMDevControl.receiptPrinterPrintFormExAsyn(l_strFormName, 0)+", l_strFormName="+l_strFormName);
+
+}
+
+
+
+</script>
+
+
+
+<input type="button" id="buttonStyle" value="打开(*)" 			onClick="LogTrace('[指令]receiptPrinterOpenAsyn='+BOCOMDevControl.receiptPrinterOpenAsyn('', 0));">
+
+<input type="button" id="buttonStyle" value="关闭(*)" 			onClick="LogTrace('[指令]receiptPrinterCloseAsyn='+BOCOMDevControl.receiptPrinterCloseAsyn(0));">
+
+<input type="button" id="buttonStyle" value="复位(*)" 			onClick="LogTrace('[指令]receiptPrinterResetAsyn='+BOCOMDevControl.receiptPrinterResetAsyn(0));"/>
+
+<input type="button" id="buttonStyle" value="取消" 				onClick="LogTrace('[指令]receiptPrinterCancel='+BOCOMDevControl.receiptPrinterCancel(0));">
+
+<select id="ReceiptPrinterCap" style="height:40;">
+
+	<option value="Caps_Compound^Caps_MaxStamp^Caps_MaxOfBatch^Caps_MaxOfA4^Caps_StampStyle">能力1（最多同时取5个）</option>
+
+	<option value="Caps_CanRotate^Caps_SPM">能力2（最多同时取5个）</option>
+
+	<option value="Caps_Compound">该逻辑设备是否是复合设备的部分</option>
+
+	<option value="Caps_MultiPage">该设备是否支持多页打印工作</option>
+
+	<option value="Caps_AcceptMedia">该设备无指令运行时是否能接受媒介</option>
+
+	<option value="Caps_SilentSupport">打印机是否支持静音模式</option>
+
+	<option value="Caps_Resolution">该设备能打印的分辨率</option>
+
+	<option value="Caps_PaperSources">该打印设备可用的打印纸</option>
+
+	<option value="Caps_CharSupport">支持字符</option>
+
+	<option value="Caps_MaxStamp">印章能够盖章总次数</option>
+
+	<option value="Caps_MaxOfBatch">每批次能够设置的盖章总数</option>
+
+	<option value="Caps_MaxOfA4">单张A4纸中可盖章数目</option>
+
+	<option value="Caps_StampStyle">盖章方式</option>
+
+	<option value="Caps_CanRotate">印章是否支持旋转</option>	
+
+	<option value="Caps_SPM">每分钟盖章个数</option>	
+
+</select>
+
+
+
+<input type="button" id="buttonStyle" value="获取能力" 			onClick="LogTrace('[指令]receiptPrinterGetCapabilities='+BOCOMDevControl.receiptPrinterGetCapabilities(document.getElementById('ReceiptPrinterCap').value,0))">
+
+
+
+<select id="ReceiptPrinterStatus" style="height:40;">
+
+	<option value="Status_Front_Shutter^Status_Back_Shutter^Status_Box^Status_Paper^Status_Stamp">状态1（最多同时取5个）</option>
+
+	<option value="StatusCurStamped^StatusTotalStamped^StatusMovePaperOK">状态2（最多同时取5个）</option>
+
+	<option value="Status_Toner">打印硒鼓墨粉量</option>
+
+	<option value="Status_Paper">打印纸的状态</option>
+
+	<option value="Status_Stamp">盖章</option>
+
+	<option value="StatusCurStamped">当前印章已经盖章次数</option>
+
+	<option value="StatusTotalStamped">本盖章机已盖章总次数</option>
+
+	<option value="StatusMovePaperOK">走纸状态是否良好</option>	
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取状态" 			onClick="LogTrace('[指令]receiptPrinterGetStatus='+BOCOMDevControl.receiptPrinterGetStatus(document.getElementById('ReceiptPrinterStatus').value))"/>
+
+
+
+<input type="button" id="buttonStyle" value="显示文本框内容" 	onClick="LogTrace(document.getElementById('taForm').value);">
+
+<input type="button" id="buttonStyle" value="打印原始数据(*)" 	onClick="LogTrace('[指令]receiptPrinterPrintRawDataAsyn='+BOCOMDevControl.receiptPrinterPrintRawDataAsyn('testprint', 0));"/>
+
+<br>
+
+<TEXTAREA id="taForm" cols="130", rows="18">
+
+<html><body><table width=1000 height=450 border=4 cellspacing=0>
+
+	<tr><td align=center>                  汇兑来账凭证(回单，三联单height=450，两联单height=680)
+
+	</td></tr><tr><td> 收报日期: 2011/07/20          业务编号: CMTI0626511000455     交易种类: HVPS 贷记                  
+
+	</td></tr><tr><td> 交易流水号: 293205642719      优先级: 0 普通                  记录状态: D 直入帐                   
+
+	</td></tr><tr><td> 发起行行号: 533100000017                                                                             
+
+	</td></tr><tr><td> 发起行名称: 摩根大通银行（中国）有限公司北京分行                                                   
+
+	</td></tr><tr><td> 接收行行号: 104301003020                                                                             
+
+	</td></tr><tr><td> 接收行名称: 中国银行股份有限公司南京明故宫支行                                                     
+
+	</td></tr><tr><td> 收款人账号: 458558227374             收款人开户行行号: 104301003020                                 
+
+	</td></tr><tr><td> 收款人名称: 南京乐金熊猫电器有限公司                                                                
+
+	</td></tr><tr><td> 付款人账号: 4447000367               付款人开户行行号: 533100000017                                 
+
+	</td></tr><tr><td> 付款人名称: 乐金电子（中国）有限公司                                                                
+
+	</td></tr><tr><td> 货币符号:人民币（CNY）金额:  1,056,854.42  大写金额: 壹佰零伍万陆仟捌佰伍拾肆元肆角贰分           
+
+	</td></tr><tr><td> 附言: 汇款
+
+	</td></tr><tr><td> 此联为客户回单                                                  银行盖章
+
+	</td></tr>
+
+</table></body><P>--------------------------------------------------------------------------------------------------<P></html>
+
+</TEXTAREA>
+
+
+
+
+
+
+
+<!-- SetFormReceiptEx('Stamp0', document.getElementById('taForm').value, 'PTR_PAPER_L3', 'PORTRAIT', '0', '1'); -->
+
+<table>
+
+	<tr>
+
+		<td><input type="text" id="PN1" value='Stamp1'></td>
+
+		<td><select id="PT1">
+
+			<option value="PTR_PAPER_L1" selected>PTR_PAPER_L1</option>
+
+			<option value="PTR_PAPER_L2">PTR_PAPER_L2</option>
+
+			<option value="PTR_PAPER_L3">PTR_PAPER_L3</option>
+
+			<option value="PTR_PAPER_L4">PTR_PAPER_L4</option>
+
+			<option value="PTR_PAPER_A5">PTR_PAPER_A5</option>
+
+			<option value="PTR_PAPER_25">PTR_PAPER_25</option>
+
+			<option value="PTR_PAPER_P4">PTR_PAPER_P4</option>
+
+		</select></td>
+
+		<td><select id="PD1">
+
+			<option value="PORTRAIT">PORTRAIT</option>
+
+			<option value="LANDSCAPE">LANDSCAPE</option>
+
+		</select></td>
+
+		<td><select id="PS1">
+
+			<option value="1">盖章</option>
+
+			<option value="0">不盖章</option>
+
+		</select></td>
+
+		<td><select id="PF1">
+
+			<option value="1">一个Form</option>
+
+			<option value="2">二个Form</option>
+
+			<option value="3">三个Form</option>
+
+		</select></td>
+
+		<td><select id="NU1">
+
+			<option value="1" selected>1份</option>
+
+			<option value="2">2份</option>
+
+			<option value="3">3份</option>
+
+			<option value="4">4份</option>
+
+			<option value="5">5份</option>
+
+			<option value="6">6份</option>
+
+			<option value="7">7份</option>
+
+			<option value="8">8份</option>
+
+			<option value="9">9份</option>
+
+		</select></td>
+
+		<td><input type="button" id="buttonStyle" value="设置Form值" 		onClick="ButtonSetForm(1);"/></td>
+
+		<td><input type="button" id="buttonStyle" value="打印单联单(*)" 	onClick="ButtonPrintForm(1);"></td>
+
+		<td><input type="button" id="buttonStyle" value="打印单联单(+)(*)" 	onClick="ButtonPrintFormEx(1);"></td>
+
+	</tr><tr>
+
+		<td><input type="text" id="PN2" value='Stamp2'></td>
+
+		<td><select id="PT2">
+
+			<option value="PTR_PAPER_L1">PTR_PAPER_L1</option>
+
+			<option value="PTR_PAPER_L2" selected>PTR_PAPER_L2</option>
+
+			<option value="PTR_PAPER_L3">PTR_PAPER_L3</option>
+
+			<option value="PTR_PAPER_L4">PTR_PAPER_L4</option>
+
+			<option value="PTR_PAPER_A5">PTR_PAPER_A5</option>
+
+			<option value="PTR_PAPER_25">PTR_PAPER_25</option>
+
+			<option value="PTR_PAPER_P4">PTR_PAPER_P4</option>
+
+		</select></td>
+
+		<td><select id="PD2">
+
+			<option value="PORTRAIT">PORTRAIT</option>
+
+			<option value="LANDSCAPE">LANDSCAPE</option>
+
+		</select></td>
+
+		<td><select id="PS2">
+
+			<option value="1">盖章</option>
+
+			<option value="0">不盖章</option>
+
+		</select></td>
+
+		<td><select id="PF2">
+
+			<option value="1">一个Form</option>
+
+			<option value="2" selected>二个Form</option>
+
+			<option value="3">三个Form</option>
+
+			<option value="4">四个Form</option>
+
+			<option value="5">五个Form</option>
+
+		</select></td>
+
+		<td><select id="NU2">
+
+			<option value="1" selected>1份</option>
+
+			<option value="2">2份</option>
+
+			<option value="3">3份</option>
+
+			<option value="4">4份</option>
+
+			<option value="5">5份</option>
+
+			<option value="6">6份</option>
+
+			<option value="7">7份</option>
+
+			<option value="8">8份</option>
+
+			<option value="9">9份</option>
+
+		</select></td>
+
+		<td><input type="button" id="buttonStyle" value="设置Form值" 		onClick="ButtonSetForm(2);"/></td>
+
+		<td><input type="button" id="buttonStyle" value="打印两联单(*)" 	onClick="ButtonPrintForm(2);"></td>
+
+		<td><input type="button" id="buttonStyle" value="打印两联单(+)(*)" 	onClick="ButtonPrintFormEx(2);"></td>
+
+	</tr><tr>
+
+		<td><input type="text" id="PN3" value='Stamp3'></td>
+
+		<td><select id="PT3">
+
+			<option value="PTR_PAPER_L1">PTR_PAPER_L1</option>
+
+			<option value="PTR_PAPER_L2">PTR_PAPER_L2</option>
+
+			<option value="PTR_PAPER_L3" selected>PTR_PAPER_L3</option>
+
+			<option value="PTR_PAPER_L4">PTR_PAPER_L4</option>
+
+			<option value="PTR_PAPER_A5">PTR_PAPER_A5</option>
+
+			<option value="PTR_PAPER_25">PTR_PAPER_25</option>
+
+			<option value="PTR_PAPER_P4">PTR_PAPER_P4</option>
+
+		</select></td>
+
+		<td><select id="PD3">
+
+			<option value="PORTRAIT">PORTRAIT</option>
+
+			<option value="LANDSCAPE">LANDSCAPE</option>
+
+		</select></td>
+
+		<td><select id="PS3">
+
+			<option value="1">盖章</option>
+
+			<option value="0">不盖章</option>
+
+		</select></td>
+
+		<td><select id="PF3">
+
+			<option value="1">一个Form</option>
+
+			<option value="2">二个Form</option>
+
+			<option value="3" selected>三个Form</option>
+
+			<option value="4">四个Form</option>
+
+			<option value="5">五个Form</option>
+
+			<option value="6">六个Form</option>
+
+			<option value="7">七个Form</option>
+
+		</select></td>
+
+		<td><select id="NU3">
+
+			<option value="1" selected>1份</option>
+
+			<option value="2">2份</option>
+
+			<option value="3">3份</option>
+
+			<option value="4">4份</option>
+
+			<option value="5">5份</option>
+
+			<option value="6">6份</option>
+
+			<option value="7">7份</option>
+
+			<option value="8">8份</option>
+
+			<option value="9">9份</option>
+
+		</select></td>
+
+		<td><input type="button" id="buttonStyle" value="设置Form值" 		onClick="ButtonSetForm(3);"/></td>
+
+		<td><input type="button" id="buttonStyle" value="打印三联单(*)" 	onClick="ButtonPrintForm(3);"></td>
+
+		<td><input type="button" id="buttonStyle" value="打印三联单(+)(*)" 	onClick="ButtonPrintFormEx(3);"></td>
+
+	</tr>
+
+</table>
+
+
+
+
+
+<P><HR>
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>票据</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;PTRCHK&nbsp;&nbsp;&nbsp;</td>
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+
+
+<!--票据事件-->
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnNoteAcceptorReset(p_lRetCode)">LogTrace("[事件]OnNoteAcceptorReset："+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnNoteAcceptorEjected(p_lRetCode)">LogTrace("[事件]OnNoteAcceptorEjected："+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnNoteAcceptorAccepted(p_lRetCode)">LogTrace("[事件]OnNoteAcceptorAccepted："+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnNoteAcceptorRetracted(p_lRetCode)">LogTrace("[事件]OnNoteAcceptorRetracted："+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnNoteAcceptorOpened(p_lRetCode)">LogTrace("[事件]OnNoteAcceptorOpened："+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnNoteAcceptorClosed(p_lRetCode)">LogTrace("[事件]OnNoteAcceptorClosed："+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnNoteAcceptorCountReset(p_lRetCode)">LogTrace("[事件]OnNoteAcceptorCountReset："+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnNoteAcceptorScaned(p_bstrImageNames, p_lRetCode)">LogTrace("[事件]OnNoteAcceptorScaned图片名："+p_bstrImageNames+"  返回码："+p_lRetCode);</script> 
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnNoteAcceptorPrintEndorsement(p_bstrPrintText, p_lRetCode)">LogTrace("[事件]OnNoteAcceptorPrintEndorsement内容："+p_bstrPrintText+"  返回码："+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnNoteAcceptorShutterOpened(p_lRetCode)">LogTrace("[事件]OnNoteAcceptorShutterOpened："+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnNoteAcceptorShutterClosed(p_lRetCode)">LogTrace("[事件]OnNoteAcceptorShutterClosed："+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnNoteAcceptorTaken(p_lRetCode)">LogTrace("[事件]OnNoteAcceptorTaken："+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnNoteAcceptorThreshold(p_lRetCode)">LogTrace("[事件]OnNoteAcceptorThreshold："+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnNoteAcceptorPresented(p_lRetCode)">LogTrace("[事件]OnNoteAcceptorPresented："+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnNoteAcceptorInited(p_lRetCode)">LogTrace("[事件]OnNoteAcceptorInited："+p_lRetCode);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnNoteAcceptorProcessComplete(p_bstrRetCode)">
+
+	LogTrace("[事件]OnNoteAcceptorProcessComplete："+p_bstrRetCode);
+
+	noteImageChange();
+
+</script>
+
+<!--票据事件-->
+
+<script language="JavaScript">
+
+<!-- SetFormNoteAcceptor('Test', '1', '1', 'NONE', 'NONE', '1500', '500', '0', '', '0', '', '0', '1', '1', 'C:\\ScanImages\\'); -->
+
+function SetFormNoteAcceptor(p_bstrFormName, 
+
+							p_bstrFrontsideCamera, 
+
+							p_bstrRearsideCamera, 
+
+							p_bstrFronsideType, 
+
+							p_bstrRearsideType, 
+
+							p_bstrDocumentWidth, 
+
+							p_bstrDocumentHigh, 
+
+							p_bstrFrontsideEndorsement, 
+
+							p_bstrFrontsideEndorseChars, 
+
+							p_bstrRearsideEndorsement, 
+
+							p_bstrRearsideEndorseChars, 
+
+							p_bstrStamp, 
+
+							p_bstrMICRReader, 
+
+							p_bstrOCRReader, 
+
+							p_bstrFilePath) {
+
+	var rc = BOCOMDevControl.noteAcceptorSetForm(p_bstrFormName, "FrontsideCamera", p_bstrFrontsideCamera, 0);
+
+	var rc = BOCOMDevControl.noteAcceptorSetForm(p_bstrFormName, "RearsideCamera", p_bstrRearsideCamera, 0);
+
+	var rc = BOCOMDevControl.noteAcceptorSetForm(p_bstrFormName, "FronsideType", p_bstrFronsideType, 0);
+
+	var rc = BOCOMDevControl.noteAcceptorSetForm(p_bstrFormName, "RearsideType", p_bstrRearsideType, 0);
+
+	var rc = BOCOMDevControl.noteAcceptorSetForm(p_bstrFormName, "DocumentWidth", p_bstrDocumentWidth, 0);
+
+	var rc = BOCOMDevControl.noteAcceptorSetForm(p_bstrFormName, "DocumentHigh", p_bstrDocumentHigh, 0);
+
+	var rc = BOCOMDevControl.noteAcceptorSetForm(p_bstrFormName, "FrontsideEndorsement", p_bstrFrontsideEndorsement, 0);
+
+	var rc = BOCOMDevControl.noteAcceptorSetForm(p_bstrFormName, "FrontsideEndorseChars", p_bstrFrontsideEndorseChars, 0);
+
+	var rc = BOCOMDevControl.noteAcceptorSetForm(p_bstrFormName, "RearsideEndorsement", p_bstrRearsideEndorsement, 0);
+
+	var rc = BOCOMDevControl.noteAcceptorSetForm(p_bstrFormName, "RearsideEndorseChars", p_bstrRearsideEndorseChars, 0);
+
+	var rc = BOCOMDevControl.noteAcceptorSetForm(p_bstrFormName, "Stamp", p_bstrStamp, 0);
+
+	var rc = BOCOMDevControl.noteAcceptorSetForm(p_bstrFormName, "MICRReader", p_bstrMICRReader, 0);
+
+	var rc = BOCOMDevControl.noteAcceptorSetForm(p_bstrFormName, "OCRReader", p_bstrOCRReader, 0);
+
+	var rc = BOCOMDevControl.noteAcceptorSetForm(p_bstrFormName, "FilePath", p_bstrFilePath, 0);
+
+	
+
+	LogTrace("FrontsideCamera="+p_bstrFrontsideCamera+", RearsideCamera="+p_bstrRearsideCamera+", FronsideType="+p_bstrFronsideType+", RearsideType="+p_bstrRearsideType+", DocumentWidth="+p_bstrDocumentWidth+", DocumentHigh="+p_bstrDocumentHigh+", FrontsideEndorsement="+p_bstrFrontsideEndorsement+", FrontsideEndorseChars="+p_bstrFrontsideEndorseChars+", RearsideEndorsement="+p_bstrRearsideEndorsement+", RearsideEndorseChars="+p_bstrRearsideEndorseChars+", Stamp="+p_bstrStamp+", MICRReader="+p_bstrMICRReader+", OCRReader="+p_bstrOCRReader+", FilePath="+p_bstrFilePath);
+
+}
+
+
+
+function noteImageChange() {
+
+	document.getElementById('RS891Front').src = "";
+
+	document.getElementById('RS891Back').src = "";
+
+	document.getElementById('RS891Uv').src = "";
+
+	document.getElementById('RS891Ir').src = "";
+
+
+
+	document.getElementById('RS891Front').src = "file://C:\\ZZAgent\\RS891Front.bmp";
+
+	document.getElementById('RS891Back').src = "file://C:\\ZZAgent\\RS891Back.bmp";
+
+	document.getElementById('RS891Uv').src = "file://C:\\ZZAgent\\RS891Uv.bmp";
+
+	document.getElementById('RS891Ir').src = "file://C:\\ZZAgent\\RS891Ir.bmp";
+
+}
+
+
+
+</script>
+
+
+
+<!--input type="button" id="buttonStyle" value="初始化(*)" 	onClick="LogTrace('[指令]noteAcceptorInitAsyn='+BOCOMDevControl.noteAcceptorInitAsyn(0));" -->
+
+<input type="button" id="buttonStyle" value="打开(*)" 		onClick="LogTrace('[指令]noteAcceptorOpenAsyn='+BOCOMDevControl.noteAcceptorOpenAsyn('',0));" />
+
+<input type="button" id="buttonStyle" value="复位(*)" 		onClick="LogTrace('[指令]noteAcceptorResetAsyn='+BOCOMDevControl.noteAcceptorResetAsyn(2, 0));" />
+
+<input type="button" id="buttonStyle" value="关闭(*)" 		onClick="LogTrace('[指令]noteAcceptorCloseAsyn='+BOCOMDevControl.noteAcceptorCloseAsyn(0));" />
+
+<select id="NoteAcceptorCap" style="height:40;">
+
+	<option value="Caps_Compound^Caps_PowerSaveMode^Caps_RearSideStamp">能力1（最多同时取5个）</option>
+
+	<option value="Caps_MaxWidth^Caps_StackSupp">能力2（最多同时取5个）</option>
+
+	<option value="Caps_Compound">该逻辑设备是否是复合设备的部分</option>
+
+	<option value="Caps_PowerSaveMode">该设备是否支持省电模式</option>
+
+	<option value="Caps_MultiFeed">该设备是否支持多张进纸</option>
+
+	<option value="Caps_TwoSideScan">该设备是否支持双面扫描</option>
+
+	<option value="Caps_FrontSideEndorse">该设备是否支持正面打码(背书)</option>
+
+	<option value="Caps_RearSideEndorse">该设备是否支持背面打码(背书)</option>
+
+	<option value="Caps_FrontSideStamp">该设备是否支持正面盖章</option>
+
+	<option value="Caps_RearSideStamp">该设备是否支持反面盖章</option>
+
+	<option value="Caps_OCRSupp">是否支持OCR识别</option>
+
+	<option value="Caps_MICRSupp">是否支持MICR识别</option>
+
+	<option value="Caps_DeskewSupp">是否支持自动纠偏</option>
+
+	<option value="Caps_DoubleDetect">是否支持厚度检测(双层检测)</option>
+
+	<option value="Caps_StackSupp">是否具备票据存入能力</option>
+
+	<option value="Caps_RejectSupp">是否具备退票功能</option>
+
+	<option value="Caps_RetractSupp">是否具备废票回收功能</option>
+
+	<option value="Caps_MaxWidth">最大扫描宽度(票据长度)</option>
+
+	<option value="Caps_MinWidth">最小扫描宽度</option>
+
+	<option value="Caps_MaxEndorsePos">最大背书位置</option>	
+
+	<option value="Caps_MinEndorsePos">最小背书位置</option>
+
+	<option value="Caps_MaxHeight">最大扫描高度(票据高度)</option>
+
+	<option value="Caps_MinHeight">最小扫描高度</option>
+
+	<option value="Caps_MinDPIGray">最小DPI支持(灰阶模式)</option>
+
+	<option value="Caps_MaxDPIGray">最大DPI支持(灰度模式)</option>
+
+	<option value="Caps_MinDPIColor">最小DPI支持(彩色模式)</option>
+
+	<option value="Caps_MaxDPIColor">最大DPI支持(彩色模式)</option>
+
+	<option value="Caps_MinSTPPos">最小盖章位置</option>
+
+	<option value="Caps_MaxSTPPos">最大盖章位置</option>
+
+	<option value="Caps_IMGTypes">支持的图像类型的定义</option>
+
+	<option value="Caps_MaxCheckNum">一批放置的票据最大数量</option>		
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取能力" 		onClick="LogTrace('[指令]noteAcceptorGetCapabilities='+BOCOMDevControl.noteAcceptorGetCapabilities(document.getElementById('NoteAcceptorCap').value));" />
+
+<select id="NoteAcceptorStatus" style="height:40;">
+
+	<option value="Status_Device^Status_Door">状态1（最多同时取5个）</option>
+
+	<option value="^StatusCurStamped^StatusTotalStamped^StatusMovePaperOK">状态2（最多同时取5个）</option>
+
+	<option value="Status_Device">设备状态</option>
+
+	<option value="Status_Door">入口状态</option>
+
+	<option value="Status_Stacker">暂存区状态</option>
+
+	<option value="Status_RejectPos">退票部状态</option>
+
+	<option value="Status_SavePowerModeCR">是否处于省电模式</option>
+
+	<option value="Status_InkCR">背书/盖章油墨量</option>
+
+	<option value="Status_BillBox">票箱状态</option>
+
+	<option value=""></option>
+
+	<option value=""></option>
+
+	<option value=""></option>
+
+	<option value=""></option>
+
+	<option value=""></option>
+
+	<option value=""></option>
+
+	<option value=""></option>
+
+	<option value=""></option>
+
+	<option value=""></option>
+
+	<option value=""></option>
+
+	<option value=""></option>
+
+	<option value=""></option>
+
+		
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取状态" 		onClick="LogTrace('[指令]noteAcceptorGetStatus='+BOCOMDevControl.noteAcceptorGetStatus(document.getElementById('NoteAcceptorStatus').value));" />
+
+
+
+<input type="button" id="buttonStyle" value="取消当前指令" 	onClick="LogTrace('[指令]noteAcceptorCancel='+BOCOMDevControl.noteAcceptorCancel('0'));" />
+
+<P>
+
+<input type="button" id="buttonStyle" value="接收并扫描支票(*)" 		onClick="LogTrace('[指令]noteAcceptorProcessFormAsyn='+BOCOMDevControl.noteAcceptorProcessFormAsyn('C:\\test',0));" />
+
+<input type="button" id="buttonStyle" value="退出支票到废票口(*)" 		onClick="LogTrace('[指令]noteAcceptorEjectAsyn='+BOCOMDevControl.noteAcceptorEjectAsyn(0));" />
+
+<input type="button" id="buttonStyle" value="把支票压入支票箱(*)" 		onClick="LogTrace('[指令]noteAcceptorAcceptAsyn='+BOCOMDevControl.noteAcceptorAcceptAsyn(0));" />
+
+<input type="button" id="buttonStyle" value="吞掉支票到回收箱(*)" 		onClick="LogTrace('[指令]noteAcceptorRetractAsyn='+BOCOMDevControl.noteAcceptorRetractAsyn(0));" />
+
+<input type="button" id="buttonStyle" value="打开闸门(*)" 				onClick="LogTrace('[指令]noteAcceptorOpenShutterAsyn='+BOCOMDevControl.noteAcceptorOpenShutterAsyn('0'));" />
+
+<input type="button" id="buttonStyle" value="关闭闸门(*)" 				onClick="LogTrace('[指令]noteAcceptorCloseShutterAsyn='+BOCOMDevControl.noteAcceptorCloseShutterAsyn('0'));" />
+
+<P>
+
+<input type="button" id="buttonStyle" value="取得MICR码" 				onClick="LogTrace('[指令]noteAcceptorGetMICR='+BOCOMDevControl.noteAcceptorGetMICR());" />
+
+<input type="button" id="buttonStyle" value="获取支票的OCRB识别结果" 	onClick="LogTrace('[指令]noteAcceptorGetOCRB='+BOCOMDevControl.noteAcceptorGetOCRB());" />
+
+<input type="button" id="buttonStyle" value="在指定位置打印背书(*)" 	onClick="LogTrace('[指令]noteAcceptorPrintEndorsementAsyn='+BOCOMDevControl.noteAcceptorPrintEndorsementAsyn('Bank of Communications',0,0));" />
+
+<p>
+
+<table border="1" cellspacing=0>
+
+	<tr align=center>
+
+		<td>白光扫描图片</td>
+
+		<td>紫外扫描图片</td>
+
+	</tr>
+
+	<tr>
+
+		<td>
+
+			<img id="RS891Front" width="220" height="120" src="file://C:\\ZZAgent\\RS891Front.bmp" />
+
+			<img id="RS891Back" width="220" height="120" src="file://C:\\ZZAgent\\RS891Back.bmp" />
+
+		</td><td>
+
+			<img id="RS891Uv" width="220" height="120" src="file://C:\\ZZAgent\\RS891Uv.bmp" />
+
+			<img id="RS891Ir" width="220" height="120" src="file://C:\\ZZAgent\\RS891Ir.bmp" />		
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<P><HR>
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>传感器</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;双板：siu1/siu2&nbsp;&nbsp;&nbsp;单板：SIU30&nbsp;&nbsp;&nbsp;</td>
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+
+
+
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnSensorStatusChanged(szCmdName, szEventName, iResult, Value)">LogTrace("[事件]OnSensorStatusChanged：szCmdName="+szCmdName+", szEventName="+szEventName+", iResult="+iResult+", Value="+Value);</script>
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnSensorError(szCmdName, szEventName, iResult, Value)">LogTrace("[事件]OnSensorError：szCmdName="+szCmdName+", szEventName="+szEventName+", iResult="+iResult+", Value="+Value);</script>
+
+
+
+<input type="button" id="buttonStyle" value="打开(*)" 		onClick="LogTrace('[指令]sensorOpenAsyn='+BOCOMDevControl.sensorOpenAsyn(1));"/>
+
+<input type="button" id="buttonStyle" value="关闭(*)" 		onClick="LogTrace('[指令]sensorCloseAsyn='+BOCOMDevControl.sensorCloseAsyn());"/>
+
+<input type="button" id="buttonStyle" value="复位(*)" 		onClick="LogTrace('[指令]sensorInitAsyn='+BOCOMDevControl.sensorInitAsyn());"/>
+
+<input type="button" id="buttonStyle" value="允许触发事件" 	onClick="LogTrace('[指令]sensorEnableEvent='+BOCOMDevControl.sensorEnableEvent('',1));"/>
+
+<input type="button" id="buttonStyle" value="禁止触发事件" 	onClick="LogTrace('[指令]sensorEnableEvent='+BOCOMDevControl.sensorEnableEvent('',0));"/>
+
+
+
+
+
+<!--
+
+<select id="LightInfoSensor" style="height:40;">
+
+	<option value="SL1">读卡器模块指示灯</option>
+
+	<option value="SL2">密码键盘模块指示灯</option>
+
+	<option value="SL3">出钞口指示灯</option>
+
+	<option value="SL4">高拍仪模块内部指示灯</option>
+
+	<option value="SL5">凭条模块指示灯</option>
+
+	<option value="SL6">存折模块指示灯</option>
+
+	<option value="SL7">身份证模块指示灯</option>
+
+	<option value="SL8">票据模块指示灯</option>
+
+	<option value="SL9">入钞口指示灯</option>
+
+	<option value="SLa">凭证回收模块指示灯</option>
+
+	<option value="SLb">打印盖章模块指示灯</option>
+
+	<option value="SLc">发票模块指示灯</option>
+
+	<option value="SLd">高拍仪模块面板指示灯</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="指示灯快闪(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensor').value+'=16'));"/>
+
+<input type="button" id="buttonStyle" value="指示灯慢闪(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensor').value+'=4'));"/>
+
+<input type="button" id="buttonStyle" value="指示灯常亮(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensor').value+'=128'));"/>
+
+<input type="button" id="buttonStyle" value="关闭指示灯(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensor').value+'=1'));"/>
+
+-->
+
+
+
+
+
+<P>
+
+
+
+
+
+<table border=1 cellspacing=0>
+
+  <tr align=center>
+
+	<td align=right>DT-7000I63:</td>
+
+	<td>
+
+		<select id="LightInfoSensorI63" style="height:40;">
+
+			<option value="SL1">读卡器模块指示灯</option>
+
+			<option value="SL2">密码键盘模块指示灯</option>
+
+			<option value="SL3">出钞口指示灯</option>
+
+			<option value="SL4">高拍仪模块内部指示灯</option>
+
+			<option value="SL5">凭条模块指示灯</option>
+
+			<option value="SL6">存折模块指示灯</option>
+
+			<option value="SL7">身份证模块指示灯</option>
+
+			<option value="SL8">票据模块指示灯</option>
+
+			<option value="SL9">入钞口指示灯</option>
+
+			<option value="SLa">凭证回收模块指示灯</option>
+
+			<option value="SLb">打印盖章模块指示灯</option>
+
+			<option value="SLc">发票模块指示灯</option>
+
+			<option value="SLd">高拍仪模块面板指示灯</option>
+
+		</select>
+
+	</td>
+
+	<td>
+
+		<input type="button" id="buttonStyle" value="指示灯快闪(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI63').value+'=16'));"/>
+
+		<input type="button" id="buttonStyle" value="指示灯慢闪(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI63').value+'=4'));"/>
+
+		<input type="button" id="buttonStyle" value="指示灯常亮(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI63').value+'=128'));"/>
+
+		<input type="button" id="buttonStyle" value="关闭指示灯(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI63').value+'=1'));"/>
+
+	</td>
+
+  </tr><tr>
+
+	<td align=right>DT-7000I62:</td>
+
+	<td>
+
+		<select id="LightInfoSensorI62" style="height:40;">
+
+			<option value="SL1">读卡器模块指示灯</option>
+
+			<option value="SL2">密码键盘模块指示灯</option>
+
+			<option value="SL3">出钞口指示灯</option>
+
+			<option value="SL4">高拍仪模块内部指示灯</option>
+
+			<option value="SL5">凭条模块指示灯</option>
+
+			<option value="SL6">存折模块指示灯</option>
+
+			<option value="SL7">身份证模块指示灯</option>
+
+			<option value="SL8">票据模块指示灯</option>
+
+			<option value="SL9">入钞口指示灯</option>
+
+			<option value="SLa">凭证回收模块指示灯</option>
+
+			<option value="SLb">打印盖章模块指示灯</option>
+
+			<option value="SLc">发票模块指示灯</option>
+
+			<option value="SLd">高拍仪模块面板指示灯</option>
+
+		</select>
+
+	</td>
+
+	<td>
+
+		<input type="button" id="buttonStyle" value="指示灯快闪(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI62').value+'=16'));"/>
+
+		<input type="button" id="buttonStyle" value="指示灯慢闪(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI62').value+'=4'));"/>
+
+		<input type="button" id="buttonStyle" value="指示灯常亮(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI62').value+'=128'));"/>
+
+		<input type="button" id="buttonStyle" value="关闭指示灯(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI62').value+'=1'));"/>
+
+	</td>
+
+
+
+
+
+
+
+  </tr><tr>
+
+	<td align=right>DT-7000I64A:</td>
+
+	<td>
+
+		<select id="LightInfoSensorI64A" style="height:40;">
+
+			<option value="SL1">读卡器模块指示灯</option>
+
+			<option value="SL2">密码键盘模块指示灯</option>
+
+			<option value="SL5">凭条模块指示灯</option>
+
+			<option value="SL6">刷折/卡模块指示灯</option>
+
+			<option value="SL7">身份证模块指示灯</option>
+
+			<option value="SLe">摄像头补光灯</option>
+
+			<option value="SLf">UKEY模块指示灯</option>
+
+		</select>
+
+	</td>
+
+	<td>
+
+		<input type="button" id="buttonStyle" value="指示灯快闪(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI64A').value+'=16'));"/>
+
+		<input type="button" id="buttonStyle" value="指示灯慢闪(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI64A').value+'=4'));"/>
+
+		<input type="button" id="buttonStyle" value="指示灯常亮(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI64A').value+'=128'));"/>
+
+		<input type="button" id="buttonStyle" value="关闭指示灯(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI64A').value+'=1'));"/>
+
+	</td>
+
+  </tr><tr>
+
+	<td align=right>DT-7000I64P:</td>
+
+	<td>
+
+		<select id="LightInfoSensorI64P" style="height:40;">
+
+			<option value="SL1">读卡器模块指示灯</option>
+
+			<option value="SL2">密码键盘模块指示灯</option>
+
+			<option value="SL5">凭条模块指示灯</option>
+
+			<option value="SL6">存折模块指示灯</option>
+
+			<option value="SL7">身份证模块指示灯</option>
+
+			<option value="SL7">非接模块指示灯</option>
+
+			<option value="SLb">回单盖章模块指示灯</option>
+
+			<option value="SLc">发票模块指示灯</option>			
+
+			<option value="SLe">摄像头补光灯</option>
+
+		</select>
+
+	</td>
+
+	<td>
+
+		<input type="button" id="buttonStyle" value="指示灯快闪(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI64P').value+'=16'));"/>
+
+		<input type="button" id="buttonStyle" value="指示灯慢闪(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI64P').value+'=4'));"/>
+
+		<input type="button" id="buttonStyle" value="指示灯常亮(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI64P').value+'=128'));"/>
+
+		<input type="button" id="buttonStyle" value="关闭指示灯(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI64P').value+'=1'));"/>
+
+	</td>
+
+  </tr><tr>
+
+	<td align=right>DT-7000I31L:</td>
+
+	<td>
+
+		<select id="LightInfoSensorI31L" style="height:40;">
+
+			<option value="SL1">读卡器模块指示灯</option>
+
+			<option value="SL2">密码键盘模块指示灯</option>
+
+			<option value="SL5">凭条模块指示灯</option>
+
+			<option value="SL6">刷折/卡模块指示灯</option>
+
+			<option value="SL7">身份证模块指示灯</option>
+
+			<option value="SL7">非接模块指示灯</option>
+
+			<option value="SLe">摄像头补光灯</option>
+
+			
+
+		</select>
+
+	</td>
+
+	<td>
+
+		<input type="button" id="buttonStyle" value="指示灯快闪(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI31L').value+'=16'));"/>
+
+		<input type="button" id="buttonStyle" value="指示灯慢闪(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI31L').value+'=4'));"/>
+
+		<input type="button" id="buttonStyle" value="指示灯常亮(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI31L').value+'=128'));"/>
+
+		<input type="button" id="buttonStyle" value="关闭指示灯(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('LightInfoSensorI31L').value+'=1'));"/>
+
+	</td>
+
+  </tr><tr>
+
+	<td align=middle>所有机型</td>
+
+	<td align=middle>所有模块指示灯</td>
+
+	<td>
+
+		<input type="button" id="buttonStyle" value="指示灯快闪(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn('SL1=16|SL8=16|SL7=16|SL5=16|SL9=16|SL2=16|SL4=16|SLc=16|SL6=16|SLb=16|SLd=16|SLa=16'));"/>
+
+		<input type="button" id="buttonStyle" value="指示灯慢闪(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn('SL1=4|SL8=4|SL7=4|SL5=4|SL9=4|SL2=4|SL4=4|SLc=4|SL6=4|SLb=4|SLd=4|SLa=4'));"/>
+
+		<input type="button" id="buttonStyle" value="指示灯常亮(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn('SL1=128|SL2=128|SL3=128|SL4=128|SL5=128|SL6=128|SL7=128|SL8=128|SL9=128|SLa=128|SLb=128|SLc=128|SLd=128|SLe=128|SLf=128'));"/>
+
+		<input type="button" id="buttonStyle" value="关闭指示灯(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn('SL1=1|SL2=1|SL3=1|SL4=1|SL5=1|SL6=1|SL7=1|SL8=1|SL9=1|SLa=1|SLb=1|SLc=1|SLd=1|SLe=1|SLf=1'));"/>
+
+	</td>
+
+  </tr>
+
+</table>
+
+
+
+<P>
+
+
+
+<table border=1 cellspacing=0>
+
+	<tr>
+
+		<td align=center>设置或清除端口:</td>
+
+		<td><input type="text" style="height:36;width:88;" id="sensorPort"></td>
+
+		<td><input type="button" id="buttonStyle" value="设置(*)" onClick="LogTrace('[指令]sensorSetPortsAsyn='+BOCOMDevControl.sensorSetPortsAsyn(document.getElementById('sensorPort').value));"/></td>
+
+		<td align=center>设置门的状态:</td>
+
+		<td><input type="text" style="height:36;width:88;" id="sensorDoor"></td>
+
+		<td><input type="button" id="buttonStyle" value="设置(*)" onClick="LogTrace('[指令]sensorSetDoorAsyn='+BOCOMDevControl.sensorSetDoorAsyn(document.getElementById('sensorDoor').value));"/></td>
+
+	</tr><tr>		
+
+		<td align=center>设置指示器的状态:</td>
+
+		<td><input type="text" style="height:36;width:88;" id="sensorIndicator"></td>
+
+		<td><input type="button" id="buttonStyle" value="设置(*)" onClick="LogTrace('[指令]sensorSetIndicatorAsyn='+BOCOMDevControl.sensorSetIndicatorAsyn(document.getElementById('sensorIndicator').value));"/></td>
+
+		<td align=center>设置辅助指示器的状态:</td>
+
+		<td><input type="text" style="height:36;width:88;" id="sensorAuxiliary"></td>
+
+		<td><input type="button" id="buttonStyle" value="设置(*)" onClick="LogTrace('[指令]sensorSetAuxiliaryAsyn='+BOCOMDevControl.sensorSetAuxiliaryAsyn(document.getElementById('sensorAuxiliary').value));"/></td>	
+
+	</tr><tr>
+
+		<td align=center>设置指示灯的状态:</td>
+
+		<td><input type="text" style="height:36;width:88;" id="sensorGuidLight"></td>
+
+		<td><input type="button" id="buttonStyle" value="设置(*)" onClick="LogTrace('[指令]sensorSetGuidLightAsyn='+BOCOMDevControl.sensorSetGuidLightAsyn(document.getElementById('sensorGuidLight').value));"/></td>	
+
+		<td align=center>获取设备11状态:<br>（0=正常，1=故障）</td>
+
+		<td><input type="text" style="height:36;width:88;" id="getsensorSts"></td>
+
+		<td><input type="button" id="buttonStyle" value="获取(*)" onClick="LogTrace('[指令]sensorGetInfo='+BOCOMDevControl.sensorGetInfo(11));"/></td>	
+
+	</tr>
+
+</table>
+
+
+
+
+
+<!--
+
+<table>
+
+	<tr>
+
+		<td><input type="button" id="buttonMin" value="读卡器指示灯快闪(*)" 	onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL1=16')"/></td>
+
+		<td><input type="button" id="buttonMin" value="读卡器指示灯慢闪(*)" 	onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL1=4')"/></td>
+
+		<td><input type="button" id="buttonMin" value="读卡器指示灯常亮(*)" 	onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL1=128')"/></td>
+
+		<td><input type="button" id="buttonMin" value="关闭指示灯(*)" 			onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL1=1')"/></td>
+
+	</tr><tr>
+
+		<td><input type="button" id="buttonMin" value="支票指示灯快闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL8=16')"/></td>
+
+		<td><input type="button" id="buttonMin" value="支票指示灯慢闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL8=4')"/></td>
+
+		<td><input type="button" id="buttonMin" value="支票指示灯常亮(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL8=128')"/></td>
+
+		<td><input type="button" id="buttonMin" value="关闭支票指示灯(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL8=1')"/></td>
+
+	</tr><tr>
+
+		<td><input type="button" id="buttonMin" value="身份证指示灯快闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL7=16')"/></td>
+
+		<td><input type="button" id="buttonMin" value="身份证指示灯慢闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL7=4')"/></td>
+
+		<td><input type="button" id="buttonMin" value="身份证指示灯常亮(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL7=128')"/></td>
+
+		<td><input type="button" id="buttonMin" value="关闭身份证指示灯(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL7=1')"/></td>
+
+	</tr><tr>
+
+		<td><input type="button" id="buttonMin" value="凭条指示灯快闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL5=16')"/></td>
+
+		<td><input type="button" id="buttonMin" value="凭条指示灯慢闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL5=4')"/></td>
+
+		<td><input type="button" id="buttonMin" value="凭条指示灯常亮(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL5=128')"/></td>
+
+		<td><input type="button" id="buttonMin" value="关闭凭条指示灯(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL5=1')"/></td>
+
+	</tr><tr>
+
+		<td><input type="button" id="buttonMin" value="钞口指示灯快闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL9=16')"/></td>
+
+		<td><input type="button" id="buttonMin" value="钞口指示灯慢闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL9=4')"/></td>
+
+		<td><input type="button" id="buttonMin" value="钞口指示灯常亮(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL9=128')"/></td>
+
+		<td><input type="button" id="buttonMin" value="关闭钞口指示灯(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL9=1')"/></td>
+
+	</tr><tr>
+
+		<td><input type="button" id="buttonMin" value="密码指示灯快闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL2=16')"/></td>
+
+		<td><input type="button" id="buttonMin" value="密码指示灯慢闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL2=4')"/></td>
+
+		<td><input type="button" id="buttonMin" value="密码指示灯常亮(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL2=128')"/></td>
+
+		<td><input type="button" id="buttonMin" value="关闭密码指示灯(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL2=1')"/></td>
+
+	</tr><tr>
+
+		<td><input type="button" id="buttonMin" value="高拍仪内部指示灯快闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL4=16')"/></td>
+
+		<td><input type="button" id="buttonMin" value="高拍仪内部指示灯慢闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL4=4')"/></td>
+
+		<td><input type="button" id="buttonMin" value="高拍仪内部指示灯常亮(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL4=128')"/></td>
+
+		<td><input type="button" id="buttonMin" value="关闭高拍仪内部指示灯(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL4=1')"/></td>
+
+	</tr><tr>
+
+		<td><input type="button" id="buttonMin" value="发票指示灯快闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SLc=16')"/></td>
+
+		<td><input type="button" id="buttonMin" value="发票指示灯慢闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SLc=4')"/></td>
+
+		<td><input type="button" id="buttonMin" value="发票指示灯常亮(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SLc=128')"/></td>
+
+		<td><input type="button" id="buttonMin" value="关闭发票指示灯(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SLc=1')"/></td>
+
+	</tr><tr>
+
+		<td><input type="button" id="buttonMin" value="存折指示灯快闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL6=16')"/></td>
+
+		<td><input type="button" id="buttonMin" value="存折指示灯慢闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL6=4')"/></td>
+
+		<td><input type="button" id="buttonMin" value="存折指示灯常亮(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL6=128')"/></td>
+
+		<td><input type="button" id="buttonMin" value="关闭存折指示灯(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL6=1')"/></td>
+
+	</tr><tr>
+
+		<td><input type="button" id="buttonMin" value="回单打印指示灯快闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SLb=16')"/></td>
+
+		<td><input type="button" id="buttonMin" value="回单打印指示灯慢闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SLb=4')"/></td>
+
+		<td><input type="button" id="buttonMin" value="回单打印指示灯常亮(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SLb=128')"/></td>
+
+		<td><input type="button" id="buttonMin" value="关闭回单打印指示灯(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SLb=1')"/></td>
+
+	</tr><tr>
+
+		<td><input type="button" id="buttonMin" value="高拍仪面板指示灯快闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SLd=16')"/></td>
+
+		<td><input type="button" id="buttonMin" value="高拍仪面板指示灯慢闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SLd=4')"/></td>
+
+		<td><input type="button" id="buttonMin" value="高拍仪面板指示灯常亮(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SLd=128')"/></td>
+
+		<td><input type="button" id="buttonMin" value="关闭高拍仪面板指示灯(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SLd=1')"/></td>
+
+	</tr><tr>
+
+		<td><input type="button" id="buttonMin" value="凭证回收指示灯快闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SLa=16')"/></td>
+
+		<td><input type="button" id="buttonMin" value="凭证回收指示灯慢闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SLa=4')"/></td>
+
+		<td><input type="button" id="buttonMin" value="凭证回收指示灯常亮(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SLa=128')"/></td>
+
+		<td><input type="button" id="buttonMin" value="关闭凭证回收指示灯(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SLa=1')"/></td>
+
+	</tr><tr>
+
+		<td><input type="button" id="buttonMin" value="所有指示灯快闪(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL1=16|SL8=16|SL7=16|SL5=16|SL9=16|SL2=16|SL4=16|SLc=16|SL6=16|SLb=16|SLd=16|SLa=16')"/></td>
+
+		<td><input type="button" id="buttonMin" value="所有指示灯关闭(*)" onClick="BOCOMDevControl.sensorSetGuidLightAsyn('SL1=1|SL8=1|SL7=1|SL5=1|SL9=1|SL2=1|SL4=1|SLc=1|SL6=1|SLb=1|SLd=1|SLa=1')"/></td>
+
+		<td><input type="button" id="buttonMin" value="所有端口快闪(*)" onClick="BOCOMDevControl.sensorSetPortsAsyn('SL1=16|SL8=16|SL7=16|SL5=16|SL9=16|SL2=16|SL4=16|SLc=16|SL6=16|SLb=16|SLd=16|SLa=16')"/></td>
+
+		<td><input type="button" id="buttonMin" value="所有端口关闭(*)" onClick="BOCOMDevControl.sensorSetPortsAsyn('SL1=1|SL8=1|SL7=1|SL5=1|SL9=1|SL2=1|SL4=1|SLc=1|SL6=1|SLb=1|SLd=1|SLa=1')"/></td>
+
+	</tr>
+
+</table>
+
+-->
+
+
+
+
+
+
+
+<P><HR>
+
+<BR><H2>高拍仪</H2><P>
+
+<input type="button" id="buttonStyle" value="打开(*)" onClick="BOCOMDevControl.camOpenAsyn('',0)"/>
+
+<input type="button" id="buttonStyle" value="关闭(*)" onClick="BOCOMDevControl.camCloseAsyn()"/>
+
+<P>
+
+<select id="BrowseType">
+
+	<option value="1">显示预览</option>
+
+	<option value="2">销毁预览</option>  
+
+	<option value="3">暂停预览</option>  
+
+	<option value="4">继续预览</option> 
+
+</select>
+
+OffsetX<input type="text" id="Offset_X">
+
+OffsetY<input type="text" id="Offset_Y">
+
+Wight<input type="text" id="Cam_Wight">
+
+Height<input type="text" id="Cam_Height">
+
+<input type="button" id="buttonStyle" value="预览(*)" onClick="var ac=document.getElementById('Offset_X').value;var X=document.getElementById('Offset_X').value;var Y=document.getElementById('Offset_Y').value;var Wight=document.getElementById('Cam_Wight').value;var Height=document.getElementById('Cam_Height').value; BOCOMDevControl.camBrowseAsyn(0,1000,200,800,600,30000);"/>
+
+<P>
+
+图片保存路径<input type="text" id="PathPic" value='C:\testpic.jpg'>
+
+图片大小<input type="text" id="PathSize">
+
+<input type="button" id="buttonStyle" value="拍照(*)" onClick="var path=document.getElementById('PathPic').value;var size=document.getElementById('PathSize').value;BOCOMDevControl.camTakePicAsyn(path,size,0);"/>
+
+
+
+
+
+<P><HR>
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>进纸通道</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;FeedChannel&nbsp;&nbsp;&nbsp;</td>
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+<input type="button" id="buttonStyle" value="打开(*)" 	onClick="BOCOMDevControl.fcOpenAsyn('', 0);"/>
+
+<input type="button" id="buttonStyle" value="关闭(*)" 	onClick="BOCOMDevControl.fcCloseAsyn();"/>
+
+<input type="button" id="buttonStyle" value="进纸(*)" 	onClick="BOCOMDevControl.fcInsertDocument()"/>
+
+图片保存路径<input type="text" id="PathBarcodePic" value='C:\BarcodeInfo.bmp'>
+
+<input type="button" id="buttonStyle" value="读条码(*)" onClick="var path=document.getElementById('PathBarcodePic').value; BOCOMDevControl.fcReadBarcodeInDocument(path);"/>
+
+<input type="button" id="buttonStyle" value="退纸(*)" 	onClick="BOCOMDevControl.fcRejectDocument()"/>
+
+<input type="button" id="buttonStyle" value="接受(*)" 	onClick="BOCOMDevControl.fcAcceptDocument()"/>
+
+
+
+<!--
+
+<P><HR>
+
+<BR><H2>条码</H2><P>
+
+<input type="button" id="buttonStyle" value="打开(*)" 		onClick="BOCOMDevControl.bcrOpenAsyn('',0);"/>
+
+<input type="button" id="buttonStyle" value="关闭(*)" 		onClick="BOCOMDevControl.bcrCloseAsyn();"/>
+
+<input type="button" id="buttonStyle" value="读条码(*)" 	onClick="BOCOMDevControl.bcrReadAsyn();"/>
+
+-->
+
+
+
+<P><HR>
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>条码扫描枪</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;BCR30&nbsp;&nbsp;&nbsp;</td>
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+
+
+<input type="button" id="buttonStyle" value="打开(*)" 	onClick="LogTrace('[指令]scanOpenAsyn()='+BOCOMDevControl.scanOpenAsyn(0));"/>
+
+<input type="button" id="buttonStyle" value="关闭(*)" 	onClick="LogTrace('[指令]scanCloseAsyn()='+BOCOMDevControl.scanCloseAsyn());"/>
+
+<input type="button" id="buttonStyle" value="复位(*)" 	onClick="LogTrace('[指令]scanInitAsyn()='+BOCOMDevControl.scanInitAsyn());"/>
+
+<input type="button" id="buttonStyle" value="读条码(*)"	onClick="LogTrace('[指令]scanReadAsyn()='+BOCOMDevControl.scanReadAsyn(10000)); LogTrace('请将条码靠近');"/>
+
+<input type="button" id="buttonStyle" value="取消" 		onClick="LogTrace('[指令]scanCancel()');BOCOMDevControl.scanCancel();"/>
+
+<select id="scanInfoSel" style="height:40;">
+
+	<option value="1">驱动程序版本</option>
+
+	<option value="2">驱动程序厂商名</option>
+
+	<option value="3">驱动程序摘要说明</option>
+
+	<option value="11">打印机状态</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取信息" 	onClick="LogTrace('[指令]scanGetInfo='+BOCOMDevControl.scanGetInfo(document.getElementById('scanInfoSel').value));"/>
+
+<P>
+
+<input type="button" id="buttonStyle" value="打开" 		onClick="LogTrace('[指令]scanOpen()='+BOCOMDevControl.scanOpen(0));"/>
+
+<input type="button" id="buttonStyle" value="关闭" 		onClick="LogTrace('[指令]scanClose() 关闭完成');BOCOMDevControl.scanClose(); "/>
+
+<input type="button" id="buttonStyle" value="复位" 		onClick="LogTrace('[指令]scanInit()='+BOCOMDevControl.scanInit());"/>
+
+<input type="button" id="buttonStyle" value="读条码" 	onClick="LogTrace('[指令]scanRead()='+BOCOMDevControl.scanRead(10000)); LogTrace('请将条码靠近');"/>
+
+
+
+
+
+
+
+
+
+
+
+<P><HR>
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>UKEY发盾器</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;UKeyDispenser&nbsp;&nbsp;&nbsp;</td>
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+<!--事件-->
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnSafetytoolissuerTaken()">
+
+	LogTrace("[事件]OnSafetytoolissuerTaken()");
+
+	UkeyPressureTest("UkeyInOut");
+
+</script>
+
+<!--事件-->
+
+<script language="JavaScript">
+
+
+
+var g_iUkeyPressureTestUkeyIssuedCount = 0;
+
+
+
+function UkeyPressureTest(p_strLastCmd) {
+
+	var checkUkeyTest = document.getElementsByName("UkeyPressureTest");
+
+	if(checkUkeyTest[0].checked) {
+
+		if(p_strLastCmd == "UkeyInsert") {
+
+			var radioRead = document.getElementsByName("UkeyPressureTestReadCard"); // 用ById就不能取得全部的radio值,而是每次返回都为1
+
+			var radioReadLength = radioRead.length;
+
+			for(var i = 0;i < radioReadLength;i++){
+
+				if(radioRead[i].checked) {
+
+					var radioReadValue = radioRead[i].value;
+
+					if("1" == radioReadValue) {
+
+						LogTrace('[指令]safetytoolissuerGetDataAsyn='+BOCOMDevControl.safetytoolissuerGetDataAsyn(0));
+
+						return;
+
+					} else if("2" == radioReadValue) {
+
+						return;
+
+					}
+
+				}
+
+			}
+
+		}
+
+		
+
+		if(p_strLastCmd == "UkeyRead" || p_strLastCmd == "UkeyInsert") {
+
+			var radioInOut = document.getElementsByName("UkeyPressureTestCardInOut"); // 用ById就不能取得全部的radio值,而是每次返回都为1
+
+			var radioInOutLength = radioInOut.length;
+
+			for(var i = 0;i < radioInOutLength;i++){
+
+				if(radioInOut[i].checked) {
+
+					var radioInOutValue = radioInOut[i].value;
+
+					if("1" == radioInOutValue) {
+
+						LogTrace('[指令]safetytoolissuerEjectAsyn='+BOCOMDevControl.safetytoolissuerEjectAsyn(10000));
+
+						return;
+
+					} else if("2" == radioInOutValue) {
+
+						LogTrace('[指令]safetytoolissuerRetainAsyn='+BOCOMDevControl.safetytoolissuerRetainAsyn(2));
+
+						return;
+
+					}
+
+				}
+
+			}
+
+		}
+
+		
+
+		if(p_strLastCmd == "UkeyInOut") {
+
+			var radioInsert = document.getElementsByName("UkeyPressureTestUnitType"); // 用ById就不能取得全部的radio值,而是每次返回都为1
+
+			var radioInsertLength = radioInsert.length;
+
+			for(var i = 0;i < radioInsertLength;i++){
+
+				if(radioInsert[i].checked) {
+
+					var radioInsertValue = radioInsert[i].value;
+
+					if("1" == radioInsertValue) {
+
+						var checkUkeyTestAllUnit = false;//document.getElementsByName("UkeyPressureTestAllUnit");
+
+						var autoInsertID = false;//标识多盾箱标识是否有改变
+
+						do{
+
+							autoInsertID = false;//无需变更盾箱
+
+							var insertID = 1;//document.getElementById('CRDInsertExID').value;//获取盾箱标识
+
+							
+
+							//记录出卡张数
+
+							g_iUkeyPressureTestUkeyIssuedCount = g_iUkeyPressureTestUkeyIssuedCount + 1;
+
+							LogTrace("[发盾器模块压力测试] "+insertID+"号盾箱出盾个数："+g_iUkeyPressureTestUkeyIssuedCount);													
+
+							
+
+							//执行下一出卡指令
+
+							var retCode = BOCOMDevControl.safetytoolissuerIssue(0, insertID);
+
+							LogTrace('[指令]safetytoolissuerIssue='+retCode);
+
+/*							
+
+							if(0 == retCode) {								
+
+
+
+							} else {								
+
+								if(checkUkeyTestAllUnit[0].checked) {//是否测试所有盾箱
+
+									autoInsertID = UkeyPressureTestAutoInsertID();//变更（切换）盾箱及其相关参数
+
+									if(autoInsertID) {//检查盾箱变更结果
+
+										g_iUkeyPressureTestUkeyIssuedCount = -1;//盾箱切换，初始化计数
+
+									}								
+
+								}								
+
+							}
+
+*/					
+
+						}while(autoInsertID && checkUkeyTestAllUnit[0].checked)//检查是否测试所有盾箱，盾箱是否变更，起到变更盾箱的作用
+
+						
+
+					}
+
+				}
+
+			}
+
+			
+
+			
+
+		}
+
+
+
+	}
+
+}
+
+
+
+function UkeyPressureTestAutoInsertID() {
+
+	var select = document.getElementById('UkeyInsertID')
+
+	var selectValue = select.value;
+
+	var selectLength = select.length;
+
+	for(var i=0; i<selectLength; i++) {
+
+		if(select.options[i].value == selectValue) {
+
+			if(i+1 == selectLength) {
+
+				return false;
+
+			}
+
+			
+
+			select.options[i].selected = false;
+
+			if(i+1<selectLength) {
+
+				select.options[i+1].selected = true;
+
+				LogTrace("[发盾器模块压力测试] 切换盾箱为："+select.options[i+1].text);
+
+				return true;
+
+			}
+
+			return false;
+
+		}
+
+	}
+
+	return false;
+
+}
+
+
+
+
+
+
+
+function UKEYUnitIDChanged() {
+
+	var radio = document.getElementsByName("UKEYUnitID"); // 用ById就不能取得全部的radio值,而是每次返回都为1
+
+	var radioLength = radio.length;
+
+	for(var i = 0;i < radioLength;i++){
+
+		if(radio[i].checked){
+
+			var radioValue = radio[i].value;
+
+			if("1" == radioValue) {
+
+				document.getElementById('UKEYCUIndex').value			= "1";
+
+				document.getElementById('UKEYCUInitialCount').value		= "99";
+
+				document.getElementById('UKEYCUCurCount').value			= "99";
+
+				document.getElementById('UKEYCUThreshold').value		= "1";
+
+			} else if ("2" == radioValue) {
+
+				document.getElementById('UKEYCUIndex').value			= "2";
+
+				document.getElementById('UKEYCUInitialCount').value		= "0";
+
+				document.getElementById('UKEYCUCurCount').value			= "0";
+
+				document.getElementById('UKEYCUThreshold').value		= "1";
+
+			}		
+
+		}
+
+	}
+
+}
+
+
+
+function SetUKEYUnit(){
+
+    var cs = document.getElementById('UKEYCUIndex').value;
+
+    var ui = document.getElementById('UKEYCUInitialCount').value;
+
+    var uc = document.getElementById('UKEYCUCurCount').value;
+
+    var ut = document.getElementById('UKEYCUThreshold').value;
+
+    LogTrace('[指令]safetytoolissuerSetCUInfo='+BOCOMDevControl.safetytoolissuerSetCUInfo(cs,ui,uc,ut));
+
+}
+
+
+
+function UkeyGetInfo() {
+
+	var InstID = document.getElementById('UKEYUnitInfo').value;
+
+	var RetVal = BOCOMDevControl.safetytoolissuerGetInfo(InstID);
+
+	//var InstID = 12;
+
+	//var RetVal = "^RT0^LPBox1&10&10&16|Box2&10&11&1";
+
+	
+
+	LogTrace('[指令]safetytoolissuerGetInfo='+RetVal);
+
+
+
+	if(12 == InstID) {
+
+		//split all bin info
+
+		var strs1 = new Array();
+
+		strs1 = RetVal.split("LP");
+
+		
+
+		if(strs1.length >= 2) {	
+
+			//split single bin info
+
+			var strs2 = new Array();
+
+			strs2 = strs1[strs1.length-1].split("|");
+
+			
+
+			if(strs2.length >= 2) {
+
+				LogTrace("==========================================================");
+
+				for(i=0; i<strs2.length; i++){
+
+					//LogTrace(strs2[i]);
+
+					
+
+					//split detail of one bin
+
+					var strs3 = new Array();
+
+					strs3 = strs2[i].split("&1");
+
+
+
+					var binDetailInfo = "";
+
+					var indexOfBin = strs3[0].charAt(strs3[0].length - 1);
+
+					if(strs3[0].indexOf("Box1") != -1) {
+
+						binDetailInfo  = "发盾箱" + indexOfBin;
+
+						if(0 == strs3[1]) {
+
+							binDetailInfo += "  状态：正常";
+
+						}
+
+						if(2 == strs3[1]) {
+
+							binDetailInfo += "  状态：箱空";
+
+						}				
+
+
+
+						binDetailInfo += "  当前数：" + strs3[2];
+
+						binDetailInfo += "  已发数：" + strs3[3];
+
+					}
+
+					
+
+					if(strs3[0].indexOf("Box2") != -1) {
+
+						binDetailInfo  = "回收箱" + indexOfBin;
+
+						if(0 == strs3[1]) {
+
+							binDetailInfo += "  状态：正常";
+
+						}
+
+						if(2 == strs3[1]) {
+
+							binDetailInfo += "  状态：箱空";
+
+						}
+
+						binDetailInfo += "  当前数：" + strs3[2];
+
+					}
+
+
+
+					LogTrace(binDetailInfo);
+
+				}
+
+				LogTrace("==========================================================");
+
+			}
+
+		}
+
+	}
+
+}
+
+
+
+</script>
+
+
+
+
+
+<input type="button" id="buttonStyle" value="打开(*)"	onClick="LogTrace('[指令]safetytoolissuerOpenAsyn='+BOCOMDevControl.safetytoolissuerOpenAsyn(0));" />
+
+<input type="button" id="buttonStyle" value="关闭(*)"	onClick="LogTrace('[指令]safetytoolissuerCloseAsyn='+BOCOMDevControl.safetytoolissuerCloseAsyn());" />
+
+<select id="UKeyResetAction" style="height:40;">
+
+	<option value="1">（复位动作）</option>
+
+	<option value="1">无动作</option>
+
+	<option value="2">出盾</option>
+
+	<option value="3">吞盾</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="复位(*)"	onClick="LogTrace('[指令]safetytoolissuerResetAsyn='+BOCOMDevControl.safetytoolissuerResetAsyn(document.getElementById('UKeyResetAction').value,10000));" />
+
+<input type="button" id="buttonStyle" value="出盾"		onClick="LogTrace('[指令]safetytoolissuerIssue='+BOCOMDevControl.safetytoolissuerIssue(0,1));" />
+
+<input type="button" id="buttonStyle" value="读条码(*)"	onClick="LogTrace('[指令]safetytoolissuerGetDataAsyn='+BOCOMDevControl.safetytoolissuerGetDataAsyn(0));" />
+
+<input type="button" id="buttonStyle" value="退盾(*)"	onClick="LogTrace('[指令]safetytoolissuerEjectAsyn='+BOCOMDevControl.safetytoolissuerEjectAsyn(10000));" />
+
+<input type="button" id="buttonStyle" value="吞盾(*)"	onClick="LogTrace('[指令]safetytoolissuerRetainAsyn='+BOCOMDevControl.safetytoolissuerRetainAsyn(2));" />
+
+<P>
+
+<input type="button" id="buttonStyle" value="打开"		onClick="LogTrace('[指令]safetytoolissuerOpen='+BOCOMDevControl.safetytoolissuerOpen(0));" />
+
+<input type="button" id="buttonStyle" value="关闭"		onClick="LogTrace('[指令]safetytoolissuerClose');BOCOMDevControl.safetytoolissuerClose();" />
+
+<input type="button" id="buttonStyle" value="复位"		onClick="LogTrace('[指令]safetytoolissuerReset='+BOCOMDevControl.safetytoolissuerReset(3,10000));" />
+
+<input type="button" id="buttonStyle" value="读条码"	onClick="LogTrace('[指令]safetytoolissuerGetData='+BOCOMDevControl.safetytoolissuerGetData(0));" />
+
+<input type="button" id="buttonStyle" value="退盾"		onClick="LogTrace('[指令]safetytoolissuerEject='+BOCOMDevControl.safetytoolissuerEject(10000));" />
+
+<input type="button" id="buttonStyle" value="吞盾"		onClick="LogTrace('[指令]safetytoolissuerRetain='+BOCOMDevControl.safetytoolissuerRetain(2));" />
+
+<select id="UKEYUnitInfo" style="height:40;">
+
+	<option value="1">驱动程序版本</option>
+
+	<option value="2">驱动程序厂商名</option>
+
+	<option value="3">驱动程序摘要说明</option>
+
+	<option value="10">部件状态</option>
+
+	<option value="11">媒介状态</option>
+
+	<option value="12" selected>安全工具箱状态</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取信息" 		onClick="UkeyGetInfo();"/>
+
+<input type="button" id="buttonStyle" value="获取盾箱个数" onClick="LogTrace('[指令]safetytoolissuerGetCUCount='+BOCOMDevControl.safetytoolissuerGetCUCount());"/>
+
+<P>
+
+
+
+<table border=1 cellspacing=0>
+
+  <tr align=center>
+
+	<td><input name="UkeyPressureTest" type="checkbox" value="1" >压力测试</input></td>
+
+	<td>盾箱类型</td>
+
+	<td>吞盾出盾</td>
+
+	<td>条码读取</td>
+
+  </tr><tr>
+
+	<td>	
+
+		<!--input name="UkeyPressureTestAllUnit" type="checkbox" value="1">所有盾箱</input-->
+
+	</td><td>
+
+		<input type="radio" name="UkeyPressureTestUnitType" value="1" checked="checked">单盾箱</input><br>
+
+		<!--input type="radio" name="UkeyPressureTestUnitType" value="2">多盾箱</input-->
+
+	</td><td>
+
+		<input type="radio" name="UkeyPressureTestCardInOut" value="1" checked="checked">出盾</input><br>
+
+		<input type="radio" name="UkeyPressureTestCardInOut" value="2">吞盾</input>
+
+		
+
+	</td><td>
+
+		<input type="radio" name="UkeyPressureTestReadCard" value="0">无动作</input><br>
+
+		<input type="radio" name="UkeyPressureTestReadCard" value="1" checked="checked">读条码信息</input>
+
+	</td>
+
+  </tr>
+
+</table>
+
+<P>
+
+<table border=1 cellspacing=0>
+
+  <tr align=center>
+
+	<td>&nbsp;</td>
+
+	<td>1号箱</td>
+
+	<td>2号箱</td>
+
+	<td align=right>盾箱索引：</td>
+
+	<td><input type="text" id="UKEYCUIndex" value='1' style="width:50;"></td>
+
+  </tr><tr>
+
+	<td align=right>GRG单盾箱：</td>
+
+	<td><input type="radio" name="UKEYUnitID" value="1" onClick="UKEYUnitIDChanged();" checked="checked">发盾箱</input></td>
+
+	<td><input type="radio" name="UKEYUnitID" value="2" onClick="UKEYUnitIDChanged();">回收箱</input></td>
+
+	<td align=right>盾箱初始张数：</td>
+
+	<td><input type="text" id="UKEYCUInitialCount" value='99' style="width:50;"></td>
+
+  </tr><tr>
+
+	<td align=right>&nbsp;</td>
+
+	<td>&nbsp;</td>
+
+	<td>&nbsp;</td>
+
+	<td align=right>盾箱当前张数：</td>
+
+	<td><input type="text" id="UKEYCUCurCount" value='99' style="width:50;"></td>
+
+  </tr><tr>
+
+	<td align=right>&nbsp;</td>
+
+	<td>&nbsp;</td>
+
+	<td>&nbsp;</td>
+
+	<td align=right>盾箱阀值：</td>
+
+	<td><input type="text" id="UKEYCUThreshold" value='1' style="width:50;"></td>
+
+  </tr>
+
+</table>
+
+<P>
+
+<input type="button" id="buttonStyle" value="1,开始设置盾箱信息" 		onClick="LogTrace('[指令]safetytoolissuerBeginSetCUInfo='+BOCOMDevControl.safetytoolissuerBeginSetCUInfo());"/>
+
+<input type="button" id="buttonStyle" value="2,设置盾箱信息" 			onClick="SetUKEYUnit();"/>
+
+<input type="button" id="buttonStyle" value="3,完成盾箱信息设置" 		onClick="LogTrace('[指令]safetytoolissuerCompleteCUInfoSetting='+BOCOMDevControl.safetytoolissuerCompleteCUInfoSetting());"/>
+
+<input type="button" id="buttonStyle" value="3,完成盾箱信息设置(*)" 	onClick="LogTrace('[指令]safetytoolissuerCompleteCUInfoSettingAsyn='+BOCOMDevControl.safetytoolissuerCompleteCUInfoSettingAsyn());"/>
+
+
+
+<P><HR>
+
+
+
+<DIV id="DeviceInvoice" style="display:none;">
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>发票打印机</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;Invoice&nbsp;&nbsp;&nbsp;</td>
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+打印数据<br>
+
+<TEXTAREA id="invoicePrintData" cols="40" rows="5" width=100%>
+
+Hello1\r\nHello2\rHello3\nHello4Hello5
+
+</TEXTAREA><br>
+
+<input type="button" id="buttonStyle" value="打开(*)" onClick="LogTrace('[指令]invoiceOpenAsyn='+BOCOMDevControl.invoiceOpenAsyn(1));"/>
+
+<input type="button" id="buttonStyle" value="关闭(*)" onClick="LogTrace('[指令]invoiceCloseAsyn='+BOCOMDevControl.invoiceCloseAsyn()); LogTrace('关闭完成');"/>
+
+<input type="button" id="buttonStyle" value="复位(*)" onClick="LogTrace('[指令]invoiceInitAsyn='+BOCOMDevControl.invoiceInitAsyn());"/>
+
+<input type="button" id="buttonStyle" value="打印(*)" onClick="LogTrace('[指令]invoicePrintAsyn='+BOCOMDevControl.invoicePrintAsyn(document.getElementById('invoicePrintData').value, -1));"/>
+
+<input type="button" id="buttonStyle" value="切纸(*)" onClick="LogTrace('[指令]invoiceCutAsyn='+BOCOMDevControl.invoiceCutAsyn());"/>
+
+<select id="invoiceInfoSel" style="height:40;">
+
+	<option value="1">驱动程序版本</option>
+
+	<option value="2">驱动程序厂商名</option>
+
+	<option value="3">驱动程序摘要说明</option>
+
+	<option value="11">打印机状态</option>
+
+	<option value="12">纸张状态</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取信息" 	onClick="LogTrace('[指令]invoiceGetInfo='+BOCOMDevControl.invoiceGetInfo(document.getElementById('invoiceInfoSel').value));"/>
+
+
+
+<P>
+
+<input type="button" id="buttonStyle" value="打开" onClick="LogTrace('[指令]invoiceOpen='+BOCOMDevControl.invoiceOpen(1));"/>
+
+<input type="button" id="buttonStyle" value="关闭" onClick="LogTrace('[指令]invoiceClose=';BOCOMDevControl.invoiceClose()); LogTrace('关闭完成');"/>
+
+<input type="button" id="buttonStyle" value="复位" onClick="LogTrace('[指令]invoiceInit='+BOCOMDevControl.invoiceInit());"/>
+
+<input type="button" id="buttonStyle" value="打印" onClick="LogTrace('[指令]invoicePrint='+BOCOMDevControl.invoicePrint(document.getElementById('invoicePrintData').value, -1));"/>
+
+<input type="button" id="buttonStyle" value="切纸" onClick="LogTrace('[指令]invoiceCut='+BOCOMDevControl.invoiceCut());"/>
+
+
+
+<P><HR>
+
+</DIV>
+
+
+
+
+
+<DIV id="DeviceRDC" style="display:none;">
+
+<BR><table>
+
+	<tr>
+
+		<td><H2>刷折/卡器</H2></td>
+
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+		<td valign=top>
+
+			<table border=1 cellspacing=0>
+
+			  <tr align=center>
+
+				<td align=right>SP逻辑名：</td>
+
+				<td align=right>&nbsp;&nbsp;&nbsp;RDC&nbsp;&nbsp;&nbsp;</td>
+
+			  </tr>
+
+			</table>
+
+		</td>
+
+	</tr>
+
+</table>
+
+
+
+<!--事件-->
+
+<script language="JavaScript" for="BOCOMDevControl" event="OnSwipeReaderInserted()">LogTrace("[事件]OnSwipeReaderInserted()");</script>
+
+<!--事件-->
+
+
+
+<input type="button" id="buttonStyle" value="打开(*)" 	onClick="LogTrace('[指令]swipeReaderOpenAsyn='+BOCOMDevControl.swipeReaderOpenAsyn(1));"/>
+
+<input type="button" id="buttonStyle" value="关闭(*)" 	onClick="LogTrace('[指令]swipeReaderCloseAsyn='+BOCOMDevControl.swipeReaderCloseAsyn());"/>
+
+<input type="button" id="buttonStyle" value="复位(*)" 	onClick="LogTrace('[指令]swipeReaderInitAsyn='+BOCOMDevControl.swipeReaderInitAsyn());"/>
+
+<select id="RDCInsertTimeout" style="height:40;">
+
+	<option value="0">（插卡超时）</option>
+
+	<option value="0">0秒</option>
+
+	<option value="1">1秒</option>
+
+	<option value="10">10秒</option>
+
+	<option value="30">30秒</option>
+
+	<option value="60">1分钟</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="刷折/卡" 	onClick="LogTrace('[指令]swipeReaderInsert='+BOCOMDevControl.swipeReaderInsert(document.getElementById('RDCInsertTimeout').value)+'OK, 可刷折/卡或取消');"/>
+
+<input type="button" id="buttonStyle" value="取消" 		onClick="LogTrace('[指令]swipeReaderCancel()');BOCOMDevControl.swipeReaderCancel();LogTrace('取消完成');"/>
+
+<input type="button" id="buttonStyle" value="读磁道(*)" onClick="LogTrace('[指令]swipeReaderReadAsyn='+BOCOMDevControl.swipeReaderReadAsyn(7));"/>
+
+<select id="swipeReaderInfoSel" style="height:40;">
+
+	<option value="1">驱动程序版本</option>
+
+	<option value="2">驱动程序厂商名</option>
+
+	<option value="3">驱动程序摘要说明</option>
+
+	<option value="11">刷卡器状态</option>
+
+</select>
+
+<input type="button" id="buttonStyle" value="获取信息" 	onClick="LogTrace('[指令]swipeReaderGetInfo='+BOCOMDevControl.swipeReaderGetInfo(document.getElementById('swipeReaderInfoSel').value));"/>
+
+<P>
+
+<input type="button" id="buttonStyle" value="打开" 		onClick="LogTrace('[指令]swipeReaderOpen='+BOCOMDevControl.swipeReaderOpen(1));"/>
+
+<input type="button" id="buttonStyle" value="关闭" 		onClick="LogTrace('[指令]swipeReaderClose()');BOCOMDevControl.swipeReaderClose();"/>
+
+<input type="button" id="buttonStyle" value="复位" 		onClick="LogTrace('[指令]swipeReaderInit='+BOCOMDevControl.swipeReaderInit());"/>
+
+<input type="button" id="buttonStyle" value="读磁道" 	onClick="LogTrace('[指令]swipeReaderRead='+BOCOMDevControl.swipeReaderRead(7));"/>
+
+<input type="button" id="buttonStyle" value="退折" 		onClick="LogTrace('[指令]swipeReaderEject='+BOCOMDevControl.swipeReaderEject(20));"/>
+
+<P><HR>
+
+</DIV>
+
+
+
+<script language="JavaScript">
+
+	//readLogicNamesForAllDevices();
+
+	LogTrace("-------- 初始化OCX控件完成！ --------");
+
+	//document.all["PanelSMS"].style.display="none"; 
+
+	//document.all["PanelSMS"].style.display="inline";
+
+	
+
+	document.all["DeviceInvoice"].style.display="inline";
+
+	document.all["DeviceRDC"].style.display="inline";
+
+
+
+</script>
+
+</BODY>
+
+</HTML>
+
