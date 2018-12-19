@@ -1,4 +1,3 @@
-import { mockOcxEnv } from './lib/mock'
 import { BankFactory } from './lib/bankApi'
 import debug from 'debug'
 
@@ -11,9 +10,8 @@ export const dva = {
   },
 };
 
-export function render(oldRender) {
+export async function render(oldRender) {
   debug.enable('wb:*')
-  mockOcxEnv(BankFactory.getOcx())
-  window._bankApi = BankFactory.create()
+  window._bankApi = BankFactory.create(await BankFactory.getOcx())
   oldRender();
 }

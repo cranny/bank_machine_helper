@@ -14,3 +14,19 @@ export const handleSyncResult = (actionName, resCode) => {
     console.error(`${actionName} failed`)
   }
 };
+
+
+export const checkUntilExist = (timeout, target, attribute) => {
+  return new Promise(resolve => {
+    let begin = Date.now()
+    let interval = setInterval(() => {
+      if (Date.now() - begin > timeout) {
+        clearInterval(interval)
+        resolve(false)
+      } else if (target[attribute]) {
+        clearInterval(interval)
+        resolve(true)
+      }
+    }, 20)
+  })
+}

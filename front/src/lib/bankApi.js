@@ -40,7 +40,8 @@
 
 // }
 import EventEmitter from 'eventemitter3'
-import {parseAsyncResult, OcxExceptions, handleSyncResult} from './utils'
+import {parseAsyncResult, OcxExceptions, handleSyncResult, checkUntilExist} from './utils'
+import { mockOcxEnv } from './mock'
 
 const debug = require('debug')('wb:lib:bankApi')
 
@@ -392,7 +393,7 @@ export class BankCard extends EventEmitter {
 // }
 
 export const BankFactory = {
-  getOcx() {
+  async getOcx() {
     let $ocx = window.BOCOMDevControl || document.getElementById('BOCOMDevControl')
 
     if (!$ocx) {
@@ -403,15 +404,19 @@ export const BankFactory = {
 
       document.body.appendChild($div.firstChild)
       $div = null
-      return document.getElementById('BOCOMDevControl')
+      $ocx = document.getElementById('BOCOMDevControl')
+    }
+
+    const isHasAPI = await checkUntilExist(3000, $ocx, 'getVersion')
+
+    if (!isHasAPI) {
+      mockOcxEnv($ocx)
     }
 
     return $ocx
   },
 
-  create() {
-    const ctx = BankFactory.getOcx()
-
+  create(ctx) {
     if (!(ctx && ctx.getVersion)) {
       throw new OcxExceptions('BOCOMDevControl API not exists!')
     }
