@@ -10,6 +10,9 @@ import CountDown from '../../components/countdown'
 const debug = require('debug')('wb:pages:checkId')
 
 class Page extends React.Component {
+
+  hasInserted = false
+
   componentDidMount() {
     getBankAPI().Ids.open()
     getBankAPI().Ids.insert()
@@ -29,10 +32,13 @@ class Page extends React.Component {
     getBankAPI().Ids.off('onInserted', this.onInserted)
     getBankAPI().Ids.off('onRead', this.onRead)
     getBankAPI().Ids.off('onScan', this.onScan)
+    !this.hasInserted && getBankAPI().Ids.cancelInsert()
+    this.hasInserted && getBankAPI().Ids.cancelInsert()
     getBankAPI().Ids.close()
-  }
+  } 
 
   onInserted = () => {
+    this.hasInserted = true
     debug('接收到身份证已放置事件')
     getBankAPI().Ids.read()
     this.props.dispatch({
@@ -48,7 +54,7 @@ class Page extends React.Component {
     getBankAPI().Ids.scan()
     this.props.dispatch({
       type: 'ids/onRead',
-      payload
+      payload: payload.value
     });
     this.props.dispatch({
       type: 'app/showLoading',
@@ -62,7 +68,7 @@ class Page extends React.Component {
     debug('接收到身份证已扫描事件', payload)
     this.props.dispatch({
       type: 'ids/onScan',
-      payload
+      payload: payload.value
     });
     
     this.props.dispatch({

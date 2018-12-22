@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import router from 'umi/router';
 import { Form, Input, Button, Col, Row } from 'antd';
 import React from 'react';
+import { connect } from 'dva'
 
 const FormItem = Form.Item;
 
@@ -38,14 +39,6 @@ class InputForm extends React.Component {
       },
     };
 
-    const idCardData = {
-      name: '文武',
-      certCode: '123456789123456789',
-      sex: '男',
-      issueAgency: '深圳宝安西乡公安分局',
-      certAddress: '深圳宝安西乡锦城湖岸'
-    }
-
     const extraData = {
       taxIdentity: '(1) 仅为中国税收居民'
     }
@@ -56,7 +49,7 @@ class InputForm extends React.Component {
           <Col span={12}>
             <FormItem label="姓名" {...formItemLayout}>
               {getFieldDecorator('name', {
-                initialValue: idCardData.name,
+                // initialValue: idCardData.name,
               })(<Input disabled size="large" />)}
             </FormItem>
           </Col>
@@ -64,7 +57,7 @@ class InputForm extends React.Component {
           <Col span={12}>
             <FormItem label="证件号码" {...formItemLayout}>
               {getFieldDecorator('certCode', {
-                initialValue: idCardData.certCode,
+                // initialValue: idCardData.certCode,
               })(<Input disabled size="large" />)}
             </FormItem>
           </Col>
@@ -74,7 +67,7 @@ class InputForm extends React.Component {
           <Col span={12}>
             <FormItem label="性别" {...formItemLayout}>
               {getFieldDecorator('sex', {
-                initialValue: idCardData.sex,
+                // initialValue: idCardData.sex,
               })(<Input disabled size="large" />)}
             </FormItem>
           </Col>
@@ -82,7 +75,7 @@ class InputForm extends React.Component {
           <Col span={12}>
             <FormItem label="发证机关" {...formItemLayout}>
               {getFieldDecorator('issueAgency', {
-                initialValue: idCardData.issueAgency,
+                // initialValue: idCardData.issueAgency,
               })(<Input disabled size="large" />)}
             </FormItem>
           </Col>
@@ -92,7 +85,7 @@ class InputForm extends React.Component {
           <Col span={24}>
             <FormItem label="证件住址" {...singleFormItemLayout}>
               {getFieldDecorator('certAddress', {
-                initialValue: idCardData.certAddress,
+                // initialValue: idCardData.certAddress,
               })(<Input disabled size="large" />)}
             </FormItem>
           </Col>
@@ -195,12 +188,33 @@ class InputForm extends React.Component {
   }
 }
 
-const WrappedInputForm = Form.create()(InputForm);
+function mapStateToProps(state) {
+  return {
+    ids: state.ids
+  };
+}
 
-export default function() {
+function Page({ids}) {
+
+  console.log('ids: ', ids)
+
+  const idCardData = {
+    name: '文武',
+    certCode: '123456789123456789',
+    sex: '男',
+    issueAgency: '深圳宝安西乡公安分局',
+    certAddress: '深圳宝安西乡锦城湖岸'
+  }
+
+  const WrappedForm = Form.create({
+    // mapPropsToFields: idCardData
+  })(InputForm)
+
   return (
     <div className={styles.input}>
-      <WrappedInputForm />
+      <WrappedForm />
     </div>
   );
 }
+
+export default connect(mapStateToProps)(Page);

@@ -26,6 +26,7 @@ export default {
       }
     },
     onScan(state, { payload }) {
+      console.log(payload)
       state.images = {
         ...payload
       }

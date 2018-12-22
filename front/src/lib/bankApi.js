@@ -125,8 +125,10 @@ export class Ids extends EventEmitter {
   }
 
   cancelInsert() {
-    debug('二代读卡器取消等待放入')
-    this.ctx.idsCancel()
+    const actionName = '二代读卡器取消等待放入'
+    debug(actionName)
+    const resCode = this.ctx.idsCancel()
+    handleSyncResult(actionName, resCode)
   }
 
   async read() {
@@ -154,7 +156,7 @@ export class Ids extends EventEmitter {
       issueAgency: eventResult.QF,
       issueDate: eventResult.SD,
       expiredDate: eventResult.ED,
-      avatar: this.ctx.IdsPhoto
+      avatar: `file://C:\\ZZAgent\\Picture.jpg`
     }
   }
 
@@ -181,13 +183,9 @@ export class Ids extends EventEmitter {
       throw new Error('getScanResult: unknown error')
     }
 
-    if (!(this.ctx.IdsImage1 && this.ctx.IdsImage2)) {
-      throw new Error('getScanResult: no data found')
-    }
-
     return {
-      IdsImage1: this.ctx.IdsImage1,
-      IdsImage2: this.ctx.IdsImage2
+      IdsImage1: `file://C:\\ZZAgent\\IdCardPic\\Image-0.jpg`,
+      IdsImage2: `file://C:\\ZZAgent\\IdCardPic\\Image-1.jpg`
     }
   }
 }
