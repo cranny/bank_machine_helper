@@ -8,10 +8,24 @@ export const parseAsyncResult = str => {
 
 export class OcxExceptions extends Error {}
 
-export const handleSyncResult = (actionName, resCode) => {
-  if (!resCode) {
+export const handleSyncResult = (actionName, res) => {
+  console.log(`handleSyncResult: ${actionName} ${res}`)
+  let resCode = -1
+
+  if (typeof res === 'number') {
+    resCode = res
+  }
+
+  if (typeof res === 'string' && res.indexOf('^') > -1) {
+    res = parseAsyncResult(res)
+    resCode = res.RT
+  }
+
+  if (parseInt(resCode, 10) !== 0) {
     // throw new OcxExceptions(`${actionName} failed`);
     console.error(`${actionName} failed`)
+  } else {
+    console.info(`${actionName} success`)
   }
 };
 

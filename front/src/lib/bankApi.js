@@ -100,7 +100,7 @@ export class Ids extends EventEmitter {
     const actionName = '获取设备状态'
     debug(actionName)
     const resCode = this.ctx.idsGetInfo(type)
-
+    handleSyncResult(actionName, resCode)
     // 设备未准备好便复位
     if (resCode === 3) {
       this.reset()
@@ -399,7 +399,7 @@ export const BankFactory = {
     if (!$ocx) {
       let $div = document.createElement('div')
       $div.innerHTML = `<object style="display:none" title="devControl"
-      classid="clsid:1D2162F4-98C8-417E-8410-C1E9B0B0337C"
+      classid="clsid:487B21FA-0862-4544-A20C-E927C8F99DA9"
       hspace="0" vspace="0" id="BOCOMDevControl"></object>`
 
       document.body.appendChild($div.firstChild)
@@ -407,19 +407,21 @@ export const BankFactory = {
       $ocx = document.getElementById('BOCOMDevControl')
     }
 
-    const isHasAPI = await checkUntilExist(3000, $ocx, 'getVersion')
+    // const isHasAPI = await checkUntilExist(3000, $ocx, 'getVersion')
 
-    if (!isHasAPI) {
-      mockOcxEnv($ocx)
-    }
+    // if (!isHasAPI) {
+    //   mockOcxEnv($ocx)
+    // }
+
+    window.BOCOMDevControl = $ocx
 
     return $ocx
   },
 
   create(ctx) {
-    if (!(ctx && ctx.getVersion)) {
-      throw new OcxExceptions('BOCOMDevControl API not exists!')
-    }
+    // if (!(ctx && ctx.getVersion)) {
+    //   throw new OcxExceptions('BOCOMDevControl API not exists!')
+    // }
 
     const apis = {
       Ids: new Ids(window.BOCOMDevControl),
@@ -429,6 +431,7 @@ export const BankFactory = {
 
     ctx.addEventListener('OnAsynExecuted', (szCmdName, szEventName, execCode, _execValue) => {
       _execValue = parseAsyncResult(_execValue)
+      console.log(szCmdName, szEventName, execCode, _execValue)
       debug('OnAsynExecuted fired:', szCmdName, szEventName, execCode, _execValue)
       Object.values(apis).map(api => {
         const eventsMap = api.constrctor.EVENTS

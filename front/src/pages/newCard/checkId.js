@@ -99,7 +99,7 @@ class Page extends React.Component {
           </ul>
         </div>
         <div className={styles.figure}>
-        <CountDown text="请于%s内插入您的身份证" num={10} onEnd={this.onTimeout} />
+        <CountDown text="请于%s内插入您的身份证" num={60} onEnd={this.onTimeout} />
         </div>
       </div>
     );
