@@ -56,7 +56,7 @@ class InputForm extends React.Component {
 
           <Col span={12}>
             <FormItem label="证件号码" {...formItemLayout}>
-              {getFieldDecorator('certCode', {
+              {getFieldDecorator('code', {
                 // initialValue: idCardData.certCode,
               })(<Input disabled size="large" />)}
             </FormItem>
@@ -84,7 +84,7 @@ class InputForm extends React.Component {
         <Row>
           <Col span={24}>
             <FormItem label="证件住址" {...singleFormItemLayout}>
-              {getFieldDecorator('certAddress', {
+              {getFieldDecorator('address', {
                 // initialValue: idCardData.certAddress,
               })(<Input disabled size="large" />)}
             </FormItem>

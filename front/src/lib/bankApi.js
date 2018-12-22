@@ -147,7 +147,7 @@ export class Ids extends EventEmitter {
     }
 
     return {
-      province: eventResult.SF,
+      code: eventResult.SF,
       name: eventResult.NM,
       sex: eventResult.SX,
       nation: eventResult.MZ,
