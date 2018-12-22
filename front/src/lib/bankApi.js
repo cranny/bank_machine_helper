@@ -159,7 +159,7 @@ export class Ids extends EventEmitter {
   }
 
   static isReadResult(eventResult) {
-    return eventResult && eventResult.issueAgency
+    return eventResult && eventResult.QF
   }
 
   static getScanResult(eventResult) {
@@ -424,17 +424,17 @@ export const BankFactory = {
     // }
 
     const apis = {
-      Ids: new Ids(window.BOCOMDevControl),
-      BankCard: new BankCard(window.BOCOMDevControl),
-      Pinpad: new Pinpad(window.BOCOMDevControl)
+      Ids: new Ids(ctx),
+      BankCard: new BankCard(ctx),
+      Pinpad: new Pinpad(ctx)
     }
 
-    ctx.addEventListener('OnAsynExecuted', (szCmdName, szEventName, execCode, _execValue) => {
+    const OnAsynExecuted = (szCmdName, szEventName, execCode, _execValue) => {
+      debug('OnAsynExecuted fired begin:', szCmdName, szEventName, execCode, _execValue)
       _execValue = parseAsyncResult(_execValue)
-      console.log(szCmdName, szEventName, execCode, _execValue)
       debug('OnAsynExecuted fired:', szCmdName, szEventName, execCode, _execValue)
       Object.values(apis).map(api => {
-        const eventsMap = api.constrctor.EVENTS
+        const eventsMap = api.constructor.EVENTS
         Object.keys(eventsMap).map(_eventKey => {
           let eventKey = _eventKey
           let eventMap = eventsMap[_eventKey]
@@ -465,7 +465,13 @@ export const BankFactory = {
           }
         })
       })
-    })
+    }
+
+    window.OnAsynExecuted = OnAsynExecuted
+
+    // ctx.addEventListener('OnAsynExecuted', () => {
+
+    // })
 
     // 兼容其它全局事件
     ctx.addEventListener('OnPinPadKeyPressed', key => {

@@ -1,7 +1,8 @@
 export const parseAsyncResult = str => {
   const arrStr = str.split('^');
   return arrStr.reduce((res, item) => {
-    res[item.slice(0, 2)] = item.slice(2);
+    const key = item.slice(0, 2)
+    key && (res[key] = item.slice(2))
     return res;
   }, {});
 };
