@@ -195,19 +195,15 @@ function mapStateToProps(state) {
 }
 
 function Page({ids}) {
-
-  console.log('ids: ', ids)
-
-  const idCardData = {
-    name: '文武',
-    certCode: '123456789123456789',
-    sex: '男',
-    issueAgency: '深圳宝安西乡公安分局',
-    certAddress: '深圳宝安西乡锦城湖岸'
-  }
-
   const WrappedForm = Form.create({
-    // mapPropsToFields: idCardData
+    mapPropsToFields(props) {
+      return Object.keys(ids.info).reduce((res, key) => {
+        res[key] = Form.createFormField({
+          value: ids.info[key]
+        })
+        return res;
+      }, {});
+    }
   })(InputForm)
 
   return (
