@@ -7,6 +7,15 @@ export const parseAsyncResult = str => {
   }, {});
 };
 
+export const parseSpecialFormat = str => {
+  const arrStr = str.split('|');
+  return arrStr.reduce((res, item) => {
+    item = item.split('=')
+    item.length && (res[item[0]] = item[1])
+    return res;
+  }, {});
+}
+
 export class OcxExceptions extends Error {}
 
 export const handleSyncResult = (actionName, res) => {
@@ -28,6 +37,8 @@ export const handleSyncResult = (actionName, res) => {
   } else {
     console.info(`${actionName} success`)
   }
+
+  return res
 };
 
 

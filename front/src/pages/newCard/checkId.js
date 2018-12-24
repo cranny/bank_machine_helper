@@ -35,7 +35,7 @@ class Page extends React.Component {
     !this.hasInserted && getBankAPI().Ids.cancelInsert()
     this.hasInserted && getBankAPI().Ids.cancelInsert()
     getBankAPI().Ids.close()
-  } 
+  }
 
   onInserted = () => {
     this.hasInserted = true
@@ -70,7 +70,7 @@ class Page extends React.Component {
       type: 'ids/onScan',
       payload: payload.value
     });
-    
+
     this.props.dispatch({
       type: 'app/hideLoading',
       payload
@@ -105,7 +105,7 @@ class Page extends React.Component {
           </ul>
         </div>
         <div className={styles.figure}>
-        <CountDown text="请于%s内插入您的身份证" num={60} onEnd={this.onTimeout} />
+          { !this.hasInserted ? <CountDown text="请于%s内插入您的身份证" num={60} onEnd={this.onTimeout} /> : null }
         </div>
       </div>
     );

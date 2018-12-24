@@ -5,6 +5,7 @@ import router from 'umi/router';
 import { Form, Input, Button, Col, Row } from 'antd';
 import React from 'react';
 import { connect } from 'dva'
+import { getBankAPI } from '../../lib/bankApi';
 
 const FormItem = Form.Item;
 
@@ -14,10 +15,22 @@ class InputForm extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
-        router.push('/newCard/changePwd')
+        // router.push('/newCard/changePwd')
+        this.onInputDone()
       }
     });
   };
+
+  onInputDone = (values) => {
+    this.props.dispatch({
+      type: 'app/showLoading',
+      payload: {
+        loading: '开卡业务办理中, 请稍等...',
+      }
+    });
+
+    getBankAPI().BankCard.open()
+  }
 
   render() {
     const { getFieldDecorator } = this.props.form;

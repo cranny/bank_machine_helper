@@ -40,7 +40,7 @@
 
 // }
 import EventEmitter from 'eventemitter3'
-import {parseAsyncResult, OcxExceptions, handleSyncResult, checkUntilExist} from './utils'
+import {parseAsyncResult, OcxExceptions, handleSyncResult, parseSpecialFormat} from './utils'
 import { mockOcxEnv } from './mock'
 
 const debug = require('debug')('wb:lib:bankApi')
@@ -293,8 +293,10 @@ export class BankCard extends EventEmitter {
 
   // 	0=成功，-2=设备硬件故障，-6=操作超时。
   open() {
-    debug('打开发卡器')
-    return this.ctx.cardissuerOpen(1, 1)
+    const actionName = '打开发卡器'
+    debug(actionName)
+    const resCode = this.ctx.cardissuerOpen(1, 1)
+    handleSyncResult(actionName, resCode)
   }
 
   close() {
@@ -320,10 +322,20 @@ export class BankCard extends EventEmitter {
   }
 
   // RT 0=成功，-1=设备没有打开，-2=硬件故障，-6=操作超时
-  getInfo(type) {
-    const result = this.ctx.cardissuerGetInfo(type)
-    return {
+  getInfo() {
+    const actionName = '获取发卡器设备状态'
+    debug(actionName)
+    const resCode = this.ctx.cardissuerGetInfo(21)
+    const res = handleSyncResult(actionName, resCode)
 
+    const globalStatus = parseSpecialFormat(res.LP)
+
+    const actionName2 = '获取发卡器卡箱数据'
+    debug(actionName2)
+    const resCode2 = this.ctx.cardissuerGetInfo(22)
+    const res2 = handleSyncResult(actionName2, resCode2)
+    return {
+      ...globalStatus
     }
   }
 
