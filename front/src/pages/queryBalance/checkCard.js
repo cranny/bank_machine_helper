@@ -19,7 +19,8 @@ class Page extends React.Component {
     getBankAPI().ContactlessCard.openAndCheck()
     getBankAPI().ContactlessCard.insert(this.timeout)
 
-    getBankAPI().ContactlessCard.once('onInserted', this.onInserted)
+    getBankAPI().ContactlessCard.once('onIn', this.onIn)
+    getBankAPI().ContactlessCard.once('onOut', this.onOut)
     // getBankAPI().Ids.once('onRead', this.onRead)
   }
 
@@ -30,14 +31,14 @@ class Page extends React.Component {
   }
 
   componentWillUnmount() {
-    getBankAPI().ContactlessCard.off('onInserted', this.onInserted)
-    // getBankAPI().ContactlessCard.off('onRead', this.onRead)
+    getBankAPI().ContactlessCard.off('onIn', this.onIn)
+    getBankAPI().ContactlessCard.off('onOut', this.onOut)
 
     !this.hasInserted && getBankAPI().ContactlessCard.cancelInsert()
     getBankAPI().ContactlessCard.close()
   }
 
-  onInserted = () => {
+  onIn = () => {
     this.hasInserted = true
     debug('接收到银行卡已放置事件')
     // getBankAPI().ContactlessCard.read()
@@ -47,6 +48,10 @@ class Page extends React.Component {
         loading: '正在读取银行卡信息',
       },
     });
+  }
+
+  onOut = () => {
+
   }
 
   onRead = payload =>{
