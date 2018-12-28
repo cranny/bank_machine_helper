@@ -454,7 +454,7 @@ export class ContactlessCard extends EventEmitter {
 
   @LogAsync('等待放置')
   insert(timeout = 60) {
-    return this.ctx.contactlessCardInsert()
+    return this.ctx.contactlessCardInsert(timeout)
   }
 
   @Log('取消等待放置')
