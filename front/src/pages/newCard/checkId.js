@@ -6,6 +6,7 @@ import { connect } from 'dva';
 import { getBankAPI } from '../../lib/bankApi';
 import React from 'react';
 import CountDown from '../../components/countdown'
+import Step from '../../components/step'
 
 const debug = require('debug')('wb:pages:checkId')
 
@@ -82,28 +83,7 @@ class Page extends React.Component {
   render() {
     return (
       <div className={styles.home}>
-        <div className={styles.crumbs}>
-          <ul>
-            <li>
-              <a href="#1">阅读协议</a>
-            </li>
-            <li>
-              <a href="#2">身份核查</a>
-            </li>
-            <li>
-              <a href="#3">录入信息</a>
-            </li>
-            {/* <li>
-              <a href="#3">发卡</a>
-            </li> */}
-            <li>
-              <a href="#3">设置密码</a>
-            </li>
-            <li>
-              <a href="#3">领取卡片</a>
-            </li>
-          </ul>
-        </div>
+        <Step />
         <div className={styles.figure}>
           { !this.hasInserted ? <CountDown text="请于%s内插入您的身份证" num={60} onEnd={this.onTimeout} /> : null }
         </div>

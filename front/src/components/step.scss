@@ -1,0 +1,62 @@
+@import '../theme/colors.scss';
+
+.crumbs {
+  text-align: center;
+}
+.crumbs ul {
+  list-style: none;
+  display: flex;
+  padding: 0;
+}
+.crumbs ul li {
+  flex: 1;
+}
+.crumbs ul li a {
+  display: block;
+  height: 60px;
+  background: $pink;
+  text-align: center;
+  line-height: 60px;
+  position: relative;
+  margin: 0 10px 0 0;
+  font-size: 20px;
+  text-decoration: none;
+  color: #fff;
+}
+.crumbs ul li a:after {
+  content: "";
+  border-top: 30px solid transparent;
+  border-bottom: 30px solid transparent;
+  border-left: 30px solid $pink;
+  position: absolute;
+  right: -29px;
+  top: 0;
+  z-index: 1;
+}
+.crumbs ul li a:before {
+  content: "";
+  border-top: 30px solid transparent;
+  border-bottom: 30px solid transparent;
+  border-left: 30px solid $red;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.crumbs ul li:first-child a {
+
+}
+.crumbs ul li:first-child a:before {
+  display: none;
+}
+.crumbs ul li:last-child a {
+  margin: 0
+}
+.crumbs ul li:last-child a:after {
+  display: none;
+}
+.crumbs ul li a:hover {
+  // background: #fa5ba5;
+}
+.crumbs ul li a:hover:after {
+  // border-left-color: #fa5ba5;
+}

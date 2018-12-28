@@ -41,6 +41,7 @@
 // }
 import EventEmitter from 'eventemitter3'
 import {parseAsyncResult, OcxExceptions, handleSyncResult, parseSpecialFormat} from './utils'
+import { Log, LogAsync } from './decorators'
 import { mockOcxEnv } from './mock'
 
 const debug = require('debug')('wb:lib:bankApi')
@@ -386,6 +387,102 @@ export class BankCard extends EventEmitter {
   }
 }
 
+export class ContactlessCard extends EventEmitter {
+  constructor(ctx) {
+    super()
+    this.ctx = ctx
+    return this
+  }
+
+  debug = debug
+
+  static DEVICE_NAME = '非接读卡器'
+
+  static EVENTS = {
+    onIn: {
+      name: 'OnContactlessCardIn',
+      desc: 'event: 银行卡已放置'
+    },
+
+    onOut: {
+      name: 'OnContactlessCardTaken',
+      desc: 'event: 银行卡已取走'
+    }
+  }
+
+  // 最近一次用户插入的卡号
+  get lastCardNum() {
+    return this.ctx.ContactlessCardNumber
+  }
+
+  // 是否安装了发卡器
+  get isActive() {
+    return this.ctx.ContactlessCardActive
+  }
+
+  // 	0=成功，-2=设备硬件故障，-6=操作超时。
+  @Log('打开')
+  open() {
+    return this.ctx.contactlessCardOpen(0)
+  }
+
+  @Log('关闭')
+  close() {
+    return this.ctx.contactlessCardClose()
+  }
+
+  // 0=成功，-1=设备没有打开，-2=硬件故障，-6=操作超时
+  @Log('初始化')
+  forceInit() {
+    return this.ctx.contactlessCardInit()
+  }
+
+  // ^RTxx^WPxx^LPxx
+  // 0=正常，1=故障 
+  @Log('设备状态')
+  getInfo() {
+    return this.ctx.contactlessCardGetInfo(11)
+  }
+
+  openAndCheck() {
+    this.open()
+    const deviceCode = this.getInfo()
+    if (deviceCode) {
+      this.reset()
+    }
+  }
+
+  @LogAsync('等待放置')
+  insert(timeout = 60) {
+    return this.ctx.contactlessCardInsert()
+  }
+
+  @Log('取消等待放置')
+  cancelInsert() {
+    return this.ctx.contactlessCardCancel()
+  }
+
+  @LogAsync('复位')
+  reset(timeout = 6000) {
+    return this.ctx.contactlessCardReset(timeout)
+  }
+
+  @LogAsync('退卡')
+  taken(timeout = 30) {
+    return this.ctx.contactlessCardEjectAsyn(timeout)
+  }
+
+  @Log('上电')
+  powerOn() {
+    return this.ctx.contactlessCardPowerOn()
+  }
+
+  @Log('下电')
+  powerOff() {
+    return this.ctx.contactlessCardPowerOff()
+  }
+}
+
 // class BankAPI {
 //   constructor() {}
 
@@ -419,9 +516,10 @@ export const BankFactory = {
 
     // const isHasAPI = await checkUntilExist(3000, $ocx, 'getVersion')
 
-    // if (!isHasAPI) {
-    //   mockOcxEnv($ocx)
-    // }
+    // @todo 调试用
+    if (navigator.userAgent.indexOf('Chrome') > -1) {
+      mockOcxEnv($ocx)
+    }
 
     window.BOCOMDevControl = $ocx
 
@@ -436,10 +534,11 @@ export const BankFactory = {
     const apis = {
       Ids: new Ids(ctx),
       BankCard: new BankCard(ctx),
-      Pinpad: new Pinpad(ctx)
+      Pinpad: new Pinpad(ctx),
+      ContactlessCard: new ContactlessCard(ctx)
     }
 
-    const OnAsynExecuted = (szCmdName, szEventName, execCode, _execValue) => {
+    window.OnAsynExecuted = (szCmdName, szEventName, execCode, _execValue) => {
       debug('OnAsynExecuted fired begin:', szCmdName, szEventName, execCode, _execValue)
       _execValue = parseAsyncResult(_execValue)
       debug('OnAsynExecuted fired:', szCmdName, szEventName, execCode, _execValue)
@@ -477,11 +576,19 @@ export const BankFactory = {
       })
     }
 
-    window.OnAsynExecuted = OnAsynExecuted
+    window.OnContactlessCardIn = (...args) => {
+      apis.ContactlessCard.emit('onIn', {
+        code: 0,
+        value: args
+      })
+    }
 
-    // ctx.addEventListener('OnAsynExecuted', () => {
-
-    // })
+    window.OnContactlessCardTaken = (...args) => {
+      apis.ContactlessCard.emit('onOut', {
+        code: 0,
+        value: args
+      })
+    }
 
     // 兼容其它全局事件
     ctx.addEventListener('OnPinPadKeyPressed', key => {

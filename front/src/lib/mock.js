@@ -27,7 +27,12 @@ export function mockOcxEnv(ctx) {
     'cardissuerEjectAsyn',
     'cardissuerResetAsyn',
     'cardissuerICPowerOnAsyn',
-    'cardissuerICPowerOffAsyn'
+    'cardissuerICPowerOffAsyn',
+    'contactlessCardOpen',
+    'contactlessCardClose',
+    'contactlessCardGetInfo',
+    'contactlessCardCancel',
+    'contactlessCardInsert'
   ]
 
   const attrributes = [

@@ -39,7 +39,7 @@ export default function() {
           </Link>
         </Col>
         <Col span={9}>
-          <Link to="" className={classNames(styles.cardItem, styles.blue)}>
+          <Link to="/queryBalance/checkCard" className={classNames(styles.cardItem, styles.blue)}>
             <figure className={classNames(styles.cardInnerItem, styles.cardInnerItem5)}>
               余额查询
             </figure>
