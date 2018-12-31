@@ -1,4 +1,4 @@
-import { BankFactory } from './lib/bankApi'
+import { BankFactory } from './lib/hardware'
 import debug from 'debug'
 
 export const dva = {

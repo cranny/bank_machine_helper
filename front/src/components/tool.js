@@ -4,7 +4,7 @@ import styles from './tool.scss';
 import { Button } from 'antd';
 import classNames from 'classnames';
 import { connect } from 'dva';
-import { getBankAPI } from '../lib/bankApi'
+import { getBankAPI } from '../lib/hardware'
 import idsPic from '../assets/new_card/ids.jpg'
 
 const debug = require('debug')('wb:components:tool')

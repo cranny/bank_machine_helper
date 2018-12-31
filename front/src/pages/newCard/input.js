@@ -5,7 +5,7 @@ import router from 'umi/router';
 import { Form, Input, Button, Col, Row } from 'antd';
 import React from 'react';
 import { connect } from 'dva'
-import { getBankAPI } from '../../lib/bankApi';
+import { getBankAPI } from '../../lib/hardware';
 
 const FormItem = Form.Item;
 

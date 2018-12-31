@@ -3,7 +3,7 @@ import styles from './checkId.scss';
 // import classNames from 'classnames';
 import router from 'umi/router';
 import { connect } from 'dva';
-import { getBankAPI } from '../../lib/bankApi';
+import { getBankAPI } from '../../lib/hardware';
 import React from 'react';
 import CountDown from '../../components/countdown'
 import Step from '../../components/step'

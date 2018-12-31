@@ -4,7 +4,7 @@ import { connect } from 'dva';
 import withRouter from 'umi/withRouter';
 import Loading from '../components/loading';
 import Tool from '../components/tool'
-import ErrorBoundary from 'react-error-boundary';
+import ErrorBoundary from '../components/errorBoundary';
 
 const { Header } = Layout;
 
