@@ -142,19 +142,19 @@ export class ContactlessCard extends BaseAPI {
     return this.ctx.contactlessCardPowerOnAsyn()
   }
 
-  @Log('下电')
+  @LogAsync('下电')
   powerOff() {
-    return this.ctx.contactlessCardPowerOff()
+    return this.ctx.contactlessCardPowerOffAsyn()
   }
 
-  @Log('建立应用列表')
+  @LogAsync('建立应用列表')
   buildApply() {
     return this.ctx.contactlessCardGetPSEAIDAsyn('')
   }
 
-  @Log('应用选择')
+  @LogAsync('应用选择')
   choiceApply(aIn = 'A000000333010101') {
-    return this.ctx.contactlessCardSelectADF(aIn)
+    return this.ctx.contactlessCardSelectADFAsyn(aIn)
   }
 
   /*@Log('应用初始化')
@@ -167,29 +167,29 @@ export class ContactlessCard extends BaseAPI {
     return this.ctx.contactlessCardReadAppDataAsyn(aAFL)
   }*/
 
-  @Log('读有效日期')
+  @LogAsync('读有效日期')
   readCardValidity() {
-    return this.ctx.contactlessCardCardDateInfo()
+    return this.ctx.contactlessCardCardDateInfoAsyn()
   }
 
-  @Log('读二磁道')
+  @LogAsync('读二磁道')
   readTrack2() {
-    return this.ctx.contactlessCardPBOCGetTrack2Data()
+    return this.ctx.contactlessCardPBOCGetTrack2DataAsyn()
   }
 
-  @Log('圈存,圈提初始化')
+  @LogAsync('圈存,圈提初始化')
   initializeCircle() {
-    return this.ctx.contactlessCardInitForLoad()
+    return this.ctx.contactlessCardInitForLoadAsyn()
   }
 
-  @Log('读55域数据')
+  @LogAsync('读55域数据')
   readField55() {
-    return this.ctx.contactlessCardReadIcTLV()
+    return this.ctx.contactlessCardReadIcTLVAsyn()
   }
 
-  @Log('读卡序列号')
+  @LogAsync('读卡序列号')
   read5F34(aTag = '5F34') {
-    return this.ctx.contactlessCardGetTag(aTag)
+    return this.ctx.contactlessCardGetTagAsyn(aTag)
   }
 
   static isBuildApplyResult(eventResult) {
