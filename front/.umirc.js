@@ -1,3 +1,4 @@
+const path = require('path')
 
 // ref: https://umijs.org/config/
 export default {
@@ -23,6 +24,22 @@ export default {
     ie: 11,
   },
   history: 'hash',
+  extraBabelIncludes: [
+    // /p-event/,
+    // /p-timeout/,
+    // /p-finally/,
+    // /node_modules\/p-event/,
+    // /node_modules\/p-timeout/,
+    // /node_modules\/p-finally/,
+    // '/node_modules/p-event/index.js',
+    // '/node_modules/p-timeout/index.js',
+    // path.resolve(__dirname, './node_modules/af-webpack/node_modules/strip-ansi/index.js'),
+    // path.resolve(__dirname, './node_modules/af-webpack/node_modules/ansi-regex/index.js'),
+    path.resolve(__dirname, 'node_modules/af-webpack/node_modules/strip-ansi/index.js'),
+    path.resolve(__dirname, 'node_modules/p-event/index.js'),
+    path.resolve(__dirname, 'node_modules/p-timeout/index.js'),
+    path.resolve(__dirname, 'node_modules/p-finally/index.js')
+  ],
   theme: {
     "heading-color": "rgba(0, 0, 0, .85)",               // 标题色
     "text-color": "rgba(0, 0, 0, .65)",                 // 主文本色

@@ -32,7 +32,10 @@ export function mockOcxEnv(ctx) {
     'contactlessCardClose',
     'contactlessCardGetInfo',
     'contactlessCardCancel',
-    'contactlessCardInsert'
+    'contactlessCardInsert',
+    'contactlessCardReset',
+    'contactlessCardInit',
+    'contactlessCardPowerOnAsyn'
   ]
 
   const attrributes = [
