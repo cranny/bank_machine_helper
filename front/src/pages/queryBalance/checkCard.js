@@ -13,11 +13,12 @@ const debug = require('debug')('wb:pages:checkId')
 class Page extends React.Component {
 
   hasInserted = false
-  timeout = 30
+  timeout = 999
 
   componentDidMount() {
-    getBankAPI().ContactlessCard.openAndCheck()
-    getBankAPI().ContactlessCard.insert(this.timeout)
+    getBankAPI().ContactlessCard.start(this.timeout)
+
+    getBankAPI().ContactlessCard.afterIn()
 
     getBankAPI().ContactlessCard.once('onIn', this.onIn)
     getBankAPI().ContactlessCard.once('onOut', this.onOut)

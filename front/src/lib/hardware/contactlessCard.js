@@ -92,14 +92,6 @@ export class ContactlessCard extends EventEmitter {
     return this.ctx.contactlessCardGetInfo(11)
   }
 
-  openAndCheck() {
-    this.open()
-    const infoData = this.getInfo()
-    if (!infoData.isOK) {
-      this.reset()
-    }
-  }
-
   @LogAsync('等待放置')
   insert(timeout = 60) {
     return this.ctx.contactlessCardInsert(timeout)
@@ -120,6 +112,26 @@ export class ContactlessCard extends EventEmitter {
     return this.ctx.contactlessCardEjectAsyn(timeout)
   }
 
+  start() {
+    this.open()
+    const infoData = this.getInfo()
+    if (!infoData.isOK) {
+      this.reset()
+    }
+    this.insert()
+  }
+
+  afterIn() {
+    this.powerOn()
+    this.buildApply()
+    this.choiceApply()
+    this.readCardValidity()
+    this.readTrack2()
+    this.initializeCircle()
+    this.readField55()
+    this.read5F34()
+  }
+
   @Log('上电')
   powerOn() {
     return this.ctx.contactlessCardPowerOn()
@@ -132,12 +144,12 @@ export class ContactlessCard extends EventEmitter {
 
   @Log('建立应用列表')
   buildApply() {
-    return this.ctx.contactlessCardGetPSEAIDAsyn('')
+    return this.ctx.contactlessCardGetPSEAID('')
   }
 
   @Log('应用选择')
-  choiceApply(aIn) {
-    return this.ctx.contactlessCardSelectADFAsyn(aIn)
+  choiceApply(aIn = 'A000000333010101') {
+    return this.ctx.contactlessCardSelectADF(aIn)
   }
 
   /*@Log('应用初始化')
@@ -152,28 +164,27 @@ export class ContactlessCard extends EventEmitter {
 
   @Log('读有效日期')
   readCardValidity() {
-    return this.ctx.contactlessCardCardDateInfoAsyn()
+    return this.ctx.contactlessCardCardDateInfo()
   }
 
   @Log('读二磁道')
   readTrack2() {
-    return this.ctx.contactlessCardPBOCGetTrack2DataAsyn()
+    return this.ctx.contactlessCardPBOCGetTrack2Data()
   }
 
   @Log('圈存,圈提初始化')
   initializeCircle() {
-    return this.ctx.contactlessCardInitForLoadAsyn()
+    return this.ctx.contactlessCardInitForLoad()
   }
 
   @Log('读55域数据')
   readField55() {
-    return this.ctx.contactlessCardReadIcTLVAsyn()
+    return this.ctx.contactlessCardReadIcTLV()
   }
 
   @Log('读卡序列号')
-  read5F34(aTag) {
-    const resCode = this.ctx.contactlessCardGetTag(aTag)
-    handleSyncResult('读卡序列号', resCode.RT)
+  read5F34(aTag = '9F51') {
+    return this.ctx.contactlessCardGetTag(aTag)
   }
 
   static isBuildApplyResult(eventResult) {
