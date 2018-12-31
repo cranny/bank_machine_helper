@@ -1,15 +1,9 @@
-import EventEmitter from 'eventemitter3'
+import { BaseAPI } from './base'
 import { Log, LogAsync } from '../decorators'
 
 const debug = require('debug')('wb:lib:hardware:cardIssuer')
 
-export class CardIssuer extends EventEmitter {
-  constructor(ctx) {
-    super()
-    this.ctx = ctx
-    return this
-  }
-
+export class CardIssuer extends BaseAPI {
   debug = debug
 
   static DEVICE_NAME = '发卡器'

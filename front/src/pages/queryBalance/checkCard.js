@@ -16,7 +16,7 @@ class Page extends React.Component {
   timeout = 999
 
   componentDidMount() {
-    getBankAPI().ContactlessCard.start(this.timeout)
+    getBankAPI().ContactlessCard.start()
 
     this.onIn()
 

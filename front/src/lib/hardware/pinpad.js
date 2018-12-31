@@ -1,15 +1,9 @@
-import EventEmitter from 'eventemitter3'
+import { BaseAPI } from './base'
 import { Log, LogAsync } from '../decorators'
 
 const debug = require('debug')('wb:lib:hardware:pinpad')
 
-export class Pinpad extends EventEmitter {
-  constructor(ctx) {
-    super()
-    this.ctx = ctx
-    return this
-  }
-
+export class Pinpad extends BaseAPI {
   debug = debug
 
   static DEVICE_NAME = '密码键盘'

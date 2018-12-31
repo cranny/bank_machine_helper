@@ -1,16 +1,10 @@
-import EventEmitter from 'eventemitter3'
+import { BaseAPI } from './base'
 import { Log, LogAsync } from '../decorators'
 import {parseAsyncResult, OcxExceptions, handleSyncResult, parseSpecialFormat} from '../utils'
 
 const debug = require('debug')('wb:lib:hardware:contactlessCard')
 
-export class ContactlessCard extends EventEmitter {
-  constructor(ctx) {
-    super()
-    this.ctx = ctx
-    return this
-  }
-
+export class ContactlessCard extends BaseAPI {
   debug = debug
 
   static DEVICE_NAME = '非接读卡器'
@@ -26,8 +20,14 @@ export class ContactlessCard extends EventEmitter {
       desc: 'event: 银行卡已取走'
     },
 
+    onPowerOn: {
+      command: 'contactlessCardPowerOnAsyn',
+      name: 'OnContactlessCardPowerOn',
+      desc: 'event: 已上电'
+    },
+
     onBuildApply: {
-      command: 'isBuildApply',
+      command: 'contactlessCardGetPSEAIDAsyn',
       name: 'OnContactlessCardGetPSEAID',
       desc: 'event: 应用列表已建立'
     },
@@ -121,20 +121,25 @@ export class ContactlessCard extends EventEmitter {
     this.insert()
   }
 
-  afterIn() {
+  async afterIn() {
+    this.forceInit()
+    this.open()
+
     this.powerOn()
+    await this.waitEvent('onPowerOn')
     this.buildApply()
-    this.choiceApply()
-    this.readCardValidity()
-    this.readTrack2()
-    this.initializeCircle()
-    this.readField55()
-    this.read5F34()
+    await this.waitEvent('onBuildApply')
+    // this.choiceApply()
+    // this.readCardValidity()
+    // this.readTrack2()
+    // this.initializeCircle()
+    // this.readField55()
+    // this.read5F34()
   }
 
-  @Log('上电')
+  @LogAsync('上电')
   powerOn() {
-    return this.ctx.contactlessCardPowerOn()
+    return this.ctx.contactlessCardPowerOnAsyn()
   }
 
   @Log('下电')
@@ -144,7 +149,7 @@ export class ContactlessCard extends EventEmitter {
 
   @Log('建立应用列表')
   buildApply() {
-    return this.ctx.contactlessCardGetPSEAID('')
+    return this.ctx.contactlessCardGetPSEAIDAsyn('')
   }
 
   @Log('应用选择')
