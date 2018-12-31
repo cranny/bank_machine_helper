@@ -94,8 +94,8 @@ export class ContactlessCard extends EventEmitter {
 
   openAndCheck() {
     this.open()
-    const deviceCode = this.getInfo()
-    if (deviceCode) {
+    const infoData = this.getInfo()
+    if (!infoData.isOK) {
       this.reset()
     }
   }
