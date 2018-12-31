@@ -3,24 +3,37 @@ import { parseAsyncResult } from '../utils'
 export const handleSyncResult = function (actionName, res) {
   this.debug(`${this.constructor.DEVICE_NAME}: ${actionName} get result ${res}`)
   let resCode = undefined
+  let resData = {}
 
   if (typeof res === 'number') {
     resCode = res
   }
 
   if (typeof res === 'string' && res.indexOf('^') > -1) {
-    res = parseAsyncResult(res)
-    resCode = res.RT
+    resData = parseAsyncResult(res)
+    resCode = resData.RT
   }
 
-  if (parseInt(resCode, 10) !== 0) {
+  const isOK = parseInt(resCode, 10) === 0
+
+  if (isOK) {
     // throw new OcxExceptions(`${actionName} failed`);
     this.debug(`${actionName} failed`)
   } else {
     this.debug(`${actionName} success`)
   }
 
-  return res
+  this.debug('handleSyncResult: ', {
+    isOK,
+    resCode,
+    resData
+  })
+
+  return {
+    isOK,
+    resCode,
+    resData
+  }
 };
 
 
@@ -30,8 +43,7 @@ export function Log(actionName){
     descriptor.value = function(...args) {
       this.debug(`${this.constructor.DEVICE_NAME}: ${actionName}`)
       const resCode = oldValue.apply(this, args);
-      handleSyncResult.call(this, actionName, resCode)
-      return resCode
+      return handleSyncResult.call(this, actionName, resCode)
     };
     return descriptor;
   }
