@@ -16,24 +16,22 @@ export const handleSyncResult = function (actionName, res) {
 
   const isOK = parseInt(resCode, 10) === 0
 
-  if (isOK) {
+  if (!isOK) {
     // throw new OcxExceptions(`${actionName} failed`);
     this.debug(`${actionName} failed`)
   } else {
     this.debug(`${actionName} success`)
   }
 
-  this.debug('handleSyncResult: ', {
+  const result = {
     isOK,
-    resCode,
-    resData
-  })
-
-  return {
-    isOK,
-    resCode,
-    resData
+    code: resCode,
+    ...resData
   }
+
+  this.debug('handleSyncResult: ', result)
+
+  return result
 };
 
 
