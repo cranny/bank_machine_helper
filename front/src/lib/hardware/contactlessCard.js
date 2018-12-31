@@ -183,7 +183,7 @@ export class ContactlessCard extends EventEmitter {
   }
 
   @Log('读卡序列号')
-  read5F34(aTag = '9F51') {
+  read5F34(aTag = '5F34') {
     return this.ctx.contactlessCardGetTag(aTag)
   }
 

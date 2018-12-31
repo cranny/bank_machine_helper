@@ -18,7 +18,7 @@ class Page extends React.Component {
   componentDidMount() {
     getBankAPI().ContactlessCard.start(this.timeout)
 
-    getBankAPI().ContactlessCard.afterIn()
+    this.onIn()
 
     getBankAPI().ContactlessCard.once('onIn', this.onIn)
     getBankAPI().ContactlessCard.once('onOut', this.onOut)
@@ -49,13 +49,14 @@ class Page extends React.Component {
   onIn = () => {
     this.hasInserted = true
     debug('接收到银行卡已放置事件')
-    getBankAPI().ContactlessCard.buildApply()
     this.props.dispatch({
       type: 'app/showLoading',
       payload: {
         loading: '正在读取银行卡信息',
       },
     });
+
+    getBankAPI().ContactlessCard.afterIn()
   }
 
   onOut = () => {
@@ -63,96 +64,44 @@ class Page extends React.Component {
   }
 
   onBuildApply = () => {
-    this.hasInserted = true
-    debug('接收到建立应用列表事件' + "asdfasd" + getBankAPI().ContactlessCard.aIn)
+    debug('接收到建立应用列表事件')
 
-    getBankAPI().ContactlessCard.choiceApply(getBankAPI().ContactlessCard.aIn)
-    this.props.dispatch({
-      type: 'app/showLoading',
-      payload: {
-        loading: '初始化读卡设备',
-      },
-    });
+    getBankAPI().ContactlessCard.choiceApply('A000000333010101')
   }
 
   onChoiceApply = () => {
-    this.hasInserted = true
     debug('接收到应用选择事件')
 
     getBankAPI().ContactlessCard.readCardValidity()
-    this.props.dispatch({
-      type: 'app/showLoading',
-      payload: {
-        loading: '读取银行卡信息',
-      },
-    });
   }
 
   onReadCardValidity = () => {
-    this.hasInserted = true
     debug('接收到读卡有效日期事件')
 
     getBankAPI().ContactlessCard.readTrack2()
-    this.props.dispatch({
-      type: 'app/showLoading',
-      payload: {
-        loading: '读取银行卡信息',
-      },
-    });
   }
 
   onReadTrack2 = () => {
-    this.hasInserted = true
     debug('接收到读二磁道数据事件')
 
     getBankAPI().ContactlessCard.initializeCircle()
-    this.props.dispatch({
-      type: 'app/showLoading',
-      payload: {
-        loading: '读取银行卡信息',
-      },
-    });
   }
 
   onInitializeCircle = () => {
-    this.hasInserted = true
     debug('接收到圈存,圈提初始化事件')
 
     getBankAPI().ContactlessCard.readField55()
-    this.props.dispatch({
-      type: 'app/showLoading',
-      payload: {
-        loading: '读取银行卡信息',
-      },
-    });
   }
 
   onReadField55 = () => {
-    this.hasInserted = true
     debug('接收到读55域数据事件')
 
     const tag = '5F34'
     getBankAPI().ContactlessCard.read5F34(tag)
-    this.props.dispatch({
-      type: 'app/showLoading',
-      payload: {
-        loading: '读取银行卡信息',
-      },
-    });
   }
 
   onRead = payload =>{
     debug('接收到银行卡已读取事件', payload)
-    // this.props.dispatch({
-    //   type: 'ids/onRead',
-    //   payload: payload.value
-    // });
-    // this.props.dispatch({
-    //   type: 'app/showLoading',
-    //   payload: {
-    //     loading: '正在扫描身份证信息',
-    //   }
-    // });
   }
 
   render() {
