@@ -1,6 +1,6 @@
 import { BaseAPI } from './base'
 import { Log, LogAsync } from '../decorators'
-import {parseAsyncResult, OcxExceptions, handleSyncResult, parseSpecialFormat} from '../utils'
+// import {parseAsyncResult, OcxExceptions, handleSyncResult, parseSpecialFormat} from '../utils'
 
 const debug = require('debug')('wb:lib:hardware:contactlessCard')
 
@@ -33,26 +33,31 @@ export class ContactlessCard extends BaseAPI {
     },
 
     onChoiceApply: {
+      command: 'contactlessCardSelectADFAsyn',
       name: 'OnContactlessCardSelectADF',
       desc: 'event: 已选择应用'
     },
 
     onReadCardValidity: {
+      command: 'contactlessCardCardDateInfoAsyn',
       name: 'OnContactlessCardCardDateInfo',
       desc: 'event: 已读有效日期'
     },
 
     onReadTrack2: {
+      command: 'contactlessCardPBOCGetTrack2DataAsyn',
       name: 'OnContactlessCardPBOCGetTrack2Data',
       desc: 'event: 已读二磁道数据'
     },
 
     onInitializeCircle: {
+      command: 'contactlessCardInitForLoadAsyn',
       name: 'OnContactlessCardInitForLoad',
       desc: 'event: 已读初始化圈存,圈提'
     },
 
     onReadField55: {
+      command: 'contactlessCardReadIcTLVAsyn',
       name: 'OnContactlessCardReadIcTLV',
       desc: 'event: 已读初始化圈存,圈提'
     }
@@ -127,14 +132,41 @@ export class ContactlessCard extends BaseAPI {
 
     this.powerOn()
     await this.waitEvent('onPowerOn')
+
     this.buildApply()
-    await this.waitEvent('onBuildApply')
-    // this.choiceApply()
-    // this.readCardValidity()
-    // this.readTrack2()
-    // this.initializeCircle()
-    // this.readField55()
-    // this.read5F34()
+    const buildApplyResult = await this.waitEvent('onBuildApply')
+
+    this.choiceApply()
+    const choiceApplyResult = await this.waitEvent('onChoiceApply')
+
+    this.readCardValidity()
+    const validityResult = await this.waitEvent('onReadCardValidity')
+
+    this.readTrack2()
+    const track2Result = await this.waitEvent('onReadTrack2')
+
+    this.initializeCircle()
+    const circleResult = await this.waitEvent('onInitializeCircle')
+
+    this.readField55()
+    const field55Result = await this.waitEvent('onReadField55')
+
+    const read5F34Result = this.read5F34()
+
+    return {
+      buildApplyResult,
+      choiceApplyResult,
+      validityResult,
+      track2Result,
+      circleResult,
+      field55Result,
+      read5F34Result
+    }
+  }
+
+  async afterOut() {
+    this.powerOff()
+    await this.waitEvent('onPowerOff')
   }
 
   @LogAsync('上电')
@@ -187,9 +219,9 @@ export class ContactlessCard extends BaseAPI {
     return this.ctx.contactlessCardReadIcTLVAsyn()
   }
 
-  @LogAsync('读卡序列号')
+  @Log('读卡序列号')
   read5F34(aTag = '5F34') {
-    return this.ctx.contactlessCardGetTagAsyn(aTag)
+    return this.ctx.contactlessCardGetTag(aTag)
   }
 
   static isBuildApplyResult(eventResult) {

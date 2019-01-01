@@ -1,12 +1,12 @@
 import styles from './checkCard.scss';
-// import { Row, Col } from 'antd';
-// import classNames from 'classnames';
+import { Button } from 'antd';
+import classNames from 'classnames';
 import router from 'umi/router';
 import { connect } from 'dva';
 import { getBankAPI } from '../../lib/hardware';
 import React from 'react';
 import CountDown from '../../components/countdown'
-import Step from '../../components/step'
+// import Step from '../../components/step'
 
 const debug = require('debug')('wb:pages:checkId')
 
@@ -18,18 +18,11 @@ class Page extends React.Component {
   componentDidMount() {
     getBankAPI().ContactlessCard.start()
 
-    this.onIn()
+    // this.onIn()
 
     getBankAPI().ContactlessCard.once('onIn', this.onIn)
     getBankAPI().ContactlessCard.once('onOut', this.onOut)
-    getBankAPI().ContactlessCard.once('onBuildApply', this.onBuildApply)
-    getBankAPI().ContactlessCard.once('onChoiceApply', this.onChoiceApply)
-    getBankAPI().ContactlessCard.once('onReadCardValidity', this.onReadCardValidity)
-    getBankAPI().ContactlessCard.once('onReadTrack2', this.onReadTrack2)
-    getBankAPI().ContactlessCard.once('onInitializeCircle', this.onInitializeCircle)
-    getBankAPI().ContactlessCard.once('onReadField55', this.onReadField55)
 
-    //getBankAPI().Ids.once('onRead', this.onRead)
   }
 
   onTimeout = () => {
@@ -46,7 +39,7 @@ class Page extends React.Component {
     getBankAPI().ContactlessCard.close()
   }
 
-  onIn = () => {
+  onIn = async () => {
     this.hasInserted = true
     debug('接收到银行卡已放置事件')
     this.props.dispatch({
@@ -56,68 +49,61 @@ class Page extends React.Component {
       },
     });
 
-    getBankAPI().ContactlessCard.afterIn()
+    const cardData = await getBankAPI().ContactlessCard.afterIn()
+    console.log(cardData)
+
+    this.props.dispatch({
+      type: 'card/onRead',
+      payload: cardData
+    });
+
+    this.props.dispatch({
+      type: 'app/hideLoading'
+    });
   }
 
-  onOut = () => {
+  onOut = async () => {
+    debug('接收到银行卡已取走事件')
+    await getBankAPI().ContactlessCard.afterOut()
+  }
+
+  onConfirm = () => {
 
   }
 
-  onBuildApply = () => {
-    debug('接收到建立应用列表事件')
-
-    getBankAPI().ContactlessCard.choiceApply('A000000333010101')
+  renderCardResult() {
+    const { id } = this.props.card
+    return (
+      <div>
+       您的卡号为: {id}
+      <Button value="确认" type="primary" size="large" onClick={this.onConfirm} className={classNames(styles.button, 'wb-button')} />
+      </div>
+    )
   }
 
-  onChoiceApply = () => {
-    debug('接收到应用选择事件')
-
-    getBankAPI().ContactlessCard.readCardValidity()
-  }
-
-  onReadCardValidity = () => {
-    debug('接收到读卡有效日期事件')
-
-    getBankAPI().ContactlessCard.readTrack2()
-  }
-
-  onReadTrack2 = () => {
-    debug('接收到读二磁道数据事件')
-
-    getBankAPI().ContactlessCard.initializeCircle()
-  }
-
-  onInitializeCircle = () => {
-    debug('接收到圈存,圈提初始化事件')
-
-    getBankAPI().ContactlessCard.readField55()
-  }
-
-  onReadField55 = () => {
-    debug('接收到读55域数据事件')
-
-    const tag = '5F34'
-    getBankAPI().ContactlessCard.read5F34(tag)
-  }
-
-  onRead = payload =>{
-    debug('接收到银行卡已读取事件', payload)
+  renderWait() {
+    return (
+      <div className={styles.figure}>
+      { !this.hasInserted ? <CountDown text="请于%s内放置您的银行卡到指定区域" num={this.timeout} onEnd={this.onTimeout} /> : null }
+      </div>
+    )
   }
 
   render() {
+    const { id } = this.props.card
     return (
       <div className={styles.home}>
-        <Step />
-        <div className={styles.figure}>
-          { !this.hasInserted ? <CountDown text="请于%s内放置您的银行卡到指定区域" num={this.timeout} onEnd={this.onTimeout} /> : null }
-        </div>
+        {/* <Step /> */}
+        { id ? this.renderCardResult() : this.renderWait() }
       </div>
     );
   }
 }
 
 function mapStateToProps(state) {
-  return {};
+  return {
+    card: state.card
+  };
 }
 
 export default connect(mapStateToProps)(Page);
