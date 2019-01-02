@@ -118,6 +118,7 @@ export class ContactlessCard extends BaseAPI {
   }
 
   start(timeout) {
+    this.forceInit()
     this.open()
     const infoData = this.getInfo()
     if (!infoData.isOK) {
@@ -127,11 +128,11 @@ export class ContactlessCard extends BaseAPI {
   }
 
   async afterIn() {
-    this.forceInit()
-    this.open()
+    // this.forceInit()
+    // this.open()
 
-    this.powerOn()
-    await this.waitEvent('onPowerOn')
+    // this.powerOn()
+    // await this.waitEvent('onPowerOn')
 
     this.buildApply()
     const buildApplyResult = await this.waitEvent('onBuildApply')
