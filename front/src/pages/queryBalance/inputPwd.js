@@ -1,4 +1,4 @@
-import styles from './inputPwd.css';
+import styles from './inputPwd.scss';
 import classNames from 'classnames';
 // import Link from 'umi/link';
 import router from 'umi/router';
@@ -6,6 +6,7 @@ import { Form, Input, Button, Col, Row } from 'antd';
 import React from 'react';
 import { connect } from 'dva';
 import { getBankAPI } from '../../lib/hardware';
+import { postman } from '../../lib/ajax'
 import CountDown from '../../components/countdown'
 
 const FormItem = Form.Item;
@@ -15,29 +16,45 @@ class InputForm extends React.Component {
   hasInputed = false
   timeout = 60
 
+  state = {
+    password: ''
+  }
+
   componentDidMount() {
     const { cardNum } = this.props.card
+    getBankAPI().Pinpad.on('onInput', this.onInput)
     getBankAPI().Pinpad.start(cardNum).then(password => {
       console.log('got password: ', password)
+      this.setState({
+        password
+      })
     })
+
+    // this.setState({
+    //   password: '******'
+    // })
   }
 
   onTimeout = () => {
     router.push('/');
   }
 
+  onInput = () => {
+    const { password } = this.state
+    this.setState({
+      password: password + '*'
+    })
+  }
+
   componentWillUnmount() {
+    getBankAPI().Pinpad.off('onInput', this.onInput)
     getBankAPI().Pinpad.pinpadEndRead()
     getBankAPI().Pinpad.close()
   }
 
-  handleSubmit = e => {
+  handleSubmit = async e => {
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        console.log('Received values of form: ', values);
-      }
-    });
+    await postman.queryBalance(this.state.password)
   };
 
   renderWait() {
@@ -59,11 +76,11 @@ class InputForm extends React.Component {
     };
 
     return (
-      <Form onSubmit={this.handleSubmit} className="input-form">
+      <Form onSubmit={this.handleSubmit.bind(this)} className="input-form">
         <Row>
           <Col span={24}>
             <FormItem label="密码" {...singleFormItemLayout}>
-              <Input size="large" type="password" />
+              <Input defaultValue={this.state.password} size="large" type="password" />
             </FormItem>
           </Col>
         </Row>

@@ -1,0 +1,15 @@
+.result {
+  width: 600px;
+  margin: 0 auto;
+
+  padding-top: 60px;
+  table {
+    display: block;
+    margin-top: -1px;
+    background-color: #f6ffed;
+    border: solid 1px #b7eb8f;
+    td {
+      padding: 20px 10px;
+    }
+  }
+}
