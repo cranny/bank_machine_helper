@@ -154,7 +154,7 @@ export class ContactlessCard extends BaseAPI {
 
     // const read5F34Result = this.read5F34()
 
-    const cardNum = track2Result.value['CN'].split('D')[0]
+    const cardNum = track2Result.CN.split('D')[0]
 
     return {
       cardNum,
