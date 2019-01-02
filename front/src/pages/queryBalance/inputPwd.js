@@ -17,8 +17,9 @@ class InputForm extends React.Component {
 
   componentDidMount() {
     const { cardNum } = this.props.card
-    getBankAPI().Pinpad.start(cardNum)
-    getBankAPI().Pinpad.on('onInput', this.onInput)
+    getBankAPI().Pinpad.start(cardNum).then(password => {
+      console.log('got password: ', password)
+    })
   }
 
   onTimeout = () => {
@@ -26,13 +27,8 @@ class InputForm extends React.Component {
   }
 
   componentWillUnmount() {
-    getBankAPI().Pinpad.off('onInput', this.onInput)
     getBankAPI().Pinpad.pinpadEndRead()
     getBankAPI().Pinpad.close()
-  }
-
-  onInput = (num) =>{
-    console.log(num)
   }
 
   handleSubmit = e => {
