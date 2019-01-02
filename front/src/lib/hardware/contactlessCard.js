@@ -149,19 +149,22 @@ export class ContactlessCard extends BaseAPI {
     this.initializeCircle()
     const circleResult = await this.waitEvent('onInitializeCircle')
 
-    this.readField55()
-    const field55Result = await this.waitEvent('onReadField55')
+    // this.readField55()
+    // const field55Result = await this.waitEvent('onReadField55')
 
-    const read5F34Result = this.read5F34()
+    // const read5F34Result = this.read5F34()
+
+    const cardNum = track2Result['CN'].split('D')[0]
 
     return {
+      cardNum,
       buildApplyResult,
       choiceApplyResult,
       validityResult,
       track2Result,
       circleResult,
-      field55Result,
-      read5F34Result
+      // field55Result,
+      // read5F34Result
     }
   }
 

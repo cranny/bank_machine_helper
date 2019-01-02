@@ -29,28 +29,23 @@ export class Pinpad extends BaseAPI {
     return this.ctx.pinpadClose()
   }
 
+  @LogAsync('获取数据')
   getData(cardNum) {
-    debug('密码盘获取输入', cardNum)
-    return this.ctx.pinpadGetData(cardNum)
+    return this.ctx.pinpadGetDataAsyn(cardNum)
   }
 
-  pinpadMainKey(key) {
-    debug('密码盘加载主密钥', key)
-    return this.ctx.pinpadMainKey(key)
+  start() {
+    this.open()
+    this.pinpadBeginRead()
   }
 
-  pinpadWorkKey(key) {
-    debug('密码盘加载工作密钥', key)
-    return this.ctx.pinpadWorkKey(key)
+  @Log('等待输入')
+  pinpadBeginRead(timeout, mode = 1, maxLength = 6) {
+    return this.ctx.pinpadBeginRead(timeout, mode, maxLength)
   }
 
-  pinpadBeginRead(timeout, mode, maxLength = 6) {
-    debug('密码盘等待输入')
-    this.ctx.pinpadBeginRead(timeout, mode, maxLength)
-  }
-
+  @Log('结束等待输入')
   pinpadEndRead() {
-    debug('密码盘结束等待输入')
-    this.ctx.pinpadEndRead()
+    return this.ctx.pinpadEndRead(1)
   }
 }

@@ -4,10 +4,35 @@ import classNames from 'classnames';
 import router from 'umi/router';
 import { Form, Input, Button, Col, Row } from 'antd';
 import React from 'react';
+import { connect } from 'dva';
+import { getBankAPI } from '../../lib/hardware';
+import CountDown from '../../components/countdown'
 
 const FormItem = Form.Item;
 
 class InputForm extends React.Component {
+
+  hasInputed = false
+  timeout = 60
+
+  componentDidMount() {
+    getBankAPI().Pinpad.start()
+    getBankAPI().Pinpad.on('onInput', this.onInput)
+  }
+
+  onTimeout = () => {
+    router.push('/');
+  }
+
+  componentWillUnmount() {
+    getBankAPI().Pinpad.off('onInput', this.onInput)
+    getBankAPI().Pinpad.pinpadEndRead()
+    getBankAPI().Pinpad.close()
+  }
+
+  onInput = (num) =>{
+    console.log(num)
+  }
 
   handleSubmit = e => {
     e.preventDefault();
@@ -18,7 +43,15 @@ class InputForm extends React.Component {
     });
   };
 
-  render() {
+  renderWait() {
+    return (
+      <div className={styles.figure}>
+      { !this.hasInputed ? <CountDown text="请于%s内输入您的取款密码" num={this.timeout} onEnd={this.onTimeout} /> : null }
+      </div>
+    )
+  }
+
+  renderForm() {
     const { getFieldDecorator } = this.props.form;
 
     const singleFormItemLayout = {
@@ -35,18 +68,7 @@ class InputForm extends React.Component {
         <Row>
           <Col span={24}>
             <FormItem label="密码" {...singleFormItemLayout}>
-              {getFieldDecorator('password', {
-                rules: [
-                  {
-                    required: true,
-                    message: '请输入您的密码!',
-                  },
-                  {
-                    len: 6,
-                    message: '密码必须为6位数'
-                  }
-                ],
-              })(<Input size="large" type="password" />)}
+              <Input size="large" type="password" />
             </FormItem>
           </Col>
         </Row>
@@ -66,14 +88,21 @@ class InputForm extends React.Component {
       </Form>
     );
   }
+
+  render() {
+    return (
+      <div>
+        {this.renderWait()}
+        {this.renderForm()}
+      </div>
+    )
+  }
 }
 
-const WrappedInputForm = Form.create()(InputForm);
-
-export default function() {
-  return (
-    <div className={styles.input}>
-      <WrappedInputForm />
-    </div>
-  );
+function mapStateToProps(state) {
+  return {
+    card: state.card
+  };
 }
+
+export default connect(mapStateToProps)(InputForm);

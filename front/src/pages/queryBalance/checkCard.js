@@ -39,6 +39,8 @@ class Page extends React.Component {
       this.props.dispatch({
         type: 'app/hideLoading'
       });
+
+      router.push('queryBalance/inputPwd')
     })
   }
 
