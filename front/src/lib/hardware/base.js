@@ -10,7 +10,7 @@ export class BaseAPI extends EventEmitter {
   EVENT_TIMEOUT = 5000
 
   async waitEvent(eventName) {
-    await pEvent(this, eventName, {
+    return await pEvent(this, eventName, {
       timeout: this.constructor.EVENT_TIMEOUT
     })
   }
