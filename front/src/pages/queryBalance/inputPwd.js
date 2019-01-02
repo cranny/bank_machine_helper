@@ -49,8 +49,6 @@ class InputForm extends React.Component {
   }
 
   renderForm() {
-    const { getFieldDecorator } = this.props.form;
-
     const singleFormItemLayout = {
       labelCol: {
         span: 3,

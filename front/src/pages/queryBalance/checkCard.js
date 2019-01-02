@@ -40,7 +40,7 @@ class Page extends React.Component {
         type: 'app/hideLoading'
       });
 
-      router.push('queryBalance/inputPwd')
+      router.push('/queryBalance/inputPwd')
     })
   }
 
