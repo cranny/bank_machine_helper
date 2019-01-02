@@ -16,7 +16,8 @@ class InputForm extends React.Component {
   timeout = 60
 
   componentDidMount() {
-    getBankAPI().Pinpad.start()
+    const { cardNum } = this.props.card
+    getBankAPI().Pinpad.start(cardNum)
     getBankAPI().Pinpad.on('onInput', this.onInput)
   }
 

@@ -34,9 +34,10 @@ export class Pinpad extends BaseAPI {
     return this.ctx.pinpadGetDataAsyn(cardNum)
   }
 
-  start() {
+  start(cardNum) {
     this.open()
     this.pinpadBeginRead()
+    this.getData(cardNum)
   }
 
   @Log('等待输入')
