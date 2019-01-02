@@ -97,7 +97,7 @@ export class ContactlessCard extends BaseAPI {
     return this.ctx.contactlessCardGetInfo(11)
   }
 
-  @LogAsync('等待放置')
+  @Log('等待放置')
   insert(timeout = 60) {
     return this.ctx.contactlessCardInsert(timeout)
   }
@@ -117,13 +117,13 @@ export class ContactlessCard extends BaseAPI {
     return this.ctx.contactlessCardEjectAsyn(timeout)
   }
 
-  start() {
+  start(timeout) {
     this.open()
     const infoData = this.getInfo()
     if (!infoData.isOK) {
       this.reset()
     }
-    this.insert()
+    this.insert(timeout)
   }
 
   async afterIn() {

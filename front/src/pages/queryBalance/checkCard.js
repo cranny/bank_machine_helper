@@ -13,34 +13,14 @@ const debug = require('debug')('wb:pages:checkId')
 class Page extends React.Component {
 
   hasInserted = false
-  timeout = 999
+  timeout = 60
 
   componentDidMount() {
     getBankAPI().ContactlessCard.start()
-
-    // this.onIn()
-
-    getBankAPI().ContactlessCard.once('onIn', this.onIn)
     getBankAPI().ContactlessCard.once('onOut', this.onOut)
 
-  }
-
-  onTimeout = () => {
-    getBankAPI().ContactlessCard.cancelInsert()
-    getBankAPI().ContactlessCard.close()
-    router.push('/');
-  }
-
-  componentWillUnmount() {
-    getBankAPI().ContactlessCard.off('onIn', this.onIn)
-    getBankAPI().ContactlessCard.off('onOut', this.onOut)
-
-    !this.hasInserted && getBankAPI().ContactlessCard.cancelInsert()
-    getBankAPI().ContactlessCard.close()
-  }
-
-  onIn = async () => {
     this.hasInserted = true
+
     debug('接收到银行卡已放置事件')
     this.props.dispatch({
       type: 'app/showLoading',
@@ -49,17 +29,27 @@ class Page extends React.Component {
       },
     });
 
-    const cardData = await getBankAPI().ContactlessCard.afterIn()
-    console.log(cardData)
+    getBankAPI().ContactlessCard.afterIn().then(cardData => {
+      console.log(cardData)
+      this.props.dispatch({
+        type: 'card/onRead',
+        payload: cardData
+      });
 
-    this.props.dispatch({
-      type: 'card/onRead',
-      payload: cardData
-    });
+      this.props.dispatch({
+        type: 'app/hideLoading'
+      });
+    })
+  }
 
-    this.props.dispatch({
-      type: 'app/hideLoading'
-    });
+  onTimeout = () => {
+    router.push('/');
+  }
+
+  componentWillUnmount() {
+    getBankAPI().ContactlessCard.off('onOut', this.onOut)
+    getBankAPI().ContactlessCard.cancelInsert()
+    getBankAPI().ContactlessCard.close()
   }
 
   onOut = async () => {
