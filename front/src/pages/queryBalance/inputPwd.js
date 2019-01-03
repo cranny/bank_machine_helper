@@ -22,6 +22,7 @@ class InputForm extends React.Component {
 
   componentDidMount() {
     const { cardNum } = this.props.card
+    console.log('-cardNum----', cardNum)
     getBankAPI().Pinpad.on('onInput', this.onInput)
     getBankAPI().Pinpad.start(cardNum).then(password => {
       console.log('got password: ', password)

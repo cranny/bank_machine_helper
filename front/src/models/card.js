@@ -7,10 +7,7 @@ export default {
   },
   reducers: {
     onRead(state, { payload }) {
-      state = {
-        ...state,
-        ...payload
-      }
+      Object.assign(state, payload)
     }
   },
 };
