@@ -18,32 +18,34 @@ class InputForm extends React.Component {
 
   state = {
     password: ''
-  }
+  }/*  */
 
   componentDidMount() {
     const { cardNum } = this.props.card
     console.log('-cardNum----', cardNum)
-    getBankAPI().Pinpad.on('onInput', this.onInput)
-    getBankAPI().Pinpad.start(cardNum).then(password => {
-      console.log('got password: ', password)
-      this.setState({
-        password
-      })
-    })
-
-    // this.setState({
-    //   password: '******'
-    // })
-  }
-
-  onTimeout = () => {
-    router.push('/');
+    getBankAPI().Pinpad.start()
+    getBankAPI().Pinpad.once('onBeginRead', this.onBeginRead)
+    this.hasInserted = true
   }
 
   onInput = () => {
     const { password } = this.state
     this.setState({
       password: password + '*'
+    })
+  }
+
+  onTimeout = () => {
+    router.push('/');
+  }
+
+  onBeginRead = () => {
+    const { cardNum } = this.props.card
+    getBankAPI().Pinpad.loadData(cardNum).then(password => {
+      console.log('got password: ', password)
+      this.setState({
+        password
+      })
     })
   }
 

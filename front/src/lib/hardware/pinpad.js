@@ -13,6 +13,11 @@ export class Pinpad extends BaseAPI {
       name: 'OnPinPadKeyPressed',
       desc: 'event: 密码键已按下'
     },
+    onBeginRead: {
+      command: 'pinpadBeginReadAsyn',
+      name: 'OnPinpadBeginRead',
+      desc: 'event: 已输入密码'
+    },
     onGetData: {
       command: 'pinpadGetDataAsyn',
       name: 'OnPinpadGottenData',
@@ -39,15 +44,24 @@ export class Pinpad extends BaseAPI {
     return this.ctx.pinpadGetDataAsyn(cardNum)
   }
 
-  async start(cardNum) {
+  async start() {
     this.open()
     this.pinpadBeginRead()
     for (const i of [1,2,3,4,5,6]) {
-      await this.waitEvent('onInput')
+      await this.waitEvent('OnInput')
     }
+    //this.getData(cardNum)
+
+    //const result = await this.waitEvent('onGetData')
+    //return result
+  }
+
+  async loadData(cardNum){
+    console.log("cardNum" + cardNum)
     this.getData(cardNum)
 
     const result = await this.waitEvent('onGetData')
+    console.log("result" + result)
     return result
   }
 

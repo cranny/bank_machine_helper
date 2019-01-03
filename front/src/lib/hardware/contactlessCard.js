@@ -137,7 +137,7 @@ export class ContactlessCard extends BaseAPI {
     this.buildApply()
     const buildApplyResult = await this.waitEvent('onBuildApply')
 
-    this.choiceApply()
+    this.choiceApply(buildApplyResult.AD.split('|')[0])
     const choiceApplyResult = await this.waitEvent('onChoiceApply')
 
     this.readCardValidity()
@@ -149,11 +149,13 @@ export class ContactlessCard extends BaseAPI {
     this.initializeCircle()
     const circleResult = await this.waitEvent('onInitializeCircle')
 
-    // this.readField55()
-    // const field55Result = await this.waitEvent('onReadField55')
-
-    // const read5F34Result = this.read5F34()
-
+    const aPAan = circleResult.PA
+    const aInAD = circleResult.AD
+    const aInAR = circleResult.AR
+    console.log("aPAan:" + aPAan + "   aInAD:" + aInAD + "    aInAR:" + aInAR)
+    this.readField55(aPAan, aInAD, aInAR)
+    const field55Result = await this.waitEvent('onReadField55')
+    const read5F34Result = this.read5F34()
     const cardNum = track2Result.CN.split('D')[0]
 
     return {
@@ -163,8 +165,8 @@ export class ContactlessCard extends BaseAPI {
       validityResult,
       track2Result,
       circleResult,
-      // field55Result,
-      // read5F34Result
+      field55Result,
+      read5F34Result
     }
   }
 
@@ -219,8 +221,8 @@ export class ContactlessCard extends BaseAPI {
   }
 
   @LogAsync('读55域数据')
-  readField55() {
-    return this.ctx.contactlessCardReadIcTLVAsyn()
+  readField55(aPAan, aInAD, aInAR) {
+    return this.ctx.contactlessCardReadIcTLVAsyn(aPAan, aInAD, aInAR)
   }
 
   @Log('读卡序列号')
