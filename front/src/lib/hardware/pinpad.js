@@ -65,6 +65,16 @@ export class Pinpad extends BaseAPI {
     return result
   }
 
+  @Log('MAC加密')
+  pinpadGetMacHex(mac64) {
+    return this.ctx.pinpadGetMacHex(mac64, 1)
+  }
+
+  @Log('二磁道加密')
+  pinpadCrypt(track2Key) {
+    return this.ctx.pinpadCrypt(1, 0, "CryptKey", track2Key)
+  }
+
   @Log('等待输入')
   pinpadBeginRead(timeout, mode = 1, maxLength = 6) {
     return this.ctx.pinpadBeginRead(timeout, mode, maxLength)

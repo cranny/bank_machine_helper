@@ -9,7 +9,7 @@ const POST_URL_MAP = {
 
 async function baseFetch(url, data, method = 'post') {
   try {
-    console.log(data)
+    console.log("data:" + data)
     return await axios({
       method,
       url,
@@ -23,22 +23,39 @@ async function baseFetch(url, data, method = 'post') {
 }
 
 export const postman = {
-  async queryBalance(password) {
+  async queryBalance(password, card, field62, field64) {
     const params = {
-      bankcardType: '', //卡类型:磁条卡 IC卡 NFC卡
-      serial: '', //卡片序列号
-      cardNo: '', //卡号
-      expiryDate: '', //卡有效期
-      track2: '', //2磁道数据
-      originalTrack2: '', //二磁道原始数据
-      track3: '', //3磁道数据
-      iccData: '',//IccData 55域
-      password, //个人标识码  密码
-      amount: '',//金额
-        field62:'',//62域
-        field64:''//64域
+      "bankcardType":1, //卡类型:磁条卡 IC卡 NFC卡
+      "serial":card.read5F34Result.DT, //卡片序列号
+      "cardNo":card.cardNum, //卡号
+      "expiryDate":card.validityResult.ED, //卡有效期
+      "track2":card.track2Result.CN, //2磁道数据
+      "originalTrack2":card.track2Result.CN, //二磁道原始数据
+      "track3":card.track2Result.CN, //3磁道数据
+      "iccData":card.field55Result.DT,//IccData 55域
+      "password":password, //个人标识码  密码
+      "amount":"",//金额
+      "field62":field62,//62域
+      "field64":field64//64域
     }
 
     return baseFetch(POST_URL_MAP.QUERY_BALANCE, params)
+  },
+
+  async setFiled62AndMac(password, card) {
+    const params = {
+      "bankcardType":1, //卡类型:磁条卡 IC卡 NFC卡
+      "serial":card.read5F34Result.DT, //卡片序列号
+      "cardNo":card.cardNum, //卡号
+      "expiryDate":card.validityResult.ED, //卡有效期
+      "track2":card.track2Result.CN, //2磁道数据
+      "originalTrack2":card.track2Result.CN, //二磁道原始数据
+      "track3":card.track2Result.CN, //3磁道数据
+      "iccData":card.field55Result.DT,//IccData 55域
+      "password":password, //个人标识码  密码
+      "amount":""//金额
+    }
+
+    return baseFetch(POST_URL_MAP.SET_FILED_62, params)
   }
 }

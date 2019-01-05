@@ -6,7 +6,7 @@ import { Form, Input, Button, Col, Row } from 'antd';
 import React from 'react';
 import { connect } from 'dva';
 import { getBankAPI } from '../../lib/hardware';
-import { postman } from '../../lib/ajax'
+// import { postman } from '../../lib/ajax'
 import CountDown from '../../components/countdown'
 
 const FormItem = Form.Item;
@@ -24,6 +24,7 @@ class InputForm extends React.Component {
     const { cardNum } = this.props.card
     console.log('-cardNum----', cardNum)
     getBankAPI().Pinpad.start()
+    getBankAPI().Pinpad.once('onInput', this.onInput)
     getBankAPI().Pinpad.once('onBeginRead', this.onBeginRead)
     this.hasInserted = true
   }
@@ -47,17 +48,36 @@ class InputForm extends React.Component {
         password
       })
     })
+    this.hasInserted = true
   }
 
   componentWillUnmount() {
     getBankAPI().Pinpad.off('onInput', this.onInput)
+    getBankAPI().Pinpad.off('onBeginRead', this.onBeginRead)
     getBankAPI().Pinpad.pinpadEndRead()
     getBankAPI().Pinpad.close()
   }
 
   handleSubmit = async e => {
     e.preventDefault();
-    await postman.queryBalance(this.state.password)
+
+    const length = this.props.card.track2Result.CN.length
+    console.log("length:" + length + "-----------------")
+
+    const track2Data = this.props.card.track2Result.CN
+    console.log("track2Data:" + track2Data + "-----------------")
+
+    const subTrack2 = track2Data.substring(length-18, length-2)
+    console.log("subTrack2:" + subTrack2 + "-----------------")
+
+    getBankAPI().Pinpad.pinpadCrypt(subTrack2)
+    // console.log("track2:" + track2 + "-----------------")
+
+    //const resultFiled = await postman.setFiled62AndMac(this.state.password.VL, this.props.card)
+    //console.log(resultFiled.data.mac64)
+
+    //const filed64 = getBankAPI().Pinpad.pinpadGetMacHex(resultFiled.data.mac64)
+    //const result = await postman.queryBalance(this.state.password, this.props.card, resultFiled.data.filed62, filed64)
   };
 
   renderWait() {
